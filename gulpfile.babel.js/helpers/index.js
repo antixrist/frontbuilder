@@ -1,3 +1,6 @@
+import gutil from 'gulp-util';
+import chalk from 'chalk';
+
 /**
  * Date formatter for Gulp notify. It showes only hours, minutes and seconds
  * @param  {number} timeItem hours, minutes or seconds
@@ -22,4 +25,14 @@ export function getTimeFormatted () {
   const seconds = currentDate.getSeconds();
   
   return [formatTime(hours), formatTime(minutes), formatTime(seconds)].join(':');
+}
+
+
+/**
+ * Helper for watcher logging
+ * @param  {String} event Type of event
+ * @param  {String} path  Path of changed file
+ */
+export function watcherLog (event, path) => {
+  gutil.log(`${chalk.cyan.bold(event)} ${chalk.green(path)}`);
 }
