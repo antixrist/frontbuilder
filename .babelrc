@@ -1,5 +1,6 @@
 {
   "presets": ["es2015", "stage-1"],
+  "plugins": ["transform-vue-jsx"],
   "ignore": [
     "**/babel_ignore_*.js",
     "*/js/framework/*.js",
