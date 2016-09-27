@@ -1,8 +1,8 @@
 import del from 'del';
 import gulp from 'gulp';
 import gulpPlugins from 'gulp-load-plugins';
-import globWatcher from 'glob-watcher';
-import runSequence from 'run-sequence';
+import watcher from 'glob-watcher';
+import runner from 'run-sequence';
 import through2 from 'through2';
 const $ = gulpPlugins();
 // $.if
@@ -18,5 +18,4 @@ const $ = gulpPlugins();
 // $.rename
 // $.sourcemaps
 // $.util
-// $.util
-
+// $.data
