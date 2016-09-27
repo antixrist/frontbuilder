@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production node -v",
+    "tmp": "cross-env NODE_ENV=production gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -64,6 +65,7 @@
     "vue-router": "^2.0.0-rc.5",
     "vue-socket.io": "^1.0.2",
     "vuex": "^2.0.0-rc.6",
+    "vuex-persistedstate": "^0.3.0",
     "vuex-router-sync": "^3.0.0"
   }
 }

@@ -1,3 +1,5 @@
+import _ from 'lodash';
+import * as config from './config';
 import del from 'del';
 import gulp from 'gulp';
 import gulpPlugins from 'gulp-load-plugins';
@@ -19,3 +21,22 @@ const $ = gulpPlugins();
 // $.sourcemaps
 // $.util
 // $.data
+
+
+import * as jsTasks from './scripts';
+
+console.log('jsTasks', jsTasks);
+
+gulp.task('default', (cb) => {
+  
+  
+  console.log('config', config);
+  console.log('tasks', Object.keys(gulp.tasks));
+  cb();
+});
+
+gulp.task('default2', (cb) => {
+  console.log('config', config);
+  console.log('tasks', gulp.tasks);
+  cb();
+});
