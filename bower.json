@@ -1,0 +1,17 @@
+{
+  "name": "builder",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Лёха <kartashov.al.and@yandex.ru>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
