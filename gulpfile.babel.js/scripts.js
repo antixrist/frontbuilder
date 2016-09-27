@@ -14,6 +14,7 @@ export function builder () {
     
   });
 }
+
 export function cleaner ({folder = false} = {}) {
   gulp.task('js:clean', () => {
     let glob = folder ? 'js/' : 'js/**/*.js';
