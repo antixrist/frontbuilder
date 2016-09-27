@@ -13,14 +13,14 @@ export function builder () {
     
   });
 }
-export function cleaner ({folder = false}) {
+export function cleaner ({folder = false} = {}) {
   gulp.task('js:clean', (cb) => {
     let glob;
     
     if (!config.isProduction) {
-      glob = folder ? 'build/js/' : 'build/js/*.js';
+      glob = folder ? 'dev/js/' : 'dev/js/**/*.js';
     } else {
-      glob = folder ? 'dev/js/' : 'dev/js/*.js';
+      glob = folder ? 'build/js/' : 'build/js/**/*.js';
     }
     
     return del(glob);

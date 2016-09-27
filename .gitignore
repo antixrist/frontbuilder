@@ -1,6 +1,7 @@
 node_modules
 bower_components
 dev
+build
 .DS_Store
 ._.DS_Store
 

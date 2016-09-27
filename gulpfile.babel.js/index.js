@@ -25,14 +25,10 @@ const $ = gulpPlugins();
 
 import * as jsTasks from './scripts';
 
-console.log('jsTasks', jsTasks);
-
 gulp.task('default', (cb) => {
-  
-  
-  console.log('config', config);
-  console.log('tasks', Object.keys(gulp.tasks));
-  cb();
+  jsTasks.cleaner({folder: true});
+
+  runner('js:clean', cb);
 });
 
 gulp.task('default2', (cb) => {
