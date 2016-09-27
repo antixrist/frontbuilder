@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import config from './config';
 import del from 'del';
+import path from 'path';
 import gulp from 'gulp';
 import gulpPlugins from 'gulp-load-plugins';
 import watcher from 'glob-watcher';
@@ -14,14 +15,9 @@ export function builder () {
   });
 }
 export function cleaner ({folder = false} = {}) {
-  gulp.task('js:clean', (cb) => {
-    let glob;
-    
-    if (!config.isProduction) {
-      glob = folder ? 'dev/js/' : 'dev/js/**/*.js';
-    } else {
-      glob = folder ? 'build/js/' : 'build/js/**/*.js';
-    }
+  gulp.task('js:clean', () => {
+    let glob = folder ? 'js/' : 'js/**/*.js';
+    glob = path.join(config.destPath, glob);
     
     return del(glob);
   });
