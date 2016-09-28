@@ -13,41 +13,8 @@ import named from 'vinyl-named';
 import glob from 'glob';
 const $ = gulpPlugins();
 
-
 // This glob includes all *.js but not *.spec.js:
 // components/**/!(*.spec).js
-
-export function webpackEntries () {
-  return new Promise ((resolve, reject) => {
-    let entries = {};
-
-    functionDone(function () {
-      return gulp
-        .src('markup/js/!(_*).js', {read: false})
-        .pipe(named())
-        .pipe(through2.obj(function (file, enc, cb) {
-          entries[file.named] = path.basename(file.path);
-          cb(null, file);
-        }))
-    }, function (err) {
-      if (err) { return reject(err); }
-
-      resolve(entries);
-    });
-  });
-}
-
-webpackEntries.sync = function () {
-  return glob.sync('markup/js/!(_*).js').reduce((entries, file) => {
-    let entry = path.basename(file, path.extname(file));
-    entries[entry] = path.basename(file);
-
-    return entries;
-  }, {});
-};
-
-
-
 
 
 export let tasks = {};

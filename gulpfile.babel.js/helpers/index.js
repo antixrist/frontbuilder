@@ -1,6 +1,11 @@
 import gutil from 'gulp-util';
 import chalk from 'chalk';
 
+import * as webpack from './webpack';
+import * as notifier from './notifier';
+
+export {webpack, notifier};
+
 /**
  * Date formatter for Gulp notify. It showes only hours, minutes and seconds
  * @param  {number} timeItem hours, minutes or seconds
@@ -33,7 +38,7 @@ export function getTimeFormatted () {
  * @param  {String} event Type of event
  * @param  {String} path  Path of changed file
  */
-export function watcherLog (event, path) => {
+export function watcherLog (event, path) {
   gutil.log(`${chalk.cyan.bold(event)} ${chalk.green(path)}`);
 }
 
