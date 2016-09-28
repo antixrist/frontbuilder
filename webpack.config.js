@@ -19,6 +19,7 @@ constants['process.env'] = keys(process.env).reduce((obj, key) => {
 }, {});
 
 let plugins = [
+  new webpack.NoErrorsPlugin(),
   new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.DefinePlugin(constants),
   new webpack.optimize.CommonsChunkPlugin({
@@ -29,12 +30,14 @@ let plugins = [
 ];
 
 if (!config.isProduction) {
-  plugins.push(
-    new webpack.HotModuleReplacementPlugin(),
-  );
+  if (config.webpack.useHMR) {
+    plugins.push(
+      new webpack.HotModuleReplacementPlugin(),
+    );
+  }
 } else {
   plugins.push(
-    new webpack.NoErrorsPlugin(),
+    // new webpack.NoErrorsPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         drop_console: config.isProduction,
