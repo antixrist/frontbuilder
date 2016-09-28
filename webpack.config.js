@@ -43,7 +43,7 @@ let webpackConfig = {
     loaders: [{
       loader: 'babel',
       test: /\.jsx?$/,
-      exclude: /(node_modules)/,
+      exclude: /(node_modules|bower_components)/,
       // config should be in .babelrc
       // query: {
       //   presets: ['es2015', 'stage-1'],
@@ -103,6 +103,10 @@ let webpackConfig = {
 
 // https://github.com/Browsersync/recipes/tree/master/recipes/webpack.monkey-hot-loader
 // https://github.com/BrowserSync/recipes/blob/master/recipes/webpack.react-hot-loader
+// \tars\tasks\main\dev.js
+// \tars\tasks\js\processing.js
+// \tars\tasks\js\webpack-processing.js
+// \webpack.config.js
 
 /*
  new webpack.optimize.OccurenceOrderPlugin(),
