@@ -6,9 +6,14 @@ const isProduction = _.trim(process.env.NODE_ENV) == 'production';
 const destPath = isProduction ? 'build' : 'dev';
 const useNotifierInDevMode = true;
 
-let webpackEntries = __.webpack.entriesFinder.sync('markup/js/!(_*).js');
+let devServerEntryPoints = [
+  'webpack/hot/dev-server',
+  'webpack-hot-middleware/client?reload=true'
+];
 
-console.log('webpackEntries', webpackEntries);
+let webpackUseHMR = !isProduction;
+let webpackEntries = __.webpack.entriesFinder.sync('markup/js/!(_*).js');
+webpackEntries = !webpackUseHMR ? webpackEntries : webpackEntries.map(entry => devServerEntryPoints.concat(entry));
 
 export default {
   isProduction,
@@ -16,13 +21,9 @@ export default {
   destPath,
 
   webpack: {
-    useHMR: !isProduction,
-    // `entry` is only for webpack-cli.
-    // it will replaced in gulp process
-    entry: {
-      js: 'js.js',
-    },
+    entry: webpackEntries,
     outputPublicPath: `./${destPath}/js/`,
-    commonChunkName: 'common'
+    commonChunkName: 'common',
+    useHMR: webpackUseHMR,
   }
 };
