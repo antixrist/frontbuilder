@@ -42,21 +42,28 @@ let webpackConfig = {
   module: {
     loaders: [{
       loader: 'babel',
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: /(node_modules)/,
-      query: {
-        presets: ['es2015', 'stage-1'],
-        plugins: [
-          ['transform-runtime', {
-            "polyfill": false,
-            "regenerator": true
-          }],
-          'transform-decorators-legacy'
-        ]
-      }
+      // config should be in .babelrc
+      // query: {
+      //   presets: ['es2015', 'stage-1'],
+      //   plugins: [
+      //     ['transform-runtime', {
+      //       "polyfill": false,
+      //       "regenerator": true
+      //     }],
+      //     // 'transform-decorators-legacy'
+      //   ]
+      // }
+    }, {
+      test: /\.json/,
+      loader: 'json'
     }, {
       test: /\.html$/,
       loader: 'vue-html'
+    }, {
+      test: /\.vue$/,
+      loader: 'vue'
     // }, {
     //   test: /\.html$/,
     //   loader: 'html'
@@ -95,6 +102,7 @@ let webpackConfig = {
 
 
 // https://github.com/Browsersync/recipes/tree/master/recipes/webpack.monkey-hot-loader
+// https://github.com/BrowserSync/recipes/blob/master/recipes/webpack.react-hot-loader
 
 /*
  new webpack.optimize.OccurenceOrderPlugin(),

@@ -1,18 +1,15 @@
 {
   "presets": ["es2015", "stage-1"],
   "plugins": [
+    "transform-vue-jsx",
     "syntax-async-functions",
     ["transform-runtime", {
       "polyfill": false,
       "regenerator": true
-    }],
-    "transform-vue-jsx"
+    }]
   ],
   "ignore": [
     "**/babel_ignore_*.js",
-    "*/js/framework/*.js",
-    "*/js/libraries/*.js",
-    "*/js/plugins/*.js",
-    "*/js/separate-js/*.js"
+    "*/js/vendor/*.js"
   ]
 }
