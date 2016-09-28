@@ -94,6 +94,7 @@ let webpackConfig = {
 };
 
 
+// https://github.com/Browsersync/recipes/tree/master/recipes/webpack.monkey-hot-loader
 
 /*
  new webpack.optimize.OccurenceOrderPlugin(),
