@@ -11,7 +11,7 @@
  */
 
 import _ from 'lodash';
-import config from './config';
+import config from '../config';
 import del from 'del';
 import path from 'path';
 import gulp from 'gulp';

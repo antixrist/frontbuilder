@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import config from './config';
+import config from '../config';
 import del from 'del';
 import path from 'path';
 import gulp from 'gulp';
@@ -15,11 +15,17 @@ export function builder () {
   });
 }
 
+let cleanerInited = false;
 export function cleaner ({folder = false} = {}) {
-  gulp.task('js:clean', () => {
+  const taskName = 'js:clean';
+  cleanerInited = true;
+  
+  !cleanerInited && gulp.task(taskName, () => {
     let glob = folder ? 'js/' : 'js/**/*.js';
     glob = path.join(config.destPath, glob);
     
     return del(glob);
   });
+  
+  return taskName;
 }

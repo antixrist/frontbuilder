@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as config from './config';
+import * as config from '../config';
 import del from 'del';
 import gulp from 'gulp';
 import gulpPlugins from 'gulp-load-plugins';

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import config from '../config';
+import config from '../../config';
 import chalk from 'chalk';
 import {getTimeFormatted} from './';
 
