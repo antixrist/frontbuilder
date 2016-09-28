@@ -80,7 +80,7 @@ let webpackConfig = {
     loaders: [{
       loader: 'babel',
       test: /\.jsx?$/,
-      exclude: /(node_modules|bower_components)/,
+      exclude: [/node_modules/, /bower_components/],
       cacheDirectory: true
       // config should be in .babelrc
       // query: {
@@ -116,6 +116,7 @@ let webpackConfig = {
     // },
     noParse: [
       /bluebird/,
+      /\/core-js\//,
       ///node_modules/,
       ///jsnetworkx/,
       // /d3\.js/,
