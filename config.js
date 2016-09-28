@@ -8,5 +8,16 @@ const useNotifierInDevMode = true;
 export default {
   isProduction,
   useNotifierInDevMode,
-  destPath
+  destPath,
+
+  webpack: {
+    useHMR: !isProduction,
+    // `entry` is only for webpack-cli.
+    // it will replaced in gulp process
+    entry: {
+      js: 'js.js',
+    },
+    outputPublicPath: `./${destPath}/js/`,
+    commonChunkName: 'common'
+  }
 };

@@ -21,14 +21,17 @@ const $ = gulpPlugins();
 // $.sourcemaps
 // $.util
 // $.data
+// $.named
 
+global.builder = {};
+Object.assign(global.builder, config);
+global.builder.runtime = {};
 
 import * as jsTasks from './scripts';
 
 gulp.task('default', (cb) => {
-  jsTasks.cleaner({folder: true});
-
-  runner('js:clean', cb);
+  // jsTasks.builder();
+  // runner('js:build', cb);
 });
 
 gulp.task('default2', (cb) => {

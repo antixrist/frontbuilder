@@ -2,7 +2,7 @@
 // //babel-plugin-transform-async-to-generator
 // babel-plugin-transform-regenerator
 
-import {keys, assign} from 'lodash';
+import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
 
@@ -22,7 +22,7 @@ let plugins = [
   new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.DefinePlugin(constants),
   new webpack.optimize.CommonsChunkPlugin({
-    name: 'common',
+    name: config.webpack.commonChunkName,
     children: true,
     minChunks: 2
   })
@@ -36,6 +36,11 @@ if (!config.isProduction) {
   plugins.push(
     new webpack.NoErrorsPlugin(),
     new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        drop_console: config.isProduction,
+        drop_debugger: config.isProduction
+      },
+      mangle: false,
       compressor: {
         warnings: false
       }
@@ -44,10 +49,12 @@ if (!config.isProduction) {
 }
 
 let webpackConfig = {
+  entry: config.webpack.entry,
   output: {
     filename: '[name].js',
     library: '[name]',
     chunkFilename: '[id].js',
+    publicPath: config.webpack.outputPublicPath
   },
   
   resolve: {
@@ -58,9 +65,14 @@ let webpackConfig = {
   plugins,
   verbose: false,
   // displayModules: false,
+  debug: config.isProduction,
   devtool: config.isProduction ? '#source-map' : '#inline-source-map',
-  
+
   module: {
+    preLoaders: [{
+      test: /\.js$/,
+      loader: 'source-map-loader'
+    }],
     loaders: [{
       loader: 'babel',
       test: /\.jsx?$/,
@@ -99,14 +111,14 @@ let webpackConfig = {
     //   ignoreCustomFragments: [/\{\{.*?}}/]
     // },
     noParse: [
+      /bluebird/,
       ///node_modules/,
       ///jsnetworkx/,
       // /d3\.js/,
       ///vue\.common\.js/,
-      /angular\/angular\.js/,
-      ///lodash/,
-      /bluebird/,
-      /dist\/jquery\.js/
+      // /angular\/angular\.js/,
+      // /lodash/,
+      // /dist\/jquery\.js/
     ]
   },
   externals: {

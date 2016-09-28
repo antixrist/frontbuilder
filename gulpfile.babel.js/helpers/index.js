@@ -36,3 +36,7 @@ export function getTimeFormatted () {
 export function watcherLog (event, path) => {
   gutil.log(`${chalk.cyan.bold(event)} ${chalk.green(path)}`);
 }
+
+export function taskLoader (path) {
+
+}

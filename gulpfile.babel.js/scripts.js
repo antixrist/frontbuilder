@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import {flatten, forEach, compact} from 'lodash';
 import config from '../config';
 import del from 'del';
 import path from 'path';
@@ -6,26 +6,110 @@ import gulp from 'gulp';
 import gulpPlugins from 'gulp-load-plugins';
 import watcher from 'glob-watcher';
 import runner from 'run-sequence';
+import Promise from 'bluebird';
+import functionDone from 'function-done';
 import through2 from 'through2';
+import named from 'vinyl-named';
+import glob from 'glob';
 const $ = gulpPlugins();
 
-export function builder () {
-  gulp.task('js:build', (cb) => {
-    
+export function webpackEntries () {
+  return new Promise ((resolve, reject) => {
+    let entries = {};
+
+    functionDone(function () {
+      return gulp
+        .src('markup/js/!(_*).js', {read: false})
+        .pipe(named())
+        .pipe(through2.obj(function (file, enc, cb) {
+          entries[file.named] = path.basename(file.path);
+          cb(null, file);
+        }))
+    }, function (err) {
+      if (err) { return reject(err); }
+
+      resolve(entries);
+    });
   });
 }
 
-let cleanerInited = false;
+webpackEntries.sync = function () {
+  return glob.sync('markup/js/!(_*).js').reduce((entries, file) => {
+    let entry = path.basename(file, path.extname(file));
+    entries[entry] = path.basename(file);
+
+    return entries;
+  }, {});
+};
+
+
+
+
+
+export let tasks = {};
+
+tasks['js:build'] = () => {
+  return function (cb) {
+    return new Promise((resolve, reject) => {
+      getWebpackEntries()
+        .then(entries => {
+          console.log('entries', entries);
+        })
+        .then(resolve)
+        .catch(reject)
+    });
+    // let entries = [];
+    // return Promise.all([
+    //   // ,
+    //   gulp
+    //     .src(['markup/js/*.js', '!markup/js/_*.js'], {read: false})
+    //     .pipe(named())
+    //     .pipe(through2.obj(function (file, enc, cb) {
+    //       console.log('file', file);
+    //       entries.push(file.named);
+    //       cb(null, file);
+    //     }))
+    //     .on('end', function () {
+    //       console.log('entries from task', entries);
+    //     })
+    //     .on('error', err => console.error(err))
+    // ]);
+  }
+};
+
+let tasksInited = {};
+
+export function taskLoader (tasksFactories) {
+  return function load (...tasksNames) {
+    console.log('tasksNames', compact(flatten(tasksNames)));
+
+    // if (!taskName) {
+    //   _.forEach(tasks, (fn, name) => load);
+    // } else
+    // if (_.isFunction(tasks[taskName]) && _.isUndefined(gulp.tasks[taskName])) {
+    //   gulp.task(taskName, tasks[taskName]);
+    // }
+  }
+}
+
+let loader = taskLoader(tasks);
+loader();
+
+
+
+export function builder () {
+  !tasksInited['js:build'] && gulp.task('js:build', );
+
+  tasksInited['js:build'] = true;
+}
+
 export function cleaner ({folder = false} = {}) {
-  const taskName = 'js:clean';
-  cleanerInited = true;
-  
-  !cleanerInited && gulp.task(taskName, () => {
+  !tasksInited['js:clean'] && gulp.task('js:clean', () => {
     let glob = folder ? 'js/' : 'js/**/*.js';
     glob = path.join(config.destPath, glob);
-    
+
     return del(glob);
   });
-  
-  return taskName;
+
+  tasksInited['js:clean'] = true;
 }
