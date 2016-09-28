@@ -1,26 +1,47 @@
-
-
-// new webpack.ProvidePlugin({
-//   'Promise': 'bluebird'
-// }),
-
 // babel-plugin-syntax-async-functions
 // //babel-plugin-transform-async-to-generator
 // babel-plugin-transform-regenerator
 
-// {
-//   test: /\.jsx?$/,
-//   exclude: /(node_modules|bower_components)/,
-//   loader: 'babel',
-//     query: {
-//     cacheDirectory: true
-//   }
-// }
+import {keys, assign} from 'lodash';
+import config from './config';
+import webpack from 'webpack';
 
-const {_keys}  = require('lodash');
-const config   = require('./config');
-const path     = require('path');
-const webpack  = require('webpack');
+let constants = keys(config).reduce((obj, key) => {
+  obj[key] = JSON.stringify(config[key]);
+  
+  return obj;
+}, {});
+
+constants['process.env'] = keys(process.env).reduce((obj, key) => {
+  obj[key] = JSON.stringify(process.env[key]);
+
+  return obj;
+}, {});
+
+let plugins = [
+  new webpack.optimize.OccurenceOrderPlugin(),
+  new webpack.DefinePlugin(constants),
+  new webpack.optimize.CommonsChunkPlugin({
+    name: 'common',
+    children: true,
+    minChunks: 2
+  })
+];
+
+if (!config.isProduction) {
+  plugins.push(
+    new webpack.HotModuleReplacementPlugin(),
+  );
+} else {
+  plugins.push(
+    new webpack.NoErrorsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false
+      }
+    }),
+  );
+}
 
 let webpackConfig = {
   output: {
@@ -34,16 +55,17 @@ let webpackConfig = {
     extensions: ['', '.js', '.jsx', 'json']
   },
   
+  plugins,
   verbose: false,
   // displayModules: false,
-  devtool: !config.isProduction ? '#module-cheap-inline-source-map' : '#source-map',
-  plugins: [],
+  devtool: config.isProduction ? '#source-map' : '#inline-source-map',
   
   module: {
     loaders: [{
       loader: 'babel',
       test: /\.jsx?$/,
       exclude: /(node_modules|bower_components)/,
+      cacheDirectory: true
       // config should be in .babelrc
       // query: {
       //   presets: ['es2015', 'stage-1'],
@@ -77,7 +99,6 @@ let webpackConfig = {
     //   ignoreCustomFragments: [/\{\{.*?}}/]
     // },
     noParse: [
-      ///faker\/lib\/locales/,
       ///node_modules/,
       ///jsnetworkx/,
       // /d3\.js/,
@@ -107,31 +128,5 @@ let webpackConfig = {
 // \tars\tasks\js\processing.js
 // \tars\tasks\js\webpack-processing.js
 // \webpack.config.js
-
-/*
- new webpack.optimize.OccurenceOrderPlugin(),
- // new webpack.HotModuleReplacementPlugin(),
- // new webpack.NoErrorsPlugin(),
- 
- //new webpack.IgnorePlugin(/jsnetworkx/),
- //new webpack.NoErrorsPlugin(),
- // new webpack.EnvironmentPlugin(Object.keys(process.env)),
- new webpack.DefinePlugin(_keys(config).reduce((obj, key) => {
- obj[key] = JSON.stringify(config[key]);
- 
- return obj;
- }, {})),
- new webpack.optimize.CommonsChunkPlugin({
- name: 'common',
- children: true,
- minChunks: 2
- }),
- new webpack.optimize.UglifyJsPlugin({
- compressor: {
- warnings: false
- }
- }),
-
-*/
 
 module.exports = webpackConfig;
