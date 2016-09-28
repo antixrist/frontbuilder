@@ -38,7 +38,7 @@ import {notifier} from './helpers';
 
 gulp.task('default', (done) => {
   let webpackConfig = require('../webpack.config.babel');
-  // webpackConfig.watch = true;
+  webpackConfig.watch = true;
 
   webpack(webpackConfig, (error, stats) => {
 

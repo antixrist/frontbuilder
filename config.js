@@ -14,11 +14,13 @@ let devServerEntryPoints = [
   // на 3е место добавится оригинальная точка входа
 ];
 
-let webpackUseHMR = !isProduction;
+// let webpackUseHMR = !isProduction;
+let webpackUseHMR = false;
+
 let webpackEntries = __.webpack.entriesFinder.sync('markup/js/!(_*).js');
 forEach(webpackEntries, (file, name) => {
   file = path.join(cwd, `markup/js`, file);
-  webpackEntries[name] = !webpackUseHMR ? webpackEntries : devServerEntryPoints.concat(file);
+  webpackEntries[name] = !webpackUseHMR ? file : devServerEntryPoints.concat(file);
 });
 
 console.log('webpackEntries', webpackEntries);
