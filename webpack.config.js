@@ -57,6 +57,7 @@ let webpackConfig = {
     filename: '[name].js',
     library: '[name]',
     chunkFilename: '[id].js',
+    path: config.webpack.outputPath,
     publicPath: config.webpack.outputPublicPath
   },
   
