@@ -13,6 +13,10 @@ import named from 'vinyl-named';
 import glob from 'glob';
 const $ = gulpPlugins();
 
+
+// This glob includes all *.js but not *.spec.js:
+// components/**/!(*.spec).js
+
 export function webpackEntries () {
   return new Promise ((resolve, reject) => {
     let entries = {};
