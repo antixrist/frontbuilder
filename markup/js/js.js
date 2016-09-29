@@ -1,11 +1,10 @@
+import {app} from './app';
+
 Promise.config({
   warnings: false,
   cancellation: true
 });
 
-// global.Promise = require('bluebird');
-// Warnings are useful for user code, but annoying for third party libraries.
-// console.log('Promise', Object.keys(Promise));
+app.$mount('#app');
 
-
-module.exports = require('./app');
+export default app;

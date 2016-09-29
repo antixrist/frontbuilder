@@ -47,7 +47,8 @@ let webpackConfig = {
   
   resolve: {
     modulesDirectories: ['node_modules'],
-    extensions: ['', '.js', '.jsx', 'json']
+    extensions: ['', '.js', '.jsx', '.json', '.vue'],
+    alias: {vue: 'vue/dist/vue.js'}
   },
   
   plugins,
