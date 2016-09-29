@@ -1,6 +1,3 @@
-// require('babel-runtime/core-js/promise').default = require('bluebird');
-// require('babel-polyfill');
-
 Promise.config({
   warnings: false,
   cancellation: true
