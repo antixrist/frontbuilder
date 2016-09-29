@@ -1,5 +1,6 @@
 import {forEach, keys} from 'lodash';
 import path from 'path';
+import compression from 'compression';
 import {entriesFinder} from './gulpfile.babel.js/helpers/webpack';
 
 const cwd = process.cwd();
@@ -34,8 +35,8 @@ export default {
     },
 
     noParse: [
-      /bluebird/,
-      /\/core-js\//,
+      // /bluebird/,
+      // /\/core-js\//,
       ///node_modules/,
       ///jsnetworkx/,
       // /d3\.js/,
@@ -85,6 +86,15 @@ export default {
       index:     'index.html',
       directory: false,
       baseDir:   (isProduction) ? './build/' : './dev'
-    }
+    },
+    middleware: [
+      compression({filter: function shouldCompress (req, res) {
+        if (req.headers['x-no-compression']) {
+          return false
+        }
+
+        return compression.filter(req, res)
+      }})
+    ]
   }
 };
