@@ -2,7 +2,7 @@
 // //babel-plugin-transform-async-to-generator
 // babel-plugin-transform-regenerator
 
-import {keys, assign, get} from 'lodash';
+import {keys, assign, get, omit} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
 
@@ -12,6 +12,8 @@ let constants = keys(config).reduce((obj, key) => {
   return obj;
 }, {});
 
+
+constants = omit(constants, ['browserSync', 'webpack']);
 constants['process.env'] = keys(process.env).reduce((obj, key) => {
   obj[key] = JSON.stringify(process.env[key]);
 
@@ -20,8 +22,8 @@ constants['process.env'] = keys(process.env).reduce((obj, key) => {
 
 let plugins = [
   new webpack.NoErrorsPlugin(),
-  new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.DefinePlugin(constants),
+  new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.optimize.CommonsChunkPlugin({
     name: config.webpack.commonChunkName,
     children: true,
@@ -29,15 +31,8 @@ let plugins = [
   })
 ];
 
-if (!config.isProduction) {
-  if (config.webpack.useHMR) {
-    plugins.push(
-      new webpack.HotModuleReplacementPlugin(),
-    );
-  }
-} else {
+if (config.isProduction) {
   plugins.push(
-    // new webpack.NoErrorsPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         drop_console: config.isProduction,

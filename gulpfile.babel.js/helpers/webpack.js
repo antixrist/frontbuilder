@@ -45,9 +45,15 @@ export function insertHMREtriesToAppEntries (appEntries = [], hmrEntries = []) {
 }
 
 function changeFilesArrayToWebpackFormat (files) {
+  files = files ? files : [];
+  files = _.isArray(files) ? files : [files];
+
   return files.reduce((entries, file) => {
-    let entry      = path.basename(file, path.extname(file));
-    entries[entry] = path.basename(file); // здесь надо зарезолвить fullpath от cwd
+    let entry    = path.basename(file, path.extname(file));
+    let filename = path.resolve(cwd, file);
+    let filenameRelativeToCwd = path.relative(cwd, filename);
+    entries[entry] = path.basename(file);
+
 
     return entries;
   }, {});

@@ -1,15 +1,15 @@
 import {forEach} from 'lodash';
 import path from 'path';
-import * as __ from './gulpfile.babel.js/helpers';
+import {entriesFinder} from './gulpfile.babel.js/helpers/webpack';
 
 const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';
 const useNotifierInDevMode = true;
 
 let webpackUseHMR = true;
-let webpackEntries = __.webpack.entriesFinder.sync('markup/js/!(_*).js');
+let webpackEntries = entriesFinder.sync('markup/js/!(_*).js');
 const destPath = isProduction ? 'build' : 'dev';
-const publicPath = '/js/'; // для hmr и require.ensure
+const webpackPublicPath = '/js/'; // для hmr и require.ensure
 
 let devServerEntryPoints = [
   // 'webpack/hot/dev-server', // при ошибках страница перезагрузится
@@ -32,7 +32,7 @@ export default {
   webpack: {
     entry: webpackEntries,
     outputPath: path.join(cwd, `/${destPath}/js/`),
-    outputPublicPath: publicPath,
+    outputPublicPath: webpackPublicPath,
     commonChunkName: 'common',
 
     useHMR: true,
@@ -45,7 +45,7 @@ export default {
       'webpack-hot-middleware/client?reload=true'
     ],
     hmr: {
-      publicPath: publicPath,
+      publicPath: webpackPublicPath,
       // quiet: false, // display no info to console (only warnings and errors)
       // noInfo: false, // display nothing to the console
       watchOptions: {
