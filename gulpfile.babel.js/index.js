@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as config from '../config';
+import config from '../config';
 import del from 'del';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
@@ -8,6 +8,10 @@ import webpack from 'webpack';
 import watcher from 'glob-watcher';
 import runner from 'run-sequence';
 import through2 from 'through2';
+import browserSync from 'browser-sync';
+
+import {insertHMREtriesToAppEntries, entriesFinder} from './helpers/webpack';
+
 const $ = gulpPlugins();
 
 // $.if
@@ -36,9 +40,55 @@ global.builder.runtime = {};
 // import * as jsTasks from './scripts';
 import {notifier} from './helpers';
 
+
+
+gulp.task('server', function (cb) {
+  let browserSyncConfig = config.browserSync;
+
+  browserSyncConfig = Object.assign(browserSyncConfig, {
+    middleware: browserSyncConfig.middleware || [],
+    logConnections: browserSyncConfig.logConnections || true,
+    logLevel: browserSyncConfig.logLevel || 'info',
+    reloadOnRestart: browserSyncConfig.reloadOnRestart || true
+  });
+
+  if (!config.webpack.useHMR) {
+    browserSync.init(browserSyncConfig);
+  } else {
+    const webpackConfig = require('../webpack.config.babel');
+    webpackConfig.plugins = webpackConfig.plugins || [];
+    let hmrPluginExists = _.some(webpackConfig.plugins, (plugin) => plugin instanceof webpack.HotModuleReplacementPlugin);
+    !hmrPluginExists && webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+
+    const webpackInstance = webpack(webpackConfig);
+    const webpackDevMiddlewareInstance = require('webpack-dev-middleware')(webpackInstance, config.webpack.hmr || {
+      publicPath: webpackConfig.output.publicPath,
+    });
+    const browserSyncMiddleware = [
+      webpackDevMiddlewareInstance,
+      require('webpack-hot-middleware')(webpackInstance)
+    ];
+
+    var preparedEntries = insertHMREtriesToAppEntries(entriesFinder.sync('markup/js/!(_*).js'), config.webpack.hmrEntries);
+    console.log('preparedEntries', preparedEntries);
+
+    browserSyncConfig.middleware = browserSyncConfig.middleware.concat(browserSyncMiddleware);
+    console.log('Wait for a moment, please. Webpack is preparing bundle for you...');
+
+    webpackDevMiddlewareInstance.waitUntilValid(() => {
+      browserSync.init(browserSyncConfig);
+      // devTaskFinallyActions();
+    });
+  }
+});
+
+
 gulp.task('default', (done) => {
   let webpackConfig = require('../webpack.config.babel');
-  // webpackConfig.watch = true;
+
+  if (config.webpack.hmr.enabled) {
+    // webpackConfig.watch = true;
+  }
 
   webpack(webpackConfig, (error, stats) => {
 
@@ -55,7 +105,7 @@ gulp.task('default', (done) => {
 
       notifier.success('JavaScript has been processed', {notStream: true});
 
-      // if (tars.useLiveReload) {
+      // if (config.webpack.hmr.enabled) {
       //   browserSync.reload();
       // }
     }
@@ -76,9 +126,6 @@ gulp.task('default', (done) => {
       }
     }
   });
-
-
-
 
 
   // jsTasks.builder();

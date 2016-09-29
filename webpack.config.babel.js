@@ -51,6 +51,8 @@ if (!config.isProduction) {
   );
 }
 
+console.log('config.webpack.entry', config.webpack.entry);
+
 let webpackConfig = {
   entry: config.webpack.entry,
 

@@ -4,8 +4,12 @@ import * as __ from './gulpfile.babel.js/helpers';
 
 const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';
-const destPath = isProduction ? 'build' : 'dev';
 const useNotifierInDevMode = true;
+
+let webpackUseHMR = true;
+let webpackEntries = __.webpack.entriesFinder.sync('markup/js/!(_*).js');
+const destPath = isProduction ? 'build' : 'dev';
+const publicPath = '/js/'; // для hmr и require.ensure
 
 let devServerEntryPoints = [
   // 'webpack/hot/dev-server', // при ошибках страница перезагрузится
@@ -14,10 +18,6 @@ let devServerEntryPoints = [
   // на 3е место добавится оригинальная точка входа
 ];
 
-// let webpackUseHMR = !isProduction;
-let webpackUseHMR = false;
-
-let webpackEntries = __.webpack.entriesFinder.sync('markup/js/!(_*).js');
 forEach(webpackEntries, (file, name) => {
   file = path.join(cwd, `markup/js`, file);
   webpackEntries[name] = !webpackUseHMR ? file : devServerEntryPoints.concat(file);
@@ -32,9 +32,30 @@ export default {
   webpack: {
     entry: webpackEntries,
     outputPath: path.join(cwd, `/${destPath}/js/`),
-    outputPublicPath: `./${destPath}/js/`,
+    outputPublicPath: publicPath,
     commonChunkName: 'common',
-    useHMR: webpackUseHMR,
+
+    useHMR: true,
+    hmrEntries: [
+      // при ошибках страница перезагрузится
+      // 'webpack/hot/dev-server',
+      // при ошибках страница перезагружаться не будет (state приложения сохранится)
+      'webpack/hot/only-dev-server',
+      // https://github.com/glenjamin/webpack-hot-middleware#documentation
+      'webpack-hot-middleware/client?reload=true'
+    ],
+    hmr: {
+      publicPath: publicPath,
+      // quiet: false, // display no info to console (only warnings and errors)
+      // noInfo: false, // display nothing to the console
+      watchOptions: {
+        aggregateTimeout: 200,
+        poll: true
+      },
+      stats: {
+        colors: true
+      }
+    },
   },
 
   browserSync: {

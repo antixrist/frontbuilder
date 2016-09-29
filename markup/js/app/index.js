@@ -1,1 +1,5 @@
-console.log('asdasd', 123);
+import {qwe} from './tmp';
+
+console.log('index');
+
+qwe.say();
