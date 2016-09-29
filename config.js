@@ -1,6 +1,7 @@
 import {forEach, keys} from 'lodash';
 import path from 'path';
 import compression from 'compression';
+import history from 'connect-history-api-fallback';
 import {entriesFinder} from './gulpfile.babel.js/helpers/webpack';
 
 const cwd = process.cwd();
@@ -36,8 +37,6 @@ export default {
 
     noParse: [
       // /bluebird/,
-      // /\/core-js\//,
-      ///node_modules/,
       ///jsnetworkx/,
       // /d3\.js/,
       ///vue\.common\.js/,
@@ -89,6 +88,9 @@ export default {
       baseDir:   (isProduction) ? './build/' : './dev'
     },
     middleware: [
+      history({
+        // logger: console.log.bind(console)
+      }),
       compression({filter: function shouldCompress (req, res) {
         if (req.headers['x-no-compression']) {
           return false
