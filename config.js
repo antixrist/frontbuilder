@@ -9,7 +9,7 @@ const useNotifierInDevMode = true;
 
 let devServerEntryPoints = [
   // 'webpack/hot/dev-server', // при ошибках страница перезагрузится
-  'webpack/hot/only-dev-server', // при ошибках страница перезагружаться не будет
+  'webpack/hot/only-dev-server', // при ошибках страница перезагружаться не будет (state приложения сохранится)
   'webpack-hot-middleware/client?reload=true'
   // на 3е место добавится оригинальная точка входа
 ];
