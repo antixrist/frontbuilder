@@ -30,6 +30,8 @@ if (config.isProduction) {
       }
     }),
   );
+} else {
+
 }
 
 let webpackConfig = {
