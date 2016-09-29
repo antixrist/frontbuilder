@@ -1,4 +1,4 @@
-import {forEach} from 'lodash';
+import {forEach, keys} from 'lodash';
 import path from 'path';
 import {entriesFinder} from './gulpfile.babel.js/helpers/webpack';
 
@@ -19,7 +19,35 @@ export default {
     entry: entriesFinder.sync('markup/js/!(_*).js'),
     outputPath: path.join(cwd, `/${destPath}/js/`),
     outputPublicPath: webpackPublicPath,
+    watchOptions: {
+      aggregateTimeout: 200,
+    },
     commonChunkName: 'common',
+    frontendConstants: {
+      'IS_PRODUCTION': isProduction,
+      'CWD': JSON.stringify(process.cwd()),
+      'process.env': keys(process.env).reduce((obj, key) => {
+        obj[key] = JSON.stringify(process.env[key]);
+
+        return obj;
+      }, {})
+    },
+
+    noParse: [
+      /bluebird/,
+      /\/core-js\//,
+      ///node_modules/,
+      ///jsnetworkx/,
+      // /d3\.js/,
+      ///vue\.common\.js/,
+      // /angular\/angular\.js/,
+      // /lodash/,
+      // /dist\/jquery\.js/
+    ],
+    externals: {
+      //lodash: 'window._',
+      //jquery: 'window.jQuery',
+    },
 
     useHMR: true,
     hmrEntries: [

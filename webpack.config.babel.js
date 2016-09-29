@@ -2,24 +2,13 @@
 // //babel-plugin-transform-async-to-generator
 // babel-plugin-transform-regenerator
 
-import {keys, assign, get, omit} from 'lodash';
+import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
 
-let constants = {
-  'process.isProduction': config.isProduction,
-  'process.cwd()': process.cwd()
-};
-constants = omit(constants, ['browserSync', 'webpack']);
-constants['process.env'] = keys(process.env).reduce((obj, key) => {
-  obj[key] = JSON.stringify(process.env[key]);
-
-  return obj;
-}, {});
-
 let plugins = [
   new webpack.NoErrorsPlugin(),
-  new webpack.DefinePlugin(constants),
+  new webpack.DefinePlugin(config.webpack.frontendConstants || {}),
   new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.optimize.CommonsChunkPlugin({
     name: config.webpack.commonChunkName,
@@ -64,6 +53,8 @@ let webpackConfig = {
   // displayModules: false,
   debug: config.isProduction,
   devtool: config.isProduction ? '#source-map' : '#inline-source-map',
+  watch: false, // will set automated
+  watchOptions: config.webpack.watchOptions || {},
 
   module: {
     preLoaders: [{
@@ -96,22 +87,9 @@ let webpackConfig = {
     // htmlLoader: {
     //   ignoreCustomFragments: [/\{\{.*?}}/]
     // },
-    noParse: [
-      /bluebird/,
-      /\/core-js\//,
-      ///node_modules/,
-      ///jsnetworkx/,
-      // /d3\.js/,
-      ///vue\.common\.js/,
-      // /angular\/angular\.js/,
-      // /lodash/,
-      // /dist\/jquery\.js/
-    ]
+    noParse: config.webpack.noParse || []
   },
-  externals: {
-    //lodash: 'window._',
-    //jquery: 'window.jQuery',
-  },
+  externals: config.webpack.noParse || {},
   // for imports/exports/expose
   resolveLoader: {
     modulesDirectories: ['node_modules'],

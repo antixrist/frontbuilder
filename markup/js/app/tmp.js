@@ -1,6 +1,7 @@
 export const qwe = {
   say: function () {
-    console.log('say!');
+    console.log('IS_PRODUCTION', IS_PRODUCTION);
+    console.log('cwd', CWD);
   }
 };
 
