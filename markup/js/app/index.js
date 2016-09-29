@@ -29,5 +29,5 @@ async function asyncTest () {
 
 asyncTest()
   .then(s => console.log(s))
-  .finally(() => console.timeEnd('runner'))
+  .then(() => console.timeEnd('runner'))
 ;
