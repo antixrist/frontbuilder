@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import {qwe} from './tmp';
 
 console.log('index');
@@ -16,12 +15,19 @@ qwe.say();
 // generate().next()
 // generate().next()
 
+console.time('runner');
+
 async function asyncTest () {
-  let res1 = await Promise.delay(300).then(() => { return Promise.resolve('result from promise #1') });
+  let [res1, res2] = await Promise.all([
+    Promise.delay(300).then(() => Promise.resolve('result from promise #1')),
+    Promise.delay(500).then(() => Promise.resolve('result from promise #1')),
+  ]);
 
-  console.log('res1', res1);
-
-  return 'result from async';
+  return {res1, res2};
 }
 
-asyncTest().then(s => console.log(s));
+
+asyncTest()
+  .then(s => console.log(s))
+  .finally(() => console.timeEnd('runner'))
+;

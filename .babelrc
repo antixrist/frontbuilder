@@ -1,14 +1,27 @@
 {
-  "presets": ["es2015"/*, "stage-1"*/],
+  "presets": ["es2015"],
   "plugins": [
-    // "transform-vue-jsx",
+    // stage-1:
+    "transform-export-extensions",
+    "transform-object-rest-spread",
+    "transform-class-properties",
+    "syntax-trailing-function-commas",
+    // "transform-async-to-generator", // вот из-за него не работает async/await
+    "transform-exponentiation-operator",
+    // end of stage-1
+
+    "transform-promise-to-bluebird",
+
+    "transform-es5-property-mutators",
     "syntax-async-functions",
     "transform-regenerator",
-//    "transform-async-to-generator",
+
     ["transform-runtime", {
-      "polyfill": false,
+      "polyfill": true,
       "regenerator": false
-    }]
+    }],
+
+    "transform-vue-jsx"
   ]
 //  "ignore": [
 //    "**/babel_ignore_*.js",
