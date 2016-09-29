@@ -23,8 +23,6 @@ forEach(webpackEntries, (file, name) => {
   webpackEntries[name] = !webpackUseHMR ? file : devServerEntryPoints.concat(file);
 });
 
-console.log('webpackEntries', webpackEntries);
-
 export default {
   cwd,
   isProduction,
@@ -37,5 +35,21 @@ export default {
     outputPublicPath: `./${destPath}/js/`,
     commonChunkName: 'common',
     useHMR: webpackUseHMR,
+  },
+
+  browserSync: {
+    ui:        false,
+    open:      false,
+    //reloadDelay: 1000,
+    //reloadDebounce: 1000,
+    ghostMode: false,
+
+    startPath: '/',
+    port:      (isProduction) ? 1313 : 13666,
+    server:    {
+      index:     'index.html',
+      directory: false,
+      baseDir:   (isProduction) ? './build/' : './dev'
+    }
   }
 };
