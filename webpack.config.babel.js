@@ -40,7 +40,7 @@ let webpackConfig = {
   output: {
     filename: '[name].js',
     library: '[name]',
-    chunkFilename: '[id].js',
+    chunkFilename: '[hash].js',
     path: config.webpack.outputPath,
     publicPath: config.webpack.outputPublicPath
   },
