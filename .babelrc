@@ -1,21 +1,17 @@
 {
-  "presets": ["es2015", "stage-1"],
+  "presets": ["es2015"/*, "stage-1"*/],
   "plugins": [
     // "transform-vue-jsx",
-//    ["transform-regenerator", {
-//      "asyncGenerators": true, // true by default
-//      "generators": true, // true by default
-//      "async": true // true by default
-//    }]
     "syntax-async-functions",
-    "transform-async-to-generator",
+    "transform-regenerator",
+//    "transform-async-to-generator",
     ["transform-runtime", {
-      "polyfill": true,
-      "regenerator": true
+      "polyfill": false,
+      "regenerator": false
     }]
-  ],
-  "ignore": [
-    "**/babel_ignore_*.js",
-    "*/js/vendor/*.js"
   ]
+//  "ignore": [
+//    "**/babel_ignore_*.js",
+//    "*/js/vendor/*.js"
+//  ]
 }

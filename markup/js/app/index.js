@@ -25,4 +25,3 @@ async function asyncTest () {
 }
 
 asyncTest().then(s => console.log(s));
-
