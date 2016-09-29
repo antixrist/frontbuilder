@@ -40,7 +40,8 @@ global.builder.runtime = {};
 // import * as jsTasks from './scripts';
 import {notifier} from './helpers';
 
-
+// http://nipstr.com/#path
+// https://www.npmjs.com/package/path-rewriter
 
 gulp.task('server', function (cb) {
   let browserSyncConfig = config.browserSync;
