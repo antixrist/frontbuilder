@@ -56,9 +56,15 @@ gulp.task('server', function (cb) {
     browserSync.init(browserSyncConfig);
   } else {
     const webpackConfig = require('../webpack.config.babel');
+
     webpackConfig.plugins = webpackConfig.plugins || [];
     let hmrPluginExists = _.some(webpackConfig.plugins, (plugin) => plugin instanceof webpack.HotModuleReplacementPlugin);
     !hmrPluginExists && webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+
+    webpackConfig.entry = insertHMREtriesToAppEntries(
+      webpackConfig.entry,
+      config.webpack.hmrEntries
+    );
 
     const webpackInstance = webpack(webpackConfig);
     const webpackDevMiddlewareInstance = require('webpack-dev-middleware')(webpackInstance, config.webpack.hmr || {
@@ -68,9 +74,6 @@ gulp.task('server', function (cb) {
       webpackDevMiddlewareInstance,
       require('webpack-hot-middleware')(webpackInstance)
     ];
-
-    var preparedEntries = insertHMREtriesToAppEntries(entriesFinder.sync('markup/js/!(_*).js'), config.webpack.hmrEntries);
-    console.log('preparedEntries', preparedEntries);
 
     browserSyncConfig.middleware = browserSyncConfig.middleware.concat(browserSyncMiddleware);
     console.log('Wait for a moment, please. Webpack is preparing bundle for you...');

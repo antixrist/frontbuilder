@@ -6,13 +6,10 @@ import {keys, assign, get, omit} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
 
-let constants = keys(config).reduce((obj, key) => {
-  obj[key] = JSON.stringify(config[key]);
-  
-  return obj;
-}, {});
-
-
+let constants = {
+  'process.isProduction': config.isProduction,
+  'process.cwd()': process.cwd()
+};
 constants = omit(constants, ['browserSync', 'webpack']);
 constants['process.env'] = keys(process.env).reduce((obj, key) => {
   obj[key] = JSON.stringify(process.env[key]);
@@ -45,8 +42,6 @@ if (config.isProduction) {
     }),
   );
 }
-
-console.log('config.webpack.entry', config.webpack.entry);
 
 let webpackConfig = {
   entry: config.webpack.entry,

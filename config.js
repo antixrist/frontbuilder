@@ -6,22 +6,8 @@ const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';
 const useNotifierInDevMode = true;
 
-let webpackUseHMR = true;
-let webpackEntries = entriesFinder.sync('markup/js/!(_*).js');
 const destPath = isProduction ? 'build' : 'dev';
 const webpackPublicPath = '/js/'; // для hmr и require.ensure
-
-let devServerEntryPoints = [
-  // 'webpack/hot/dev-server', // при ошибках страница перезагрузится
-  'webpack/hot/only-dev-server', // при ошибках страница перезагружаться не будет (state приложения сохранится)
-  'webpack-hot-middleware/client?reload=true'
-  // на 3е место добавится оригинальная точка входа
-];
-
-forEach(webpackEntries, (file, name) => {
-  file = path.join(cwd, `markup/js`, file);
-  webpackEntries[name] = !webpackUseHMR ? file : devServerEntryPoints.concat(file);
-});
 
 export default {
   cwd,
@@ -30,7 +16,7 @@ export default {
   destPath,
 
   webpack: {
-    entry: webpackEntries,
+    entry: entriesFinder.sync('markup/js/!(_*).js'),
     outputPath: path.join(cwd, `/${destPath}/js/`),
     outputPublicPath: webpackPublicPath,
     commonChunkName: 'common',

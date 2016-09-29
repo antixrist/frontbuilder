@@ -4,7 +4,18 @@ import path from 'path';
 
 const cwd = process.cwd();
 
-export function entriesFinder (pattern, cb = () => {}) {
+/**
+ * @param pattern
+ * @param {string|function} [context]
+ * @param {function} [cb]
+ * @returns {Promise}
+ */
+export function entriesFinder (pattern, context = cwd, cb = () => {}) {
+  if (_.isFunction(context)) {
+    cb = context;
+    context = cwd;
+  }
+
   return new Promise((resolve, reject) => {
     glob(pattern, {}, function (err, files) {
       if (err) {
@@ -23,13 +34,18 @@ export function entriesFinder (pattern, cb = () => {}) {
   });
 }
 
-entriesFinder.sync = function (pattern) {
-  return changeFilesArrayToWebpackFormat(glob.sync(pattern));
+/**
+ * @param pattern
+ * @param {string} [context]
+ * @returns {[]|{}}
+ */
+entriesFinder.sync = function (pattern, context = cwd) {
+  return changeFilesArrayToWebpackFormat(glob.sync(pattern, context));
 };
 
-export function insertHMREtriesToAppEntries (appEntries = [], hmrEntries = []) {
+export function insertHMREtriesToAppEntries (appEntries = [], hmrEntries = [], context = cwd) {
   if (_.isString(appEntries)) {
-    return insertHMREtriesToAppEntries([appEntries], hmrEntries);
+    return insertHMREtriesToAppEntries([appEntries], hmrEntries, context);
   } else
   if (_.isArray(appEntries)) {
     appEntries = hmrEntries.concat(_.clone(appEntries));
@@ -44,16 +60,15 @@ export function insertHMREtriesToAppEntries (appEntries = [], hmrEntries = []) {
   return appEntries;
 }
 
-function changeFilesArrayToWebpackFormat (files) {
+function changeFilesArrayToWebpackFormat (files, context = cwd) {
   files = files ? files : [];
   files = _.isArray(files) ? files : [files];
 
   return files.reduce((entries, file) => {
     let entry    = path.basename(file, path.extname(file));
-    let filename = path.resolve(cwd, file);
-    let filenameRelativeToCwd = path.relative(cwd, filename);
-    entries[entry] = path.basename(file);
-
+    let filename = path.resolve(context, file);
+    let filenameRelativeToCwd = path.relative(context, filename);
+    entries[entry] = `./${filenameRelativeToCwd}`;
 
     return entries;
   }, {});
