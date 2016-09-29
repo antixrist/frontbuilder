@@ -53,6 +53,7 @@ if (!config.isProduction) {
 
 let webpackConfig = {
   entry: config.webpack.entry,
+
   output: {
     filename: '[name].js',
     library: '[name]',
@@ -82,17 +83,6 @@ let webpackConfig = {
       test: /\.jsx?$/,
       exclude: [/node_modules/, /bower_components/],
       cacheDirectory: true
-      // config should be in .babelrc
-      // query: {
-      //   presets: ['es2015', 'stage-1'],
-      //   plugins: [
-      //     ['transform-runtime', {
-      //       "polyfill": false,
-      //       "regenerator": true
-      //     }],
-      //     // 'transform-decorators-legacy'
-      //   ]
-      // }
     }, {
       test: /\.json/,
       loader: 'json'
