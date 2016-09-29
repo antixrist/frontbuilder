@@ -55,6 +55,7 @@ gulp.task('server', function (cb) {
   if (!config.webpack.useHMR) {
     browserSync.init(browserSyncConfig);
   } else {
+    // настроим webpack для "Hot Module Replacement"
     const webpackConfig = require('../webpack.config.babel');
 
     webpackConfig.plugins = webpackConfig.plugins || [];
