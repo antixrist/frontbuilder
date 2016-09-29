@@ -1,15 +1,22 @@
-import Vue from 'vue'
-import {sync} from 'vuex-router-sync'
-// import App from './App.vue'
-import router from './router'
-import store from './store'
-sync(store, router);
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import VueResource from 'vue-resource';
+import store from './store';
+import routes from './routes';
 
-const app = new Vue({
-  router,
-  store,
-  // ...App
-  // render (h) => h()
+Vue.use(VueRouter);
+Vue.use(VueResource);
+
+const router = new VueRouter({
+  routes,
+  mode: 'history',
+  hashbang: false
 });
 
-export {app, router, store};
+import {sync} from 'vuex-router-sync';
+sync(store, router);
+
+export default new Vue({
+  router,
+  store,
+});
