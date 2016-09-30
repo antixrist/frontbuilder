@@ -1,6 +1,8 @@
 {
   "presets": ["es2015"],
   "plugins": [
+    "transform-es5-property-mutators",
+
     // stage-1:
     "transform-export-extensions",
     "transform-object-rest-spread",
@@ -10,10 +12,15 @@
     "transform-exponentiation-operator",
     // end of stage-1
 
-    "transform-promise-to-bluebird",
-
-    "transform-es5-property-mutators",
     "syntax-async-functions",
+    "transform-promise-to-bluebird",
+//    "transform-async-to-bluebird",
+//    ["transform-async-to-module-method", {
+//      "module": "bluebird",
+//      "method": "coroutine"
+//    }],
+
+//    "babel-plugin-bluebird-async-functions",
     "transform-regenerator",
 
     ["transform-runtime", {

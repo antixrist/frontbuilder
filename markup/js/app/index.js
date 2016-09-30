@@ -11,3 +11,14 @@ const app = new Vue({
 });
 
 export {app, router, store};
+
+
+
+async function qweqwe () {
+  return await Promise.delay(100).then(() => Promise.resolve('asdqweasd'))
+}
+
+qweqwe()
+  .then(b => console.log(b))
+  // .finally(() => console.log('finally'))
+;

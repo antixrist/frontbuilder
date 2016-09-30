@@ -65,10 +65,9 @@ let webpackConfig = {
       loader: 'source-map-loader'
     }],
     loaders: [{
-      loader: 'babel',
+      loader: 'babel?cacheDirectory',
       test: /\.jsx?$/,
-      exclude: [/node_modules/, /bower_components/],
-      cacheDirectory: true
+      exclude: [/node_modules/, /bower_components/]
     }, {
       test: /\.json/,
       loader: 'json'
