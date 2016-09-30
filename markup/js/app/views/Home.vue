@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <h1>HomeAnother</h1>
+    <h1>Home</h1>
     <p>
       <a href="#"
          @click.prevent="enabled = !enabled"
