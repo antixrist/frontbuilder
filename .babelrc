@@ -22,11 +22,12 @@
 
 //    "babel-plugin-bluebird-async-functions",
     "transform-regenerator",
+    "transform-runtime",
 
-    ["transform-runtime", {
-      "polyfill": true,
-      "regenerator": false
-    }],
+//    ["transform-runtime", {
+//      "polyfill": true,
+//      "regenerator": true
+//    }],
 
     "transform-vue-jsx"
   ]

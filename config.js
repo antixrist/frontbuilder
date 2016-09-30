@@ -51,7 +51,7 @@ export default {
 
     useHMR: true,
     hmrEntries: [
-      'babel-regenerator-runtime',
+      // 'babel-regenerator-runtime',
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
       // при ошибках страница перезагружаться не будет (state приложения сохранится)
