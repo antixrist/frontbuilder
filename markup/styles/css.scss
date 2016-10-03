@@ -1,4 +1,4 @@
-@import '../../bower_components/font-awesome/css/font-awesome.css';
+@import './styles';
 
 .qwe {
   font-family: -apple-system,
@@ -20,15 +20,11 @@
 .test-2 {
   background: url(/markup/images/felix.png);
 }
-//.test-3 {
-//  background: url(/markup/images/felix.png);
-//}
-//.test-4 {
-//  background: url(/markup/images/felix.png);
-//}
-//.test-5 {
-//  background: url(/markup/images/felix.png);
-//}
-//.test-6 {
-//  background: url(/markup/images/felix.png);
-//}
+.test-3 {
+  background: url( "/markup/images/felix.png" );
+  background: url( '/markup/images/felix.png' );
+  background: url("/markup/images/felix.png");
+  background: url('/markup/images/felix.png');
+}
+
+@import '../../bower_components/font-awesome/css/font-awesome.css';

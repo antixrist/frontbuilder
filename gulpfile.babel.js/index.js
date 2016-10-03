@@ -7,6 +7,7 @@ import webpack from 'webpack';
 import watcher from 'glob-watcher';
 import runner from 'run-sequence';
 import through2 from 'through2';
+import functionDone from 'function-done';
 import browserSync from 'browser-sync';
 
 import {notifier} from './helpers';
@@ -92,35 +93,111 @@ import sass from 'gulp-sass';
 import plumber from 'gulp-plumber';
 import sassImportOnce from 'node-sass-import-once';
 
-gulp.task('styles', function (done) {
-  let errorMessage = 'An error occurred while compiling css';
+/**
+ * @param {string} url
+ * @returns {boolean}
+ */
+function isUrlShouldBeIgnored (url) {
+  return url.indexOf('/') === 0 ||
+    url.indexOf('#') === 0 ||
+    url.indexOf("data:") === 0 ||
+    // isUrl(url) ||
+    /^[a-z]+:\/\//.test(url)
+  ;
+}
+
+/**
+ * Trims whitespace and quotes from css 'url()' values
+ *
+ * @param {string} value - string to trim
+ * @returns {string} - the trimmed string
+ */
+function trimUrlValue (value) {
+  var beginSlice, endSlice;
+  value = value.trim();
+  beginSlice = value.charAt(0) === '\'' || value.charAt(0) === '"' ? 1 : 0;
+  endSlice = value.charAt(value.length - 1) === '\'' ||
+             value.charAt(value.length - 1) === '"' ?
+             -1 : undefined;
+  return value.slice(beginSlice, endSlice).trim();
+}
+
+/**
+ * @param {string} url
+ * @returns {string}
+ */
+function wrapUrlDecl (url) {
+  return `url(${url})`;
+}
+
+gulp.task('styles', function () {
+  const destPath = `./dev/css`;
 
   return gulp
-    .src('./markup/styles/**/*.scss')
+    .src('./markup/styles/*.scss', {read: false})
     .pipe(plumber({
       errorHandler (error) {
-        notifier.error(errorMessage, error);
+        notifier.error('An error occurred while compiling css', error);
         this.emit('end');
       }
     }))
-    .pipe(through2.obj(function(file, enc, callback) {
-      console.log('file', file.path);
-      callback(null, file);
+    .pipe(through2.obj(function (file, enc, callback) {
+      let vinylEntryPoint = file;
+      let vinylResultFile = vinylEntryPoint;
+
+      functionDone(function () {
+        return gulp
+          .src(file.path)
+          .pipe(through2.obj(function(file, enc, cb) {
+            let contents = file.contents.toString();
+
+            let re = /[:,\s]url\s*\((.*?)\)/ig;
+            contents =
+            contents.replace(re, function (str, matched) {
+              let url = trimUrlValue(matched);
+
+              if (isUrlShouldBeIgnored(url)) {
+                return str;
+              }
+
+              console.log('url', url);
+
+              return wrapUrlDecl(url);
+            });
+
+            file.contents = Buffer.from(contents, enc);
+            cb(null, file);
+          }))
+          .pipe(sass({
+            precision: 10,
+            quiet: true,
+            importer (uri, prev, done) {
+              console.log('uri, prev', uri, prev);
+              sassImportOnce.call(this, uri, prev, function (data) {
+                console.log('== imported data', Object.keys(data));
+
+                done(data);
+              });
+            },
+            importOnce: {
+              index: true,
+              css: true,
+              bower: false
+            }
+          }))
+          .pipe(through2.obj(function(file, enc, cb) {
+            vinylResultFile = file;
+
+            cb(null, file);
+          }))
+        ;
+      }, function (err, result) {
+        if (err) { return callback(err); }
+
+        callback(null, vinylResultFile);
+      });
     }))
-    .pipe(sass({
-      precision: 10,
-      quiet: true,
-      importer: function importer(uri, prev, done) {
-        console.log('uri, prev', uri, prev);
-        sassImportOnce.call(this, uri, prev, done);
-      },
-      importOnce: {
-        index: true,
-        css: true,
-        bower: false
-      }
-    }))
-    .pipe(gulp.dest('./dev/css'))
+    .pipe(gulp.dest(destPath))
     .pipe(notifier.success(`(S)CSS files have been compiled`))
   ;
 });
