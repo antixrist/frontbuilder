@@ -26,7 +26,7 @@ export function entriesFinder (pattern, context = cwd, cb = () => {}) {
       files = files ? files : [];
       files = Array.isArray(files) ? files : [files];
 
-      let entries = changeFilesArrayToWebpackFormat(files);
+      let entries = changeFilesArrayToWebpackFormat(files, context);
 
       cb(null, entries);
       resolve(entries);

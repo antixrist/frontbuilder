@@ -88,6 +88,34 @@ gulp.task('server', function (cb) {
 });
 
 
+import sass from 'gulp-sass';
+import sassImportOnce from 'node-sass-import-once';
+
+gulp.task('styles', function (done) {
+  return gulp
+    .src('./markup/styles/*.scss')
+    .pipe(through2(function(file, enc, callback) {
+      console.log('file', file.path);
+      callback(null, file);
+    }))
+    .pipe(sass({
+      precision: 10,
+      quiet: true,
+      importer: function importer(uri, prev, done) {
+        console.log('uri, prev', uri, prev);
+        sassImportOnce.call(this, uri, prev, done);
+      },
+      importOnce: {
+        index: true,
+        css: true,
+        bower: false
+      }
+    }))
+    .pipe(gulp.dest('./dev/css'))
+  ;
+});
+
+
 gulp.task('default', (done) => {
   let webpackConfig = require('../webpack.config.babel');
 
