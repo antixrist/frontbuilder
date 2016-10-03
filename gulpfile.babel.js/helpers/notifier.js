@@ -54,7 +54,7 @@ export function error (message, error) {
 /**
  * On success notifier
  * @param  {String} message Success message
- * @param  {{onLast?: Boolean, notStream?: Boolean}} params Use notify only on last changed file
+ * @param  {{onLast?: Boolean, notStream?: Boolean}} [params] Use notify only on last changed file
  * @return {Pipe}
  */
 export function success (message, params) {

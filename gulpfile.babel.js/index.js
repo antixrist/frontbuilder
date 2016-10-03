@@ -3,16 +3,17 @@ import config from '../config';
 import del from 'del';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
-import gulpPlugins from 'gulp-load-plugins';
 import webpack from 'webpack';
 import watcher from 'glob-watcher';
 import runner from 'run-sequence';
 import through2 from 'through2';
 import browserSync from 'browser-sync';
 
+import {notifier} from './helpers';
 import {insertHMREtriesToAppEntries, entriesFinder} from './helpers/webpack';
 
-const $ = gulpPlugins();
+// import gulpPlugins from 'gulp-load-plugins';
+// const $ = gulpPlugins();
 
 // $.if
 // $.rename
@@ -38,7 +39,6 @@ global.builder.runtime = {};
 
 
 // import * as jsTasks from './scripts';
-import {notifier} from './helpers';
 
 // http://nipstr.com/#path
 // https://www.npmjs.com/package/path-rewriter
@@ -89,12 +89,21 @@ gulp.task('server', function (cb) {
 
 
 import sass from 'gulp-sass';
+import plumber from 'gulp-plumber';
 import sassImportOnce from 'node-sass-import-once';
 
 gulp.task('styles', function (done) {
+  let errorMessage = 'An error occurred while compiling css';
+
   return gulp
-    .src('./markup/styles/*.scss')
-    .pipe(through2(function(file, enc, callback) {
+    .src('./markup/styles/**/*.scss')
+    .pipe(plumber({
+      errorHandler (error) {
+        notifier.error(errorMessage, error);
+        this.emit('end');
+      }
+    }))
+    .pipe(through2.obj(function(file, enc, callback) {
       console.log('file', file.path);
       callback(null, file);
     }))
@@ -112,6 +121,7 @@ gulp.task('styles', function (done) {
       }
     }))
     .pipe(gulp.dest('./dev/css'))
+    .pipe(notifier.success(`(S)CSS files have been compiled`))
   ;
 });
 
