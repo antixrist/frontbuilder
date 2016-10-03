@@ -174,8 +174,15 @@ gulp.task('styles', function () {
             importer (uri, prev, done) {
               console.log('uri, prev', uri, prev);
               sassImportOnce.call(this, uri, prev, function (data) {
-                console.log('== imported data', Object.keys(data));
+                let contents = data.contents || null;
+                if (!contents) {
+                  return done(data);
+                }
 
+                // work
+                
+
+                data.contents = contents;
                 done(data);
               });
             },
