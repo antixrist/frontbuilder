@@ -1,12 +1,14 @@
 import _ from 'lodash';
 import config from '../config';
 import del from 'del';
+import path from 'path';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import webpack from 'webpack';
 import watcher from 'glob-watcher';
 import runner from 'run-sequence';
 import through2 from 'through2';
+import sourcemaps from 'gulp-sourcemaps';
 import functionDone from 'function-done';
 import browserSync from 'browser-sync';
 
@@ -130,6 +132,28 @@ function wrapUrlDecl (url) {
   return `url(${url})`;
 }
 
+/**
+ * @param {string} from
+ * @param {string} to
+ * @param {string} contents
+ * @returns {string}
+ */
+function resolveUrlsToRelative (from, to, contents) {
+  let re = /[:,\s]url\s*\((.*?)\)/ig;
+  return contents.replace(re, function (str, matched) {
+    let url = trimUrlValue(matched);
+
+    if (isUrlShouldBeIgnored(url)) {
+      return str;
+    }
+
+    let resolvedUrl = path.resolve(from, url);
+    let relativeUrl = path.relative(to, resolvedUrl);
+
+    return wrapUrlDecl(relativeUrl);
+  });
+}
+
 gulp.task('styles', function () {
   const destPath = `./dev/css`;
 
@@ -148,23 +172,14 @@ gulp.task('styles', function () {
       functionDone(function () {
         return gulp
           .src(file.path)
+          .pipe(sourcemaps.init())
           .pipe(through2.obj(function(file, enc, cb) {
             let contents = file.contents.toString();
-
-            let re = /[:,\s]url\s*\((.*?)\)/ig;
-            contents =
-            contents.replace(re, function (str, matched) {
-              let url = trimUrlValue(matched);
-
-              if (isUrlShouldBeIgnored(url)) {
-                return str;
-              }
-
-              console.log('url', url);
-
-              return wrapUrlDecl(url);
-            });
-
+            contents = resolveUrlsToRelative(
+              path.dirname(vinylEntryPoint.path),
+              path.dirname(vinylEntryPoint.path),
+              contents
+            );
             file.contents = Buffer.from(contents, enc);
             cb(null, file);
           }))
@@ -172,18 +187,17 @@ gulp.task('styles', function () {
             precision: 10,
             quiet: true,
             importer (uri, prev, done) {
-              console.log('uri, prev', uri, prev);
-              sassImportOnce.call(this, uri, prev, function (data) {
-                let contents = data.contents || null;
-                if (!contents) {
-                  return done(data);
+              sassImportOnce.call(this, uri, prev, function ({file, contents}) {
+                if (!contents || !file) {
+                  return done.apply(this, arguments);
                 }
 
-                // work
-                
-
-                data.contents = contents;
-                done(data);
+                contents = resolveUrlsToRelative(
+                  path.dirname(file),
+                  path.dirname(vinylEntryPoint.path),
+                  contents
+                );
+                done({file, contents});
               });
             },
             importOnce: {
@@ -192,6 +206,7 @@ gulp.task('styles', function () {
               bower: false
             }
           }))
+          // .pipe(sourcemaps.write(''))
           .pipe(through2.obj(function(file, enc, cb) {
             vinylResultFile = file;
 
@@ -204,7 +219,24 @@ gulp.task('styles', function () {
         callback(null, vinylResultFile);
       });
     }))
+    .pipe(sourcemaps.init({loadMaps: true}))
+    // .pipe(require('gulp-replace-task')({
+    //   patterns: [
+    //     {
+    //       match: /%=staticPrefixForCss=%|%=static=%|__static__/gim,
+    //       replacement: tars.config.staticPrefixForCss
+    //     }
+    //   ],
+    //   usePrefix: false
+    // }))
+    // .pipe(postcss(postProcessors))
+    // .pipe(rename({ suffix: tars.options.build.hash }))
+    // .pipe(sourcemaps.write(inlineSourcemaps ? '' : '.'))
+    .pipe(sourcemaps.write('.', {
+      sourceRoot: './markup/styles/'
+    }))
     .pipe(gulp.dest(destPath))
+    // .pipe(browserSync.reload({ stream: true }))
     .pipe(notifier.success(`(S)CSS files have been compiled`))
   ;
 });
