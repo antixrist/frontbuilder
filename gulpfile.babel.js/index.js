@@ -95,6 +95,34 @@ import sass from 'gulp-sass';
 import plumber from 'gulp-plumber';
 import sassImportOnce from 'node-sass-import-once';
 
+const postcssPLugins = (function () {
+  let plugins = [];
+
+  plugins.push({
+    'postcss-input-range': {
+      method: 'clone'
+    },
+    'postcss-gradientfixer': {},
+    'postcss-flexboxfixer': {},
+    'postcss-flexbugs-fixes': {}
+  });
+
+  if (config.isProduction) {
+    plugins.push({
+      'autoprefixer': {
+        browsers: ['> 1%', 'last 5 versions', 'ie >= 9']
+      },
+    });
+  } else {
+    plugins.push({
+      'autoprefixer': {
+        browsers: ['last 2 versions']
+      },
+    });
+  }
+
+})();
+
 /**
  * @param {string} url
  * @returns {boolean}
@@ -186,6 +214,7 @@ gulp.task('styles', function () {
           .pipe(sass({
             precision: 10,
             quiet: true,
+            includePaths: ['node_modules'],
             importer (uri, prev, done) {
               sassImportOnce.call(this, uri, prev, function ({file, contents}) {
                 if (!contents || !file) {
