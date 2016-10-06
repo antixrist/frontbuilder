@@ -5,6 +5,7 @@
 import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 let plugins = [
   new webpack.NoErrorsPlugin(),
@@ -47,7 +48,7 @@ let webpackConfig = {
   
   resolve: {
     modulesDirectories: ['node_modules'],
-    extensions: ['', '.js', '.jsx', '.json', '.vue'],
+    extensions: ['', '.js', '.jsx', '.json', '.vue', '.scss', '.sass', '.less', '.jade', '.pug', '.html'],
     alias: {vue: 'vue/dist/vue.js'}
   },
   
@@ -82,6 +83,28 @@ let webpackConfig = {
     //   loader: 'html'
     }],
     vue: {
+      loaders: {
+        css:  ExtractTextPlugin.extract('css'),
+        less: ExtractTextPlugin.extract('css!less'),
+        sass: ExtractTextPlugin.extract('css!sass'),
+      },
+      sassLoader: {
+        precision:    10,
+        quiet:        true,
+        includePaths: ['node_modules'],
+        importer:     require('node-sass-import-once'),
+        importOnce:   {
+          index: true,
+          css:   true,
+          bower: true
+        }
+      },
+      postcss: {
+        plugins: [
+          // require('postcss-cssnext')()
+        ],
+        options: {}
+      },
       html: {
         ignoreCustomFragments: [/\{\{.*?}}/]
       },
