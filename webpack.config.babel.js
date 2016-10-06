@@ -74,7 +74,8 @@ let webpackConfig = {
       loader: 'json'
     }, {
       test: /\.html$/,
-      loader: 'vue-html'
+      loader: 'vue-html',
+      attrs: false
     }, {
       test: /\.vue$/,
       loader: 'vue'
@@ -105,9 +106,20 @@ let webpackConfig = {
         ],
         options: {}
       },
-      html: {
-        ignoreCustomFragments: [/\{\{.*?}}/]
-      },
+    },
+    htmlLoader: {
+      attrs: false,
+      ignoreCustomFragments: [/\{\{.*?}}/],
+      minimize: {
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        removeComments: true,
+        removeEmptyAttributes: true,
+        removeRedundantAttributes: false,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true
+      }
     },
     // htmlLoader: {
     //   ignoreCustomFragments: [/\{\{.*?}}/]

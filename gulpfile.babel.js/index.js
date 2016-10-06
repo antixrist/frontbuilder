@@ -166,7 +166,7 @@ function wrapUrlDecl (url) {
  * @param {string} contents
  * @returns {string}
  */
-function resolveUrlsToRelative (from, to, contents) {
+function resolveUrlsToEntryPoint (from, to, contents) {
   let re = /[:,\s]url\s*\((.*?)\)/ig;
   return contents.replace(re, function (str, matched) {
     let url = trimUrlValue(matched);
@@ -200,10 +200,10 @@ gulp.task('styles', function () {
       functionDone(function () {
         return gulp
           .src(file.path)
-          .pipe(sourcemaps.init())
+          .pipe(sourcemaps.init({identityMap: false}))
           .pipe(through2.obj(function(file, enc, cb) {
             let contents = file.contents.toString();
-            contents = resolveUrlsToRelative(
+            contents = resolveUrlsToEntryPoint(
               path.dirname(vinylEntryPoint.path),
               path.dirname(vinylEntryPoint.path),
               contents
@@ -221,7 +221,7 @@ gulp.task('styles', function () {
                   return done.apply(this, arguments);
                 }
 
-                contents = resolveUrlsToRelative(
+                contents = resolveUrlsToEntryPoint(
                   path.dirname(file),
                   path.dirname(vinylEntryPoint.path),
                   contents
@@ -235,7 +235,7 @@ gulp.task('styles', function () {
               bower: false
             }
           }))
-          // .pipe(sourcemaps.write(''))
+          .pipe(sourcemaps.write(''))
           .pipe(through2.obj(function(file, enc, cb) {
             vinylResultFile = file;
 
