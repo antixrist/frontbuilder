@@ -110,15 +110,11 @@ let webpackConfig = {
         options: {}
       },
       html: {
-        // todo: разобраться с подгрузкой html и урлов в тегах.
+        // todo: разобраться с подгрузкой урлов в тегах.
         // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
         attrs: false,
         ignoreCustomFragments: [/\{\{.*?}}/],
       },
-      htmlLoader: {
-        attrs: false,
-        ignoreCustomFragments: [/\{\{.*?}}/],
-      }
     },
     htmlLoader: {
       attrs: false,
@@ -134,9 +130,6 @@ let webpackConfig = {
       removeScriptTypeAttributes: true,
       removeStyleLinkTypeAttributes: true
     },
-    // htmlLoader: {
-    //   ignoreCustomFragments: [/\{\{.*?}}/]
-    // },
     noParse: config.webpack.noParse || []
   },
   externals: config.webpack.noParse || {},
