@@ -106,6 +106,15 @@ let webpackConfig = {
         ],
         options: {}
       },
+      html: {
+        // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
+        attrs: false,
+        ignoreCustomFragments: [/\{\{.*?}}/],
+      },
+      htmlLoader: {
+        attrs: false,
+        ignoreCustomFragments: [/\{\{.*?}}/],
+      }
     },
     htmlLoader: {
       attrs: false,
@@ -114,9 +123,9 @@ let webpackConfig = {
       minimize: true,
       collapseBooleanAttributes: true,
       collapseWhitespace: true,
-      removeAttributeQuotes: true,
+      removeAttributeQuotes: false,
       removeComments: true,
-      removeEmptyAttributes: true,
+      removeEmptyAttributes: false,
       removeRedundantAttributes: false,
       removeScriptTypeAttributes: true,
       removeStyleLinkTypeAttributes: true
