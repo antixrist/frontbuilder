@@ -74,8 +74,11 @@ let webpackConfig = {
       loader: 'json'
     }, {
       test: /\.html$/,
-      loader: 'vue-html',
-      attrs: false
+      loader: 'vue-html'
+    }, {
+      // todo: разобраться с подгрузкой jade->html и урлов в тегах (без vue)
+      test: /\.jade$/,
+      loader: 'jade-html!vue-html'
     }, {
       test: /\.vue$/,
       loader: 'vue'
@@ -107,6 +110,7 @@ let webpackConfig = {
         options: {}
       },
       html: {
+        // todo: разобраться с подгрузкой html и урлов в тегах.
         // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
         attrs: false,
         ignoreCustomFragments: [/\{\{.*?}}/],
