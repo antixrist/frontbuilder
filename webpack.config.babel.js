@@ -85,11 +85,16 @@ let webpackConfig = {
     // }, {
     //   test: /\.html$/,
     //   loader: 'html'
+    // }, {
+    //   https://github.com/bholloway/resolve-url-loader/
+    //   test: /\.sass/,
+    //   loader: '['styles', 'css', 'sass']
     }],
     vue: {
       loaders: {
         css:  ExtractTextPlugin.extract('css'),
         less: ExtractTextPlugin.extract('css!less'),
+        // https://github.com/bholloway/resolve-url-loader/
         sass: ExtractTextPlugin.extract('css!sass'),
       },
       sassLoader: {
