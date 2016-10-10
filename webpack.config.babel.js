@@ -5,6 +5,7 @@
 import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 let plugins = [
   new webpack.NoErrorsPlugin(),
@@ -47,7 +48,7 @@ let webpackConfig = {
   
   resolve: {
     modulesDirectories: ['node_modules'],
-    extensions: ['', '.js', '.jsx', '.json', '.vue'],
+    extensions: ['', '.js', '.jsx', '.json', '.vue', '.scss', '.sass', '.less', '.jade', '.pug', '.html'],
     alias: {vue: 'vue/dist/vue.js'}
   },
   
@@ -75,20 +76,65 @@ let webpackConfig = {
       test: /\.html$/,
       loader: 'vue-html'
     }, {
+      // todo: разобраться с подгрузкой jade->html и урлов в тегах (без vue)
+      test: /\.jade$/,
+      loader: 'jade-html!vue-html'
+    }, {
       test: /\.vue$/,
       loader: 'vue'
     // }, {
     //   test: /\.html$/,
     //   loader: 'html'
+    // }, {
+    //   https://github.com/bholloway/resolve-url-loader/
+    //   test: /\.sass/,
+    //   loader: '['styles', 'css', 'sass']
     }],
     vue: {
+      loaders: {
+        css:  ExtractTextPlugin.extract('css'),
+        less: ExtractTextPlugin.extract('css!less'),
+        // https://github.com/bholloway/resolve-url-loader/
+        sass: ExtractTextPlugin.extract('css!sass'),
+      },
+      sassLoader: {
+        precision:    10,
+        quiet:        true,
+        includePaths: ['node_modules'],
+        importer:     require('node-sass-import-once'),
+        importOnce:   {
+          index: true,
+          css:   true,
+          bower: true
+        }
+      },
+      postcss: {
+        plugins: [
+          // require('postcss-cssnext')()
+        ],
+        options: {}
+      },
       html: {
-        ignoreCustomFragments: [/\{\{.*?}}/]
+        // todo: разобраться с подгрузкой урлов в тегах.
+        // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
+        attrs: false,
+        ignoreCustomFragments: [/\{\{.*?}}/],
       },
     },
-    // htmlLoader: {
-    //   ignoreCustomFragments: [/\{\{.*?}}/]
-    // },
+    htmlLoader: {
+      attrs: false,
+      ignoreCustomFragments: [/\{\{.*?}}/],
+
+      minimize: true,
+      collapseBooleanAttributes: true,
+      collapseWhitespace: true,
+      removeAttributeQuotes: false,
+      removeComments: true,
+      removeEmptyAttributes: false,
+      removeRedundantAttributes: false,
+      removeScriptTypeAttributes: true,
+      removeStyleLinkTypeAttributes: true
+    },
     noParse: config.webpack.noParse || []
   },
   externals: config.webpack.noParse || {},

@@ -1,0 +1,4 @@
+.page
+  p: img(src='../../../../images/felix.png')
+  p: a(href="#", @click.prevent="enabled = !enabled") Toggle #[i.fa.fa-user]
+  div(v-show="enabled"): counter
