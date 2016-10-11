@@ -35,6 +35,9 @@ if (config.isProduction) {
 
 }
 
+// todo: изучить, взять необходимое
+// https://github.com/Litor/ubase-vue/blob/master/src/apptools/webpack/index.js
+
 let webpackConfig = {
   entry: config.webpack.entry,
 
