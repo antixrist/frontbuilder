@@ -8,6 +8,7 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 let plugins = [
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
   new webpack.NoErrorsPlugin(),
   new webpack.DefinePlugin(config.webpack.frontendConstants || {}),
   new webpack.optimize.OccurenceOrderPlugin(),
@@ -34,6 +35,9 @@ if (config.isProduction) {
 } else {
 
 }
+
+// todo: изучить, взять необходимое
+// https://github.com/Litor/ubase-vue/blob/master/src/apptools/webpack/index.js
 
 let webpackConfig = {
   entry: config.webpack.entry,
@@ -117,6 +121,8 @@ let webpackConfig = {
       html: {
         // todo: разобраться с подгрузкой урлов в тегах.
         // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
+        // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
+        // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
         attrs: false,
         ignoreCustomFragments: [/\{\{.*?}}/],
       },
@@ -137,7 +143,7 @@ let webpackConfig = {
     },
     noParse: config.webpack.noParse || []
   },
-  externals: config.webpack.noParse || {},
+  externals: config.webpack.externals || {},
   // for imports/exports/expose
   resolveLoader: {
     modulesDirectories: ['node_modules'],

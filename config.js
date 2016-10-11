@@ -36,6 +36,7 @@ export default {
     },
 
     noParse: [
+      // /moment/,
       // /bluebird/,
       ///jsnetworkx/,
       // /d3\.js/,

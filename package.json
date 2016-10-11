@@ -1,6 +1,6 @@
 {
   "name": "builder",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "exports-loader": "^0.6.3",
     "expose-loader": "^0.7.1",
     "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
     "function-done": "^2.1.1",
     "glob": "^7.1.1",
     "glob-watcher": "^3.0.0",
@@ -55,7 +56,7 @@
     "gulp-remember": "^0.3.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
-    "gulp-sourcemaps": "^1.6.0",
+    "gulp-sourcemaps": "^1.7.1",
     "gulp-util": "^3.0.7",
     "imports-loader": "^0.6.5",
     "jade": "^1.11.0",
@@ -81,15 +82,20 @@
     "vue-template-compiler": "^2.0.1",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.8.4",
-    "webpack-hot-middleware": "^2.12.2"
+    "webpack-hot-middleware": "^2.13.0"
   },
   "dependencies": {
     "bluebird": "^3.4.6",
     "lodash": "^4.16.4",
+    "vee-validate": "^2.0.0-beta.12",
     "vue": "^2.0.1",
+    "vue-head": "^2.0.6",
+    "vue-lazyload": "^0.8.2",
+    "vue-resizesensor": "^0.1.0",
     "vue-resource": "^1.0.3",
     "vue-router": "^2.0.0",
     "vue-socket.io": "^1.0.2",
+    "vue-text-mask": "^0.1.2",
     "vuex": "^2.0.0",
     "vuex-persistedstate": "^0.3.0",
     "vuex-router-sync": "^3.0.0"
