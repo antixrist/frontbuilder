@@ -5,18 +5,18 @@
  // types.js
  import {namespace} from './utils';
  export default namespace('auth', {
-    getters: [
-        'user'
-    ],
-    actions: [
-        'fetchUser'
-    ],
-    mutations: [
-        'receiveUser'
-    ]
-  });
+   getters: [
+     'user'
+   ],
+   actions: [
+     'fetchUser'
+   ],
+   mutations: [
+     'receiveUser'
+   ]
+ });
 
- //module.js
+ // module.js
  import * as accountApi from 'api/account'
  import types from './types'
 
