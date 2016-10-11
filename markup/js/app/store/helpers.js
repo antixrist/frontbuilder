@@ -1,3 +1,12 @@
+/**
+ * https://github.com/vuejs/vuex/issues/335#issuecomment-250224136
+ */
+
+/**
+ * @param {{}} obj
+ * @param {Function} f
+ * @returns {{}}
+ */
 function mapValues (obj, f) {
   const res = {};
   Object.keys(obj).forEach(key => {
@@ -6,39 +15,23 @@ function mapValues (obj, f) {
   return res
 }
 
-function namespace (module, types) {
-  return mapValues(types, (names, type) => {
-    return mapValues(names, name => {
-      return module + ':' + type + ':' + name
-    })
-  })
+/**
+ * @param {string} module
+ * @param {{}} types
+ * @param {string} [separator]
+ * @returns {{}}
+ */
+function namespace (module, types, separator = ':') {
+  let newObj = {};
+
+  mapValues(types, (names, type) => {
+    newObj[type] = {};
+    types[type].forEach(name=> {
+      newObj[type][name] = [module, name].join(separator);
+    });
+  });
+  return newObj;
 }
 
-/**
- * Usage:
- *
- *
-```javascript
- // Define mutation types
- const types = namespace('product', {
-   getters: {
-     all: 'ALL'
-   },
-   actions: {
-     fetch: 'FETCH'
-   },
-   mutations: {
-     add: 'ADD',
-     remove: 'REMOVE',
-     filter: 'FILTER',
-     sort: 'SORT'
-   }
- })
-
- // output
- console.log(types);
-```
- *
- */
 
 export default { namespace };
