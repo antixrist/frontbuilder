@@ -8,6 +8,7 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 let plugins = [
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
   new webpack.NoErrorsPlugin(),
   new webpack.DefinePlugin(config.webpack.frontendConstants || {}),
   new webpack.optimize.OccurenceOrderPlugin(),
