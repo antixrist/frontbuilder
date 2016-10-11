@@ -26,6 +26,7 @@ const actions = {
 };
 
 const store = new Vuex.Store({
+  strict: process.env.NODE_ENV !== 'production',
   plugins: [createPersistedState({
     key: 'appStore'
   })],
