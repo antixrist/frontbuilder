@@ -117,6 +117,7 @@ let webpackConfig = {
       html: {
         // todo: разобраться с подгрузкой урлов в тегах.
         // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
+        // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
         attrs: false,
         ignoreCustomFragments: [/\{\{.*?}}/],
       },
@@ -137,7 +138,7 @@ let webpackConfig = {
     },
     noParse: config.webpack.noParse || []
   },
-  externals: config.webpack.noParse || {},
+  externals: config.webpack.externals || {},
   // for imports/exports/expose
   resolveLoader: {
     modulesDirectories: ['node_modules'],
