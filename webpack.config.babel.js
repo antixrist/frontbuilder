@@ -93,6 +93,10 @@ let webpackConfig = {
     //   https://github.com/bholloway/resolve-url-loader/
     //   test: /\.sass/,
     //   loader: '['styles', 'css', 'sass']
+    // }, {
+    //   test: /\.(eot|woff|ttf|svg|png|jpg)$/,
+    //   loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
+    // }
     }],
     vue: {
       loaders: {
@@ -120,6 +124,7 @@ let webpackConfig = {
       },
       html: {
         // todo: разобраться с подгрузкой урлов в тегах.
+        // https://www.npmjs.com/package/file-loader
         // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
         // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
         // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117

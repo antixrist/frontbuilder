@@ -30,6 +30,17 @@
     "logerr": "*",
     "draggabilly": "^2.1.1",
     "reframe.js": "^0.3.1",
-    "jquery.scroolly": "^0.0.1"
+    "jquery.scroolly": "^0.0.1",
+    "Scut": "scut#^1.4.0",
+    "typi": "^2.3.0",
+    "webfontloader": "^1.6.26",
+    "sassdash": "^0.8.0",
+    "accoutrement-fonts": "git://github.com/oddbird/accoutrement-type.git#^1.0.4",
+    "gridlex": "^2.2.2",
+    "bower": "*",
+    "install": "^1.0.4",
+    "flexiblegs-scss": "^5.5.3",
+    "flexiblegs-scss-plus": "^5.5.3",
+    "pixelperfectcss-scss": "^1.0.2"
   }
 }
