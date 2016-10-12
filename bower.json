@@ -14,5 +14,22 @@
     "test",
     "tests"
   ],
-  "version": "1.1.0"
+  "version": "1.1.0",
+  "dependencies": {
+    "include-media": "^1.4.8",
+    "family.scss": "^1.0.8",
+    "css-element-queries": "git://github.com/marcj/css-element-queries.git#^0.3.2",
+    "material-shadows": "^3.0.1",
+    "sass-flex-mixin": "^1.0.3",
+    "matches-selector": "^2.0.1",
+    "wenk": "^1.0.2",
+    "autosize": "^3.0.17",
+    "scrollbear": "git://github.com/changbenny/scrollbear.git#^0.1.0",
+    "lazy-progressive-enhancement": "git://github.com/tvler/lazy-progressive-enhancement.git",
+    "angled-edges": "^1.1.2",
+    "logerr": "*",
+    "draggabilly": "^2.1.1",
+    "reframe.js": "^0.3.1",
+    "jquery.scroolly": "^0.0.1"
+  }
 }
