@@ -1,14 +1,13 @@
 import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
+// import ExtractTextPlugin from 'extract-text-webpack-plugin';
 const cwd = process.cwd();
 
 let plugins = [
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
   new webpack.NoErrorsPlugin(),
   new webpack.DefinePlugin(config.webpack.frontendConstants || {}),
-  new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.optimize.CommonsChunkPlugin({
     name: config.webpack.commonChunkName,
     children: true,
@@ -28,6 +27,7 @@ if (config.isProduction) {
         warnings: false
       }
     }),
+    new webpack.optimize.OccurenceOrderPlugin(),
   );
 } else {
 
@@ -35,6 +35,15 @@ if (config.isProduction) {
 
 // todo: изучить, взять необходимое
 // https://github.com/Litor/ubase-vue/blob/master/src/apptools/webpack/index.js
+
+// // https://www.npmjs.com/package/style-loader
+// https://www.npmjs.com/package/css-loader
+// https://www.npmjs.com/package/url-loader
+// https://www.npmjs.com/package/file-loader
+// https://www.npmjs.com/package/html-loader
+// https://www.npmjs.com/package/svgo-loader
+//
+
 
 let webpackConfig = {
   entry: config.webpack.entry,
@@ -87,9 +96,9 @@ let webpackConfig = {
     //   test: /\.html$/,
     //   loader: 'html'
     // }, {
-    //   https://github.com/bholloway/resolve-url-loader/
+      // https://github.com/bholloway/resolve-url-loader/
     //   test: /\.sass/,
-    //   loader: '['styles', 'css', 'sass']
+    //   loaders: '['styles', 'css', 'sass']
     // }, {
     //   test: /\.(eot|woff|ttf|svg|png|jpg)$/,
     //   loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
@@ -97,10 +106,9 @@ let webpackConfig = {
     }],
     vue: {
       loaders: {
-        css:  ExtractTextPlugin.extract('css'),
-        less: ExtractTextPlugin.extract('css!less'),
-        // https://github.com/bholloway/resolve-url-loader/
-        sass: ExtractTextPlugin.extract('css!sass'),
+        // css:  ExtractTextPlugin.extract('css'),
+        // less: ExtractTextPlugin.extract('css!less'),
+        // sass: ExtractTextPlugin.extract('css!sass'),
       },
       sassLoader: {
         precision:    10,
@@ -126,7 +134,7 @@ let webpackConfig = {
         // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
         // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
         attrs: false,
-        root: cwd,
+        // root: cwd,
         ignoreCustomFragments: [/\{\{.*?}}/],
           
         minimize: config.isProduction,
@@ -142,7 +150,7 @@ let webpackConfig = {
     },
     htmlLoader: {
       attrs: false,
-      root: cwd,
+      // root: cwd,
       ignoreCustomFragments: [/\{\{.*?}}/],
 
       minimize: config.isProduction,
