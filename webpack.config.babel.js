@@ -2,6 +2,7 @@ import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+const cwd = process.cwd();
 
 let plugins = [
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
@@ -125,8 +126,9 @@ let webpackConfig = {
         // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
         // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
         attrs: false,
+        root: cwd,
         ignoreCustomFragments: [/\{\{.*?}}/],
-  
+          
         minimize: config.isProduction,
         collapseBooleanAttributes: true,
         collapseWhitespace: true,
@@ -140,6 +142,7 @@ let webpackConfig = {
     },
     htmlLoader: {
       attrs: false,
+      root: cwd,
       ignoreCustomFragments: [/\{\{.*?}}/],
 
       minimize: config.isProduction,
