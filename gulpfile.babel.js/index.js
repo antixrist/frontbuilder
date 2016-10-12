@@ -13,7 +13,7 @@ import functionDone from 'function-done';
 import browserSync from 'browser-sync';
 
 import {notifier} from './helpers';
-import {insertHMREtriesToAppEntries, entriesFinder} from './helpers/webpack';
+import {insertHMREntriesToAppEntries, entriesFinder} from './helpers/webpack';
 
 // import gulpPlugins from 'gulp-load-plugins';
 // const $ = gulpPlugins();
@@ -55,22 +55,29 @@ gulp.task('server', function (cb) {
     logLevel: browserSyncConfig.logLevel || 'info',
     reloadOnRestart: browserSyncConfig.reloadOnRestart || true
   });
-
+  
+  // если горячая перезагрузка модулей не нужна?
   if (!config.webpack.useHMR) {
+    // nj просто запустим dev-сервер
     browserSync.init(browserSyncConfig);
-  } else {
-    // настроим webpack для "Hot Module Replacement"
+  }
+  // иначе настроим webpack для "Hot Module Replacement".
+  else {
+    // грузим webpack-конфиг
     const webpackConfig = require('../webpack.config.babel');
-
+    
     webpackConfig.plugins = webpackConfig.plugins || [];
+    // добавим hmr-плагин, если его нету в конфиге
     let hmrPluginExists = _.some(webpackConfig.plugins, (plugin) => plugin instanceof webpack.HotModuleReplacementPlugin);
     !hmrPluginExists && webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-
-    webpackConfig.entry = insertHMREtriesToAppEntries(
+    
+    // добавим webpack'овскую hmr-магию в точки входа
+    webpackConfig.entry = insertHMREntriesToAppEntries(
       webpackConfig.entry,
       config.webpack.hmrEntries
     );
-
+    
+    
     const webpackInstance = webpack(webpackConfig);
     const webpackDevMiddlewareInstance = require('webpack-dev-middleware')(webpackInstance, config.webpack.hmr || {
       publicPath: webpackConfig.output.publicPath,

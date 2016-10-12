@@ -1,10 +1,13 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import glob from 'glob';
 import path from 'path';
 
 const cwd = process.cwd();
 
 /**
+ * По паттерну в заданной директории ищет нужные файлы
+ * и возвращает их в пригодном для webpack'а формате
+ *
  * @param pattern
  * @param {string|function} [context]
  * @param {function} [cb]
@@ -35,6 +38,9 @@ export function entriesFinder (pattern, context = cwd, cb = () => {}) {
 }
 
 /**
+ * По паттерну в заданной директории синхронно ищет нужные файлы
+ * и возвращает их в пригодном для webpack'а формате
+ *
  * @param pattern
  * @param {string} [context]
  * @returns {[]|{}}
@@ -43,9 +49,15 @@ entriesFinder.sync = function (pattern, context = cwd) {
   return changeFilesArrayToWebpackFormat(glob.sync(pattern, context));
 };
 
-export function insertHMREtriesToAppEntries (appEntries = [], hmrEntries = [], context = cwd) {
+/**
+ * @param {string|[]|{}} appEntries
+ * @param {[]} [hmrEntries]
+ * @param {string} [context]
+ * @returns {Array}
+ */
+export function insertHMREntriesToAppEntries (appEntries = [], hmrEntries = [], context = cwd) {
   if (_.isString(appEntries)) {
-    return insertHMREtriesToAppEntries([appEntries], hmrEntries, context);
+    return insertHMREntriesToAppEntries([appEntries], hmrEntries, context);
   } else
   if (_.isArray(appEntries)) {
     appEntries = hmrEntries.concat(_.clone(appEntries));
@@ -60,6 +72,15 @@ export function insertHMREtriesToAppEntries (appEntries = [], hmrEntries = [], c
   return appEntries;
 }
 
+/**
+ * На вход получает список файлов,
+ * на выход отдаёт список (plain object) именованных точек входа
+ * (имя точки входа == имя файла без расширения)
+ *
+ * @param {|string[]} files
+ * @param {string} [context]
+ * @returns {{}}
+ */
 function changeFilesArrayToWebpackFormat (files, context = cwd) {
   files = files ? files : [];
   files = _.isArray(files) ? files : [files];
