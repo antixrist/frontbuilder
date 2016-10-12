@@ -50,6 +50,11 @@ entriesFinder.sync = function (pattern, context = cwd) {
 };
 
 /**
+ * На входе список точек входа в любом формате.
+ * На выходе - тот же самый список,
+ * только к каждой точке входа будет добавлен список hmr-магии.
+ * ['webpack/hot/only-dev-server', 'webpack-hot-middleware/client?reload=true', 'myEntryFile.js']
+ *
  * @param {string|[]|{}} appEntries
  * @param {[]} [hmrEntries]
  * @param {string} [context]
@@ -60,7 +65,7 @@ export function insertHMREntriesToAppEntries (appEntries = [], hmrEntries = [], 
     return insertHMREntriesToAppEntries([appEntries], hmrEntries, context);
   } else
   if (_.isArray(appEntries)) {
-    appEntries = hmrEntries.concat(_.clone(appEntries));
+    appEntries = hmrEntries.concat(appEntries);
   } else
   if (_.isPlainObject(appEntries)) {
     appEntries = _.clone(appEntries);
