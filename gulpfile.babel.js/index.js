@@ -77,20 +77,25 @@ gulp.task('server', function (cb) {
       config.webpack.hmrEntries
     );
     
-    
+    // создадим инстанс вебпака
     const webpackInstance = webpack(webpackConfig);
+    // создадим инстанс dev-мидлвари (с fallback'ом для publicPath'а, на всякий случай)
     const webpackDevMiddlewareInstance = require('webpack-dev-middleware')(webpackInstance, config.webpack.hmr || {
       publicPath: webpackConfig.output.publicPath,
     });
     const browserSyncMiddleware = [
       webpackDevMiddlewareInstance,
+      // создадим инстанс hot-мидлвари
       require('webpack-hot-middleware')(webpackInstance)
     ];
-
+    
+    // добавим их к настройкам сервера
     browserSyncConfig.middleware = browserSyncConfig.middleware.concat(browserSyncMiddleware);
     console.log('Wait for a moment, please. Webpack is preparing bundle for you...');
-
+    
+    // дождёмся пока сбилдятся бандлы
     webpackDevMiddlewareInstance.waitUntilValid(() => {
+      // и запустим сервер
       browserSync.init(browserSyncConfig);
       // devTaskFinallyActions();
     });
