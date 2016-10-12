@@ -1,7 +1,3 @@
-// babel-plugin-syntax-async-functions
-// //babel-plugin-transform-async-to-generator
-// babel-plugin-transform-regenerator
-
 import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
@@ -130,13 +126,23 @@ let webpackConfig = {
         // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
         attrs: false,
         ignoreCustomFragments: [/\{\{.*?}}/],
+  
+        minimize: config.isProduction,
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: false,
+        removeComments: true,
+        removeEmptyAttributes: false,
+        removeRedundantAttributes: false,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true
       },
     },
     htmlLoader: {
       attrs: false,
       ignoreCustomFragments: [/\{\{.*?}}/],
 
-      minimize: true,
+      minimize: config.isProduction,
       collapseBooleanAttributes: true,
       collapseWhitespace: true,
       removeAttributeQuotes: false,
@@ -158,8 +164,6 @@ let webpackConfig = {
 };
 
 
-// https://github.com/Browsersync/recipes/tree/master/recipes/webpack.monkey-hot-loader
-// https://github.com/BrowserSync/recipes/blob/master/recipes/webpack.react-hot-loader
 // \tars\tasks\main\dev.js
 // \tars\tasks\js\processing.js
 // \tars\tasks\js\webpack-processing.js
