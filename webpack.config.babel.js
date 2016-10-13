@@ -1,10 +1,12 @@
 import {keys, assign, get} from 'lodash';
 import config from './config';
 import webpack from 'webpack';
-// import ExtractTextPlugin from 'extract-text-webpack-plugin';
+
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
 const cwd = process.cwd();
 
 let plugins = [
+  // new ExtractTextPlugin('[name].css', {allChunks: true}),
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
   new webpack.NoErrorsPlugin(),
   new webpack.DefinePlugin(config.webpack.frontendConstants || {}),
@@ -107,8 +109,8 @@ let webpackConfig = {
     vue: {
       loaders: {
         // css:  ExtractTextPlugin.extract('css'),
-        // less: ExtractTextPlugin.extract('css!less'),
-        // sass: ExtractTextPlugin.extract('css!sass'),
+        // less: ExtractTextPlugin.extract('style!css!less'),
+        // sass: ExtractTextPlugin.extract('style!css!sass'),
       },
       sassLoader: {
         precision:    10,
