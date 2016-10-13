@@ -100,7 +100,7 @@ let webpackConfig = {
     // }, {
       // https://github.com/bholloway/resolve-url-loader/
     //   test: /\.sass/,
-    //   loaders: '['styles', 'css', 'sass']
+    //   loaders: '['style', 'css', 'sass']
     // }, {
     //   test: /\.(eot|woff|ttf|svg|png|jpg)$/,
     //   loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
