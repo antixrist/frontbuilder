@@ -11,7 +11,10 @@ import through2 from 'through2';
 import sourcemaps from 'gulp-sourcemaps';
 import functionDone from 'function-done';
 import browserSync from 'browser-sync';
+
 import webpackConfig from '../webpack';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import {notifier} from './utils';
 import {insertHMREntriesToAppEntries, entriesFinder} from './utils/webpack';
@@ -59,14 +62,11 @@ gulp.task('server', function (cb) {
   
   // если горячая перезагрузка модулей не нужна?
   if (!config.webpack.useHMR) {
-    // nj просто запустим dev-сервер
+    // то просто запустим dev-сервер
     browserSync.init(browserSyncConfig);
   }
   // иначе настроим webpack для "Hot Module Replacement".
   else {
-    // грузим webpack-конфиг
-    // const webpackConfig = require('../webpack').default;
-    
     webpackConfig.plugins = webpackConfig.plugins || [];
     // добавим hmr-плагин, если его нету в конфиге
     let hmrPluginExists = _.some(webpackConfig.plugins, (plugin) => plugin instanceof webpack.HotModuleReplacementPlugin);
@@ -84,13 +84,13 @@ gulp.task('server', function (cb) {
     // создадим инстанс вебпака
     const webpackInstance = webpack(webpackConfig);
     // создадим инстанс dev-мидлвари (с fallback'ом для publicPath'а, на всякий случай)
-    const webpackDevMiddlewareInstance = require('webpack-dev-middleware')(webpackInstance, config.webpack.hmr || {
+    const webpackDevMiddlewareInstance = webpackDevMiddleware(webpackInstance, _.assign({
       publicPath: webpackConfig.output.publicPath,
-    });
+    }, config.webpack.hmr));
     const browserSyncMiddleware = [
       webpackDevMiddlewareInstance,
       // создадим инстанс hot-мидлвари
-      require('webpack-hot-middleware')(webpackInstance)
+      webpackHotMiddleware(webpackInstance)
     ];
     
     // добавим их к настройкам сервера
@@ -288,8 +288,6 @@ gulp.task('styles', function () {
 
 
 gulp.task('default', (done) => {
-  // let webpackConfig = require('../webpack');
-
   if (config.webpack.hmr.enabled) {
     // webpackConfig.watch = true;
   }
