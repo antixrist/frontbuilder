@@ -43,6 +43,7 @@
     "flexiblegs-scss-plus": "^5.5.3",
     "pixelperfectcss-scss": "^1.0.2",
     "SassMagic": "git://github.com/W3cplus/SassMagic.git",
-    "material-colors": "^1.1.1"
+    "material-colors": "^1.1.1",
+    "steady": "git://github.com/wpotools/Steady.js.git#^2.0.0"
   }
 }
