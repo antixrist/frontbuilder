@@ -1,11 +1,11 @@
 <template>
   <div class="page">
     <h1>Home</h1>
-    <p><img src="../../../../images/felix.png"></p>
+    <!--<p><img src="../../../../images/felix.png"></p>-->
     <p>
       <a href="#"
          @click.prevent="enabled = !enabled"
-      >Toggle</a>
+      >Toggle, ёпта!</a>
     </p>
     <div v-show="enabled">
       <counter></counter>

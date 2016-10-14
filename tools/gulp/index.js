@@ -11,6 +11,7 @@ import through2 from 'through2';
 import sourcemaps from 'gulp-sourcemaps';
 import functionDone from 'function-done';
 import browserSync from 'browser-sync';
+import webpackConfig from '../webpack';
 
 import {notifier} from './helpers';
 import {insertHMREntriesToAppEntries, entriesFinder} from './helpers/webpack';
@@ -64,7 +65,7 @@ gulp.task('server', function (cb) {
   // иначе настроим webpack для "Hot Module Replacement".
   else {
     // грузим webpack-конфиг
-    const webpackConfig = require('../webpack.config.babel');
+    // const webpackConfig = require('../webpack').default;
     
     webpackConfig.plugins = webpackConfig.plugins || [];
     // добавим hmr-плагин, если его нету в конфиге
@@ -76,7 +77,10 @@ gulp.task('server', function (cb) {
       webpackConfig.entry,
       config.webpack.hmrEntries
     );
-    
+
+    // console.log('webpackConfig', webpackConfig);
+    // console.log('cwd', process.cwd());
+
     // создадим инстанс вебпака
     const webpackInstance = webpack(webpackConfig);
     // создадим инстанс dev-мидлвари (с fallback'ом для publicPath'а, на всякий случай)
@@ -284,7 +288,7 @@ gulp.task('styles', function () {
 
 
 gulp.task('default', (done) => {
-  let webpackConfig = require('../webpack.config.babel');
+  // let webpackConfig = require('../webpack');
 
   if (config.webpack.hmr.enabled) {
     // webpackConfig.watch = true;

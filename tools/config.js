@@ -2,7 +2,7 @@ import {forEach, keys} from 'lodash';
 import path from 'path';
 import compression from 'compression';
 import history from 'connect-history-api-fallback';
-import {entriesFinder} from './gulpfile.babel.js/helpers/webpack';
+import {entriesFinder} from './gulp/helpers/webpack';
 
 const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';

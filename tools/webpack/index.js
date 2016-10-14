@@ -1,9 +1,9 @@
 import {keys, assign, get} from 'lodash';
-import config from './config';
+import config from '../config';
 import webpack from 'webpack';
 
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-const cwd = process.cwd();
+// import ExtractTextPlugin from 'extract-text-webpack-plugin';
+// const cwd = process.cwd();
 
 let plugins = [
   // new ExtractTextPlugin('[name].css', {allChunks: true}),
@@ -57,14 +57,14 @@ let webpackConfig = {
     path: config.webpack.outputPath,
     publicPath: config.webpack.outputPublicPath
   },
-  
+
   resolve: {
     modulesDirectories: ['node_modules'],
     extensions: ['', '.js', '.jsx', '.json', '.vue', '.scss', '.sass', '.less', '.jade', '.pug', '.html'],
     alias: {vue: 'vue/dist/vue.js'}
   },
-  
-  plugins,
+
+                plugins,
   verbose: false,
   // displayModules: false,
   debug: config.isProduction,
@@ -94,17 +94,17 @@ let webpackConfig = {
     }, {
       test: /\.vue$/,
       loader: 'vue'
-    // }, {
-    //   test: /\.html$/,
-    //   loader: 'html'
-    // }, {
+      // }, {
+      //   test: /\.html$/,
+      //   loader: 'html'
+      // }, {
       // https://github.com/bholloway/resolve-url-loader/
-    //   test: /\.sass/,
-    //   loaders: '['style', 'css', 'sass']
-    // }, {
-    //   test: /\.(eot|woff|ttf|svg|png|jpg)$/,
-    //   loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
-    // }
+      //   test: /\.sass/,
+      //   loaders: '['style', 'css', 'sass']
+      // }, {
+      //   test: /\.(eot|woff|ttf|svg|png|jpg)$/,
+      //   loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
+      // }
     }],
     vue: {
       loaders: {
@@ -138,7 +138,7 @@ let webpackConfig = {
         attrs: false,
         // root: cwd,
         ignoreCustomFragments: [/\{\{.*?}}/],
-          
+
         minimize: config.isProduction,
         collapseBooleanAttributes: true,
         collapseWhitespace: true,
@@ -182,4 +182,4 @@ let webpackConfig = {
 // \tars\tasks\js\webpack-processing.js
 // \webpack.config.js
 
-module.exports = webpackConfig;
+export default webpackConfig;
