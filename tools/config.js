@@ -2,7 +2,7 @@ import {forEach, keys} from 'lodash';
 import path from 'path';
 import compression from 'compression';
 import history from 'connect-history-api-fallback';
-import {entriesFinder} from './gulp/helpers/webpack';
+import {entriesFinder} from './gulp/utils/webpack';
 
 const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';
@@ -52,7 +52,6 @@ export default {
 
     useHMR: true,
     hmrEntries: [
-      // 'babel-regenerator-runtime',
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
       // при ошибках страница перезагружаться не будет (state приложения сохранится)

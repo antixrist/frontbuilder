@@ -13,8 +13,8 @@ import functionDone from 'function-done';
 import browserSync from 'browser-sync';
 import webpackConfig from '../webpack';
 
-import {notifier} from './helpers';
-import {insertHMREntriesToAppEntries, entriesFinder} from './helpers/webpack';
+import {notifier} from './utils';
+import {insertHMREntriesToAppEntries, entriesFinder} from './utils/webpack';
 
 // import gulpPlugins from 'gulp-load-plugins';
 // const $ = gulpPlugins();
