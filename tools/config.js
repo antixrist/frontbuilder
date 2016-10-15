@@ -1,4 +1,4 @@
-import {forEach, keys} from 'lodash';
+import * as _ from 'lodash';
 import path from 'path';
 import compression from 'compression';
 import history from 'connect-history-api-fallback';
@@ -35,7 +35,7 @@ export default {
     frontendConstants: {
       'IS_PRODUCTION': isProduction,
       'CWD': JSON.stringify(process.cwd()),
-      'process.env': keys(process.env).reduce((obj, key) => {
+      'process.env': _.keys(process.env).reduce((obj, key) => {
         obj[key] = JSON.stringify(process.env[key]);
 
         return obj;
