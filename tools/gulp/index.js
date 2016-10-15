@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import config from '../config';
+import os from 'os';
 import del from 'del';
 import path from 'path';
 import gulp from 'gulp';
@@ -14,11 +15,8 @@ import browserSync from 'browser-sync';
 
 import webpackConfig from '../webpack';
 import {run as runWebpack} from '../webpack/runner';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-
 import {notifier} from './utils';
-import {insertHMREntriesToAppEntries, entriesFinder} from '../webpack/utils';
+import {toArray} from '../utils';
 
 // import gulpPlugins from 'gulp-load-plugins';
 // const $ = gulpPlugins();
@@ -40,8 +38,8 @@ import {insertHMREntriesToAppEntries, entriesFinder} from '../webpack/utils';
 // $.named
 
 
-if (os.platform() !== 'win32') {
-  const limit = config.ulimit;
+os.platform() !== 'win32' && (function () {
+  const ulimit = config.ulimit || 4096;
   let posix;
   
   try {
@@ -52,7 +50,7 @@ if (os.platform() !== 'win32') {
   
   if (posix) {
     try {
-      posix.setrlimit('nofile', { soft: limit });
+      posix.setrlimit('nofile', { soft: ulimit });
       return true;
     } catch (ex) {
       console.log('Error while ulimit setting');
@@ -60,7 +58,7 @@ if (os.platform() !== 'win32') {
     }
   }
   return false;
-}
+})();
 
 
 
@@ -77,72 +75,43 @@ global.builder.runtime = {};
 // http://nipstr.com/#path
 // https://www.npmjs.com/package/path-rewriter
 
+import * as jsTasks from './scripts';
+
 gulp.task('server', function (done) {
   let browserSyncConfig = config.browserSync;
 
   browserSyncConfig = Object.assign(browserSyncConfig, {
-    middleware: browserSyncConfig.middleware || [],
+    middleware: toArray(browserSyncConfig.middleware),
     logConnections: browserSyncConfig.logConnections || true,
     logLevel: browserSyncConfig.logLevel || 'info',
     reloadOnRestart: browserSyncConfig.reloadOnRestart || true
   });
   
-  // если горячая перезагрузка модулей не нужна
-  if (!config.webpack.useHMR) {
-    // то
-    webpackConfig.watch = true;
-    webpack(webpackConfig, (error, stats) => {
-    
-      if (!error) {
-        error = stats.toJson().errors[0];
-      }
-    
-      if (error) {
-        notifier.error('JavaScript has not been processed', error);
-      } else {
-        console.log(stats.toString({
-          colors: true
-        }));
-      
-        notifier.success('JavaScript has been processed', {notStream: true});
-      
-        // if (config.webpack.hmr.enabled) {
-        //   browserSync.reload();
-        // }
-      }
-    
-      // Task never errs in watch mode, it waits and recompiles
-      // if (!tars.options.watch.isActive && error) {
-      if (!webpackConfig.watch && error) {
-        done(
-          new gutil.PluginError(
-            'webpack-processing',
-            new Error('An error occured during webpack build process')
-          )
-        );
-      } else {
-        if (!done.called) {
-          // запустим dev-сервер
-          browserSync.init(browserSyncConfig);
-          done.called = true;
-          done();
-        } else {
-          browserSync.reload();
-        }
-      }
-    });
-  }
-  // иначе настроим webpack для "Hot Module Replacement".
-  else {
-    console.log('Ждём, пока сбилдится webpack...');
-    runWebpack(webpackConfig, {hmr: true}, function ({instance, middleware}) {
-      console.log('Webpack готов!');
-      console.log('Запускаем сервер...');
-  
+  const hmr = !!config.webpack.useHMR;
+  jsTasks.watcher({hmr}, function ({instance, error, stats, webpackConfig, middleware}) {
+    if (hmr) {
       browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);
-    });
-  }
+    } else {
+      if (!done.called) {
+        browserSync.init(browserSyncConfig);
+        done.called = true;
+        done();
+      } else {
+        browserSync.reload();
+      }
+    }
+  });
+  
+// // настроим webpack для "Hot Module Replacement".
+// console.log('Ждём, пока сбилдится webpack...');
+// runWebpack(webpackConfig, {hmr: true}, function ({instance, middleware, webpackConfig}) {
+//   console.log('Webpack готов!');
+//   console.log('Запускаем сервер...');
+//
+//   browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
+//   browserSync.init(browserSyncConfig);
+// });
 });
 
 

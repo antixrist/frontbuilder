@@ -62,13 +62,14 @@ export function run (wconfig = webpackConfig, {
   
     // дождёмся, пока сбилдятся бандлы
     middleware.dev.waitUntilValid(() => {
-      cb({middleware, instance});
-      // и запустим сервер
-      // browserSync.init(browserSyncConfig);
-      // devTaskFinallyActions();
+      cb({middleware, instance, webpackConfig: wconfig});
     });
   } else {
     wconfig.watch = !!watch;
-
+  
+    const instance = webpack(wconfig, (error, stats) => {
+      error = !!error ? error : stats.toJson().errors[0];
+      cb({instance, error, stats, webpackConfig: wconfig});
+    });
   }
 }

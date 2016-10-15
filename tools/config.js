@@ -54,7 +54,7 @@ export default {
       //jquery: 'window.jQuery',
     },
 
-    useHMR: true,
+    useHMR: false,
     hmrEntries: [
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
