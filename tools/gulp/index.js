@@ -13,6 +13,7 @@ import functionDone from 'function-done';
 import browserSync from 'browser-sync';
 
 import webpackConfig from '../webpack';
+import {run as runWebpack} from '../webpack/runner';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
@@ -107,38 +108,13 @@ gulp.task('server', function (done) {
   }
   // иначе настроим webpack для "Hot Module Replacement".
   else {
-    webpackConfig.plugins = webpackConfig.plugins || [];
-    // добавим hmr-плагин, если его нету в конфиге
-    let hmrPluginExists = _.some(webpackConfig.plugins, (plugin) => plugin instanceof webpack.HotModuleReplacementPlugin);
-    !hmrPluginExists && webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-    
-    // добавим webpack'овскую hmr-магию в точки входа
-    webpackConfig.entry = insertHMREntriesToAppEntries(
-      webpackConfig.entry,
-      config.webpack.hmrEntries
-    );
-
-    // создадим инстанс вебпака
-    const webpackInstance = webpack(webpackConfig);
-    // создадим инстанс dev-мидлвари (с fallback'ом для publicPath'а, на всякий случай)
-    const webpackDevMiddlewareInstance = webpackDevMiddleware(webpackInstance, _.assign({
-      publicPath: webpackConfig.output.publicPath,
-    }, config.webpack.hmr));
-    const browserSyncMiddleware = [
-      webpackDevMiddlewareInstance,
-      // создадим инстанс hot-мидлвари
-      webpackHotMiddleware(webpackInstance)
-    ];
-    
-    // добавим их к настройкам сервера
-    browserSyncConfig.middleware = browserSyncConfig.middleware.concat(browserSyncMiddleware);
-    console.log('Wait for a moment, please. Webpack is preparing bundle for you...');
-    
-    // дождёмся пока сбилдятся бандлы
-    webpackDevMiddlewareInstance.waitUntilValid(() => {
-      // и запустим сервер
+    console.log('Ждём, пока сбилдится webpack...');
+    runWebpack(webpackConfig, {hmr: true}, function ({instance, middleware}) {
+      console.log('Webpack готов!');
+      console.log('Запускаем сервер...');
+  
+      browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);
-      // devTaskFinallyActions();
     });
   }
 });

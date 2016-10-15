@@ -64,7 +64,7 @@ let webpackConfig = {
     alias: {vue: 'vue/dist/vue.js'}
   },
 
-                plugins,
+  plugins,
   verbose: false,
   // displayModules: false,
   debug: config.isProduction,

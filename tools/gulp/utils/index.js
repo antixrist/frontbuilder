@@ -1,10 +1,9 @@
 import gutil from 'gulp-util';
 import chalk from 'chalk';
 
-import * as webpack from './webpack';
 import * as notifier from './notifier';
 
-export {webpack, notifier};
+export {notifier};
 
 /**
  * Date formatter for Gulp notify. It showes only hours, minutes and seconds

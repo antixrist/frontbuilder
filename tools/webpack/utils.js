@@ -52,7 +52,7 @@ entriesFinder.sync = function (pattern, context = cwd) {
 /**
  * На входе список точек входа в любом формате.
  * На выходе - тот же самый список,
- * только к каждой точке входа будет добавлен список hmr-магии.
+ * только каждая точка входа будет превращена вот в такую:
  * ['webpack/hot/only-dev-server', 'webpack-hot-middleware/client?reload=true', 'myEntryFile.js']
  *
  * @param {string|[]|{}} appEntries
