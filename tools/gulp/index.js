@@ -87,11 +87,13 @@ gulp.task('server', function (done) {
     reloadOnRestart: !_.isUndefined(reloadOnRestart) ? !!reloadOnRestart : true,
   });
   
+ 
   jsTasks.watcher(function ({instance, error, stats, webpackConfig, middleware}) {
     const hmr = !!config.webpack.useHMR;
     // при обычном watch-mode данная функция будет срабатывать всегда,
     // когда будут изменяться зависимости.
     // а при hrm-mode она сработает единожды.
+    
     if (hmr) {
       browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);

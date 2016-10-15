@@ -40,11 +40,8 @@ if (config.isProduction) {
 
 // // https://www.npmjs.com/package/style-loader
 // https://www.npmjs.com/package/css-loader
-// https://www.npmjs.com/package/url-loader
-// https://www.npmjs.com/package/file-loader
 // https://www.npmjs.com/package/html-loader
-// https://www.npmjs.com/package/svgo-loader
-//
+// https://www.npmjs.com/package/img-loader
 
 
 let webpackConfig = {
@@ -53,7 +50,8 @@ let webpackConfig = {
   output: {
     filename: '[name].js',
     library: '[name]',
-    chunkFilename: '[hash].js',
+    chunkFilename: '[name].js?[chunkhash]',
+    // hotUpdateChunkFilename: '[name].hot-update.js?[hash]',
     path: config.webpack.outputPath,
     publicPath: config.webpack.outputPublicPath
   },
@@ -92,6 +90,12 @@ let webpackConfig = {
       test: /\.jade$/,
       loader: 'jade-html!vue-html'
     }, {
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      loaders: [
+        `url?${config.webpack.setupLoaders.url.qs}`,
+        'img?config=imagemin'
+      ]
+    }, {
       test: /\.vue$/,
       loader: 'vue'
       // }, {
@@ -112,62 +116,32 @@ let webpackConfig = {
         // less: ExtractTextPlugin.extract('style!css!less'),
         // sass: ExtractTextPlugin.extract('style!css!sass'),
       },
-      sassLoader: {
-        precision:    10,
-        quiet:        true,
-        includePaths: ['node_modules'],
-        importer:     require('node-sass-import-once'),
-        importOnce:   {
-          index: true,
-          css:   true,
-          bower: true
-        }
-      },
+      sassLoader: config.webpack.setupLoaders.sass,
       postcss: {
         plugins: [
           // require('postcss-cssnext')()
         ],
         options: {}
       },
-      html: {
-        // todo: разобраться с подгрузкой урлов в тегах.
-        // https://www.npmjs.com/package/file-loader
-        // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
-        // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
-        // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
-        attrs: false,
-        // root: cwd,
-        ignoreCustomFragments: [/\{\{.*?}}/],
-
-        minimize: config.isProduction,
-        collapseBooleanAttributes: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: false,
-        removeComments: true,
-        removeEmptyAttributes: false,
-        removeRedundantAttributes: false,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true
-      },
-    },
-    htmlLoader: {
-      attrs: false,
-      // root: cwd,
-      ignoreCustomFragments: [/\{\{.*?}}/],
-
-      minimize: config.isProduction,
-      collapseBooleanAttributes: true,
-      collapseWhitespace: true,
-      removeAttributeQuotes: false,
-      removeComments: true,
-      removeEmptyAttributes: false,
-      removeRedundantAttributes: false,
-      removeScriptTypeAttributes: true,
-      removeStyleLinkTypeAttributes: true
+      // todo: разобраться с подгрузкой урлов в тегах.
+      // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
+      // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
+      // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
+      html: Object.assign({
+        minimize: config.isProduction
+      }, config.webpack.setupLoaders.html),
     },
     noParse: config.webpack.noParse || []
   },
   externals: config.webpack.externals || {},
+  
+  sassLoader: config.webpack.setupLoaders.sass, // todo: настроить НЕ через vue
+  
+  imagemin: config.webpack.setupLoaders.imagemin,
+  htmlLoader: Object.assign({
+    minimize: config.isProduction
+  }, config.webpack.setupLoaders.html),
+
   // for imports/exports/expose
   resolveLoader: {
     modulesDirectories: ['node_modules'],

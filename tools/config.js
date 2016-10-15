@@ -9,7 +9,6 @@ const isProduction = process.env.NODE_ENV == 'production';
 const useNotifierInDevMode = true;
 
 const destPath = isProduction ? 'build' : 'dev';
-const webpackPublicPath = '/js/'; // для hmr и require.ensure
 
 export default {
   cwd,
@@ -24,7 +23,11 @@ export default {
   webpack: {
     entry: entriesFinder.sync('markup/js/!(_*).js'),
     outputPath: path.join(cwd, `/${destPath}/js/`),
-    outputPublicPath: webpackPublicPath,
+    // для require.ensure и file-loader'а.
+    // если нужен относительный путь,
+    // то обязательно переопределить config.webpack.hmr.publicPath,
+    // чтобы он был абсолютным. иначе hmr работать не будет!
+    outputPublicPath: './js/',
     watchOptions: {
       aggregateTimeout: 200,
     },
@@ -54,7 +57,7 @@ export default {
       //jquery: 'window.jQuery',
     },
 
-    useHMR: true,
+    useHMR: false,
     hmrEntries: [
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
@@ -64,7 +67,10 @@ export default {
       'webpack-hot-middleware/client?reload=true'
     ],
     hmr: {
-      // publicPath: webpackPublicPath, // will set automated
+      // если не определить publicPath,
+      // то он автоматически установится в config.webpack.outputPublicPath.
+      // должен быть абсолютным!
+      publicPath: '/js/',
       // quiet: false, // display no info to console (only warnings and errors)
       // noInfo: false, // display nothing to the console
       watchOptions: {
@@ -75,6 +81,58 @@ export default {
         colors: true
       }
     },
+    
+    // это не список лоадеров, а конфиг к конкретным
+    setupLoaders: {
+      url: {
+        // без ведущего '?'
+        qs: `limit=${10 * 1024}&name=[path][name]-[hash].[ext]&context=./markup/`
+      },
+      html: {
+        ignoreCustomFragments: [/\{\{.*?}}/],
+
+        minimize: isProduction,
+        // minimize options:
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: false,
+        removeComments: true,
+        removeEmptyAttributes: false,
+        removeRedundantAttributes: false,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true
+      },
+      sass: {
+        precision:    10,
+        quiet:        true,
+        includePaths: ['node_modules'],
+        importer:     require('node-sass-import-once'),
+        importOnce:   {
+          index: true,
+          css:   true,
+          bower: true
+        }
+      },
+      imagemin: {
+        minimize: isProduction,
+        gifsicle: { interlaced: true },
+        jpegtran: {
+          progressive: true,
+          arithmetic: false
+        },
+        optipng: { optimizationLevel: 5 },
+        pngquant: {
+          floyd: 0.5,
+          speed: 2
+        },
+        svgo: {
+          plugins: [
+            { removeTitle: true },
+            { convertPathData: false }
+          ]
+        }
+      },
+    }
   },
 
   browserSync: {
@@ -89,7 +147,7 @@ export default {
     server:    {
       index:     'index.html',
       directory: false,
-      baseDir:   (isProduction) ? './build/' : './dev'
+      baseDir:   (isProduction) ? './build/' : './dev/'
     },
     middleware: [
       history({
