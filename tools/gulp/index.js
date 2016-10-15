@@ -14,7 +14,6 @@ import functionDone from 'function-done';
 import browserSync from 'browser-sync';
 
 import webpackConfig from '../webpack';
-import {run as runWebpack} from '../webpack/runner';
 import {notifier} from './utils';
 import {toArray} from '../utils';
 
@@ -88,7 +87,7 @@ gulp.task('server', function (done) {
   });
   
   const hmr = !!config.webpack.useHMR;
-  jsTasks.watcher({hmr}, function ({instance, error, stats, webpackConfig, middleware}) {
+  jsTasks.watcher(function ({instance, error, stats, webpackConfig, middleware}) {
     if (hmr) {
       browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);

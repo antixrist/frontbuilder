@@ -5,7 +5,7 @@
     <p>
       <a href="#"
          @click.prevent="enabled = !enabled"
-      >Toggle, ёпта!</a>
+      >Toggle</a>
     </p>
     <div v-show="enabled">
       <counter></counter>
