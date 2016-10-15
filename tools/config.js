@@ -16,7 +16,11 @@ export default {
   isProduction,
   useNotifierInDevMode,
   destPath,
-
+  
+  // для невиндовых систем,
+  // чтобы можно было работать с большим количеством файлов
+  ulimit: 4096,
+  
   webpack: {
     entry: entriesFinder.sync('markup/js/!(_*).js'),
     outputPath: path.join(cwd, `/${destPath}/js/`),

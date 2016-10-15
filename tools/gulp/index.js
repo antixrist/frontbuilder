@@ -39,6 +39,32 @@ import {insertHMREntriesToAppEntries, entriesFinder} from '../webpack/utils';
 // $.data
 // $.named
 
+
+if (os.platform() !== 'win32') {
+  const limit = config.ulimit;
+  let posix;
+  
+  try {
+    posix = require('posix');
+  } catch (ex) {
+    return false;
+  }
+  
+  if (posix) {
+    try {
+      posix.setrlimit('nofile', { soft: limit });
+      return true;
+    } catch (ex) {
+      console.log('Error while ulimit setting');
+      return false;
+    }
+  }
+  return false;
+}
+
+
+
+
 global.builder = {};
 Object.assign(global.builder, config);
 global.builder.runtime = {};
