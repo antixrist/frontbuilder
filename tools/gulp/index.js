@@ -50,7 +50,7 @@ global.builder.runtime = {};
 // http://nipstr.com/#path
 // https://www.npmjs.com/package/path-rewriter
 
-gulp.task('server', function (cb) {
+gulp.task('server', function (done) {
   let browserSyncConfig = config.browserSync;
 
   browserSyncConfig = Object.assign(browserSyncConfig, {
@@ -62,6 +62,44 @@ gulp.task('server', function (cb) {
   
   // если горячая перезагрузка модулей не нужна?
   if (!config.webpack.useHMR) {
+    webpackConfig.watch = true;
+    webpack(webpackConfig, (error, stats) => {
+    
+      if (!error) {
+        error = stats.toJson().errors[0];
+      }
+    
+      if (error) {
+        notifier.error('JavaScript has not been processed', error);
+      } else {
+        console.log(stats.toString({
+          colors: true
+        }));
+      
+        notifier.success('JavaScript has been processed', {notStream: true});
+      
+        // if (config.webpack.hmr.enabled) {
+        //   browserSync.reload();
+        // }
+      }
+    
+      // Task never errs in watch mode, it waits and recompiles
+      // if (!tars.options.watch.isActive && error) {
+      if (!webpackConfig.watch && error) {
+        done(
+          new gutil.PluginError(
+            'webpack-processing',
+            new Error('An error occured during webpack build process')
+          )
+        );
+      } else {
+        if (!done.called) {
+          done.called = true;
+          done();
+        }
+      }
+    });
+  
     // то просто запустим dev-сервер
     browserSync.init(browserSyncConfig);
   }

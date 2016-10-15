@@ -69,7 +69,7 @@ let webpackConfig = {
   // displayModules: false,
   debug: config.isProduction,
   devtool: config.isProduction ? '#source-map' : '#inline-source-map',
-  watch: false, // will set automated
+  // watch: false, // will set automated
   watchOptions: config.webpack.watchOptions || {},
 
   module: {

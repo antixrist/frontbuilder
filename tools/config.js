@@ -50,7 +50,7 @@ export default {
       //jquery: 'window.jQuery',
     },
 
-    useHMR: true,
+    useHMR: 0,
     hmrEntries: [
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
@@ -60,7 +60,7 @@ export default {
       'webpack-hot-middleware/client?reload=true'
     ],
     hmr: {
-      publicPath: webpackPublicPath,
+      // publicPath: webpackPublicPath, // will set automated
       // quiet: false, // display no info to console (only warnings and errors)
       // noInfo: false, // display nothing to the console
       watchOptions: {
