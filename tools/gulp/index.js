@@ -78,39 +78,39 @@ import * as jsTasks from './scripts';
 
 gulp.task('server', function (done) {
   let browserSyncConfig = config.browserSync;
-
+  let {middleware, logConnections, logLevel, reloadOnRestart} = browserSyncConfig;
+  
   browserSyncConfig = Object.assign(browserSyncConfig, {
-    middleware: toArray(browserSyncConfig.middleware),
-    logConnections: browserSyncConfig.logConnections || true,
-    logLevel: browserSyncConfig.logLevel || 'info',
-    reloadOnRestart: browserSyncConfig.reloadOnRestart || true
+    logLevel:        logLevel || 'info',
+    middleware:      toArray(middleware),
+    logConnections:  !_.isUndefined(logConnections) ? !!logConnections : true,
+    reloadOnRestart: !_.isUndefined(reloadOnRestart) ? !!reloadOnRestart : true,
   });
   
-  const hmr = !!config.webpack.useHMR;
   jsTasks.watcher(function ({instance, error, stats, webpackConfig, middleware}) {
+    const hmr = !!config.webpack.useHMR;
+    // при обычном watch-mode данная функция будет срабатывать всегда,
+    // когда будут изменяться зависимости.
+    // а при hrm-mode она сработает единожды.
     if (hmr) {
       browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);
     } else {
+      // для обычного watch-mode gulp-коллбек надо запускать один раз,
+      // чтобы таск нормально завершился.
+      // webpack продолжит вотчить зависимости и вызывать текущую функцию,
+      // когда билд будет готов.
       if (!done.called) {
+        // поэтому при первом запуске этой функции запускаем сервер
         browserSync.init(browserSyncConfig);
         done.called = true;
         done();
       } else {
+        // при всех остальных вызовах - перезагружаем сервер
         browserSync.reload();
       }
     }
   });
-  
-// // настроим webpack для "Hot Module Replacement".
-// console.log('Ждём, пока сбилдится webpack...');
-// runWebpack(webpackConfig, {hmr: true}, function ({instance, middleware, webpackConfig}) {
-//   console.log('Webpack готов!');
-//   console.log('Запускаем сервер...');
-//
-//   browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
-//   browserSync.init(browserSyncConfig);
-// });
 });
 
 
