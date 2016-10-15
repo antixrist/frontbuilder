@@ -17,7 +17,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import {notifier} from './utils';
-import {insertHMREntriesToAppEntries, entriesFinder} from './utils/webpack';
+import {insertHMREntriesToAppEntries, entriesFinder} from '../webpack/utils';
 
 // import gulpPlugins from 'gulp-load-plugins';
 // const $ = gulpPlugins();
@@ -60,8 +60,9 @@ gulp.task('server', function (done) {
     reloadOnRestart: browserSyncConfig.reloadOnRestart || true
   });
   
-  // если горячая перезагрузка модулей не нужна?
+  // если горячая перезагрузка модулей не нужна
   if (!config.webpack.useHMR) {
+    // то
     webpackConfig.watch = true;
     webpack(webpackConfig, (error, stats) => {
     
@@ -94,14 +95,15 @@ gulp.task('server', function (done) {
         );
       } else {
         if (!done.called) {
+          // запустим dev-сервер
+          browserSync.init(browserSyncConfig);
           done.called = true;
           done();
+        } else {
+          browserSync.reload();
         }
       }
     });
-  
-    // то просто запустим dev-сервер
-    browserSync.init(browserSyncConfig);
   }
   // иначе настроим webpack для "Hot Module Replacement".
   else {
@@ -115,9 +117,6 @@ gulp.task('server', function (done) {
       webpackConfig.entry,
       config.webpack.hmrEntries
     );
-
-    // console.log('webpackConfig', webpackConfig);
-    // console.log('cwd', process.cwd());
 
     // создадим инстанс вебпака
     const webpackInstance = webpack(webpackConfig);

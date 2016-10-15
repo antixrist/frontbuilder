@@ -18,19 +18,19 @@ export function entriesFinder (pattern, context = cwd, cb = () => {}) {
     cb = context;
     context = cwd;
   }
-
+  
   return new Promise((resolve, reject) => {
     glob(pattern, {}, function (err, files) {
       if (err) {
         cb(err);
         return reject(err);
       }
-
+      
       files = files ? files : [];
       files = Array.isArray(files) ? files : [files];
-
+      
       let entries = changeFilesArrayToWebpackFormat(files, context);
-
+      
       cb(null, entries);
       resolve(entries);
     })
@@ -73,7 +73,7 @@ export function insertHMREntriesToAppEntries (appEntries = [], hmrEntries = [], 
       appEntries[name] = hmrEntries.concat(entry);
     });
   }
-
+  
   return appEntries;
 }
 
@@ -89,13 +89,13 @@ export function insertHMREntriesToAppEntries (appEntries = [], hmrEntries = [], 
 function changeFilesArrayToWebpackFormat (files, context = cwd) {
   files = files ? files : [];
   files = _.isArray(files) ? files : [files];
-
+  
   return files.reduce((entries, file) => {
     let entry    = path.basename(file, path.extname(file));
     let filename = path.resolve(context, file);
     let filenameRelativeToCwd = path.relative(context, filename);
     entries[entry] = `./${filenameRelativeToCwd}`;
-
+    
     return entries;
   }, {});
 }
