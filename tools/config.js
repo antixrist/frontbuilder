@@ -1,26 +1,33 @@
-import {forEach, keys} from 'lodash';
+import * as _ from 'lodash';
 import path from 'path';
 import compression from 'compression';
 import history from 'connect-history-api-fallback';
-import {entriesFinder} from './gulp/helpers/webpack';
+import {entriesFinder} from './webpack/utils';
 
 const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';
 const useNotifierInDevMode = true;
 
 const destPath = isProduction ? 'build' : 'dev';
-const webpackPublicPath = '/js/'; // для hmr и require.ensure
 
 export default {
   cwd,
   isProduction,
   useNotifierInDevMode,
   destPath,
-
+  
+  // для невиндовых систем,
+  // чтобы можно было работать с большим количеством файлов
+  ulimit: 4096,
+  
   webpack: {
     entry: entriesFinder.sync('markup/js/!(_*).js'),
     outputPath: path.join(cwd, `/${destPath}/js/`),
-    outputPublicPath: webpackPublicPath,
+    // для require.ensure и file-loader'а.
+    // если нужен относительный путь,
+    // то обязательно переопределить config.webpack.hmr.publicPath,
+    // чтобы он был абсолютным. иначе hmr работать не будет!
+    outputPublicPath: './js/',
     watchOptions: {
       aggregateTimeout: 200,
     },
@@ -28,7 +35,7 @@ export default {
     frontendConstants: {
       'IS_PRODUCTION': isProduction,
       'CWD': JSON.stringify(process.cwd()),
-      'process.env': keys(process.env).reduce((obj, key) => {
+      'process.env': _.keys(process.env).reduce((obj, key) => {
         obj[key] = JSON.stringify(process.env[key]);
 
         return obj;
@@ -50,9 +57,8 @@ export default {
       //jquery: 'window.jQuery',
     },
 
-    useHMR: true,
+    useHMR: false,
     hmrEntries: [
-      // 'babel-regenerator-runtime',
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
       // при ошибках страница перезагружаться не будет (state приложения сохранится)
@@ -61,7 +67,10 @@ export default {
       'webpack-hot-middleware/client?reload=true'
     ],
     hmr: {
-      publicPath: webpackPublicPath,
+      // если не определить publicPath,
+      // то он автоматически установится в config.webpack.outputPublicPath.
+      // должен быть абсолютным!
+      publicPath: '/js/',
       // quiet: false, // display no info to console (only warnings and errors)
       // noInfo: false, // display nothing to the console
       watchOptions: {
@@ -72,6 +81,58 @@ export default {
         colors: true
       }
     },
+    
+    // это не список лоадеров, а конфиг к конкретным
+    setupLoaders: {
+      url: {
+        // без ведущего '?'
+        qs: `limit=${10 * 1024}&name=[path][name]-[hash].[ext]&context=./markup/`
+      },
+      html: {
+        ignoreCustomFragments: [/\{\{.*?}}/],
+
+        minimize: isProduction,
+        // minimize options:
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: false,
+        removeComments: true,
+        removeEmptyAttributes: false,
+        removeRedundantAttributes: false,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true
+      },
+      sass: {
+        precision:    10,
+        quiet:        true,
+        includePaths: ['node_modules'],
+        importer:     require('node-sass-import-once'),
+        importOnce:   {
+          index: true,
+          css:   true,
+          bower: true
+        }
+      },
+      imagemin: {
+        minimize: isProduction,
+        gifsicle: { interlaced: true },
+        jpegtran: {
+          progressive: true,
+          arithmetic: false
+        },
+        optipng: { optimizationLevel: 5 },
+        pngquant: {
+          floyd: 0.5,
+          speed: 2
+        },
+        svgo: {
+          plugins: [
+            { removeTitle: true },
+            { convertPathData: false }
+          ]
+        }
+      },
+    }
   },
 
   browserSync: {
@@ -86,7 +147,7 @@ export default {
     server:    {
       index:     'index.html',
       directory: false,
-      baseDir:   (isProduction) ? './build/' : './dev'
+      baseDir:   (isProduction) ? './build/' : './dev/'
     },
     middleware: [
       history({

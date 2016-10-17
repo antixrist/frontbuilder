@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import config from '../config';
+import os from 'os';
 import del from 'del';
 import path from 'path';
 import gulp from 'gulp';
@@ -11,10 +12,10 @@ import through2 from 'through2';
 import sourcemaps from 'gulp-sourcemaps';
 import functionDone from 'function-done';
 import browserSync from 'browser-sync';
-import webpackConfig from '../webpack';
 
-import {notifier} from './helpers';
-import {insertHMREntriesToAppEntries, entriesFinder} from './helpers/webpack';
+import webpackConfig from '../webpack';
+import {notifier} from './utils';
+import {toArray} from '../utils';
 
 // import gulpPlugins from 'gulp-load-plugins';
 // const $ = gulpPlugins();
@@ -35,6 +36,32 @@ import {insertHMREntriesToAppEntries, entriesFinder} from './helpers/webpack';
 // $.data
 // $.named
 
+
+os.platform() !== 'win32' && (function () {
+  const ulimit = config.ulimit || 4096;
+  let posix;
+  
+  try {
+    posix = require('posix');
+  } catch (ex) {
+    return false;
+  }
+  
+  if (posix) {
+    try {
+      posix.setrlimit('nofile', { soft: ulimit });
+      return true;
+    } catch (ex) {
+      console.log('Error while ulimit setting');
+      return false;
+    }
+  }
+  return false;
+})();
+
+
+
+
 global.builder = {};
 Object.assign(global.builder, config);
 global.builder.runtime = {};
@@ -48,63 +75,45 @@ global.builder.runtime = {};
 // https://www.npmjs.com/package/path-rewriter
 // https://www.sitepoint.com/reskinnable-svg-symbols-how-to-make-them-and-why/
 
-gulp.task('server', function (cb) {
-  let browserSyncConfig = config.browserSync;
+import * as jsTasks from './scripts';
 
+gulp.task('server', function (done) {
+  let browserSyncConfig = config.browserSync;
+  let {middleware, logConnections, logLevel, reloadOnRestart} = browserSyncConfig;
+  
   browserSyncConfig = Object.assign(browserSyncConfig, {
-    middleware: browserSyncConfig.middleware || [],
-    logConnections: browserSyncConfig.logConnections || true,
-    logLevel: browserSyncConfig.logLevel || 'info',
-    reloadOnRestart: browserSyncConfig.reloadOnRestart || true
+    logLevel:        logLevel || 'info',
+    middleware:      toArray(middleware),
+    logConnections:  !_.isUndefined(logConnections) ? !!logConnections : true,
+    reloadOnRestart: !_.isUndefined(reloadOnRestart) ? !!reloadOnRestart : true,
   });
   
-  // если горячая перезагрузка модулей не нужна?
-  if (!config.webpack.useHMR) {
-    // nj просто запустим dev-сервер
-    browserSync.init(browserSyncConfig);
-  }
-  // иначе настроим webpack для "Hot Module Replacement".
-  else {
-    // грузим webpack-конфиг
-    // const webpackConfig = require('../webpack').default;
+ 
+  jsTasks.watcher(function ({instance, error, stats, webpackConfig, middleware}) {
+    const hmr = !!config.webpack.useHMR;
+    // при обычном watch-mode данная функция будет срабатывать всегда,
+    // когда будут изменяться зависимости.
+    // а при hrm-mode она сработает единожды.
     
-    webpackConfig.plugins = webpackConfig.plugins || [];
-    // добавим hmr-плагин, если его нету в конфиге
-    let hmrPluginExists = _.some(webpackConfig.plugins, (plugin) => plugin instanceof webpack.HotModuleReplacementPlugin);
-    !hmrPluginExists && webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-    
-    // добавим webpack'овскую hmr-магию в точки входа
-    webpackConfig.entry = insertHMREntriesToAppEntries(
-      webpackConfig.entry,
-      config.webpack.hmrEntries
-    );
-
-    // console.log('webpackConfig', webpackConfig);
-    // console.log('cwd', process.cwd());
-
-    // создадим инстанс вебпака
-    const webpackInstance = webpack(webpackConfig);
-    // создадим инстанс dev-мидлвари (с fallback'ом для publicPath'а, на всякий случай)
-    const webpackDevMiddlewareInstance = require('webpack-dev-middleware')(webpackInstance, config.webpack.hmr || {
-      publicPath: webpackConfig.output.publicPath,
-    });
-    const browserSyncMiddleware = [
-      webpackDevMiddlewareInstance,
-      // создадим инстанс hot-мидлвари
-      require('webpack-hot-middleware')(webpackInstance)
-    ];
-    
-    // добавим их к настройкам сервера
-    browserSyncConfig.middleware = browserSyncConfig.middleware.concat(browserSyncMiddleware);
-    console.log('Wait for a moment, please. Webpack is preparing bundle for you...');
-    
-    // дождёмся пока сбилдятся бандлы
-    webpackDevMiddlewareInstance.waitUntilValid(() => {
-      // и запустим сервер
+    if (hmr) {
+      browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);
-      // devTaskFinallyActions();
-    });
-  }
+    } else {
+      // для обычного watch-mode gulp-коллбек надо запускать один раз,
+      // чтобы таск нормально завершился.
+      // webpack продолжит вотчить зависимости и вызывать текущую функцию,
+      // когда билд будет готов.
+      if (!done.called) {
+        // поэтому при первом запуске этой функции запускаем сервер
+        browserSync.init(browserSyncConfig);
+        done.called = true;
+        done();
+      } else {
+        // при всех остальных вызовах - перезагружаем сервер
+        browserSync.reload();
+      }
+    }
+  });
 });
 
 
@@ -289,8 +298,6 @@ gulp.task('styles', function () {
 
 
 gulp.task('default', (done) => {
-  // let webpackConfig = require('../webpack');
-
   if (config.webpack.hmr.enabled) {
     // webpackConfig.watch = true;
   }
