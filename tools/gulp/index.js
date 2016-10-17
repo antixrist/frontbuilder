@@ -46,6 +46,7 @@ global.builder.runtime = {};
 
 // http://nipstr.com/#path
 // https://www.npmjs.com/package/path-rewriter
+// https://www.sitepoint.com/reskinnable-svg-symbols-how-to-make-them-and-why/
 
 gulp.task('server', function (cb) {
   let browserSyncConfig = config.browserSync;
