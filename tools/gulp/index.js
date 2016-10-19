@@ -77,24 +77,29 @@ global.builder.runtime = {};
 
 import * as jsTasks from './scripts';
 
+gulp.task('scripts', function (done) {
+  jsTasks.builder(() => done());
+});
+
+
 gulp.task('server', function (done) {
   let browserSyncConfig = config.browserSync;
   let {middleware, logConnections, logLevel, reloadOnRestart} = browserSyncConfig;
-  
+
   browserSyncConfig = Object.assign(browserSyncConfig, {
     logLevel:        logLevel || 'info',
     middleware:      toArray(middleware),
     logConnections:  !_.isUndefined(logConnections) ? !!logConnections : true,
     reloadOnRestart: !_.isUndefined(reloadOnRestart) ? !!reloadOnRestart : true,
   });
-  
- 
+
+
   jsTasks.watcher(function ({instance, error, stats, webpackConfig, middleware}) {
     const hmr = !!config.webpack.useHMR;
     // при обычном watch-mode данная функция будет срабатывать всегда,
     // когда будут изменяться зависимости.
     // а при hrm-mode она сработает единожды.
-    
+
     if (hmr) {
       browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
       browserSync.init(browserSyncConfig);

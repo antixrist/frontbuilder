@@ -109,7 +109,7 @@ export function runWebpack (wconfig = webpackConfig, {
       hot: webpackHotMiddleware(instance),
       // dev-мидлваря (с fallback'ом для publicPath'а, на всякий случай)
       dev: webpackDevMiddleware(instance, _.assign({
-        publicPath: wconfig.output.publicPath,
+        publicPath: wconfig.output.hotPublicPath || wconfig.output.publicPath,
       }, config.webpack.hmr))
     };
     

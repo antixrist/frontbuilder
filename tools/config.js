@@ -17,16 +17,16 @@ export default {
   destPath,
   
   // для невиндовых систем,
-  // чтобы можно было работать с большим количеством файлов
+  // чтобы можно было работать с большим количеством файлов (сперва руками установить `posix`)
   ulimit: 4096,
   
   webpack: {
     entry: entriesFinder.sync('markup/js/!(_*).js'),
     outputPath: path.join(cwd, `/${destPath}/js/`),
-    // для require.ensure и file-loader'а.
+    // outputPublicPath нужен для require.ensure и file-loader'а.
     // если нужен относительный путь,
     // то обязательно переопределить config.webpack.hmr.publicPath,
-    // чтобы он был абсолютным. иначе hmr работать не будет!
+    // чтобы он был абсолютным. иначе hmr работать не будет.
     outputPublicPath: './js/',
     watchOptions: {
       aggregateTimeout: 200,
@@ -57,7 +57,7 @@ export default {
       //jquery: 'window.jQuery',
     },
 
-    useHMR: false,
+    useHMR: true,
     hmrEntries: [
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
