@@ -47,6 +47,15 @@ if (isProduction) {
 
 const destPath = isProduction ? 'build' : 'dev';
 
+/**
+ * todo
+ * - завести ассеты в css и style-loader: вставка тега с контентом, вставка тега с урлом, конкатенация всех css'ок в одну и всё такая же вставка тега с урлом или контентом;
+ * - ассеты в css со строками запроса и хэшами в урлах не попадают в нужные лоадеры;
+ * - завести sass/scss, resolve-url-loader и jade/pug;
+ * - настроить сборку для прода;
+ * - настроить всё это для vue
+ */
+
 let webpackConfig = {
   entry: entriesFinder.sync('markup/js/!(_*).js'),
   
@@ -96,7 +105,7 @@ let webpackConfig = {
       }, {
         test:    /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-          `url?limit=${10 * 1024}&name=i/[name]-[hash].[ext]&context=./markup/`, // &context=./markup/
+          `url?limit=${10 * 1024}&name=img/[name]-[hash].[ext]&context=./markup/`, // &context=./markup/
           'img?config=imagemin'
         ]
       }, {
