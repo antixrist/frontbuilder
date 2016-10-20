@@ -103,6 +103,7 @@
     "vue-router": "^2.0.1",
     "vue-socket.io": "^1.0.2",
     "vue-text-mask": "^0.1.2",
+    "vue-touch-ripple": "^2.2.1",
     "vuex": "^2.0.0",
     "vuex-persistedstate": "^0.3.0",
     "vuex-router-sync": "^3.0.0"

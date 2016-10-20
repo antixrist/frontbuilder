@@ -56,6 +56,7 @@ const destPath = isProduction ? 'build' : 'dev';
  * - завести sass/scss, resolve-url-loader и jade/pug;
  * - настроить сборку для прода;
  * - настроить всё это для vue
+ * - сделать нормальный bower/npm/git пакет для antixrist/md-shadows-scss
  *
  * https://github.com/MillerRen/vue-boilerplate/blob/master/build/webpack.prod.conf.js#L65-L84
  *

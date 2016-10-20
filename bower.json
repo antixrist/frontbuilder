@@ -19,7 +19,6 @@
     "include-media": "^1.4.8",
     "family.scss": "^1.0.8",
     "css-element-queries": "git://github.com/marcj/css-element-queries.git#^0.3.2",
-    "material-shadows": "^3.0.1",
     "sass-flex-mixin": "^1.0.3",
     "matches-selector": "^2.0.1",
     "wenk": "^1.0.2",
@@ -45,6 +44,8 @@
     "SassMagic": "git://github.com/W3cplus/SassMagic.git",
     "material-colors": "^1.1.1",
     "steady": "git://github.com/wpotools/Steady.js.git#^2.0.0",
-    "font-awesome": "fontawesome#^4.6.3"
+    "font-awesome": "fontawesome#^4.6.3",
+    "vue2-animate": "^1.0.4",
+    "material-shadows": "git://github.com/antixrist/md-shadows-scss.git#^3.0.1"
   }
 }
