@@ -6,6 +6,7 @@ import {entriesFinder} from './utils';
 
 const cwd = process.cwd();
 const isProduction = process.env.NODE_ENV == 'production';
+const isTesting    = process.env.NODE_ENV == 'testing';
 
 let plugins = [
   // new ExtractTextPlugin('[name].css', {allChunks: true}),
@@ -49,11 +50,15 @@ const destPath = isProduction ? 'build' : 'dev';
 
 /**
  * todo
- * - завести ассеты в css и style-loader: вставка тега с контентом, вставка тега с урлом, конкатенация всех css'ок в одну и всё такая же вставка тега с урлом или контентом;
+ * - завести ассеты в css и style-loader: вставка тега с контентом, вставка тега с урлом, конкатенация всех css'ок в
+ * одну и всё такая же вставка тега с урлом или контентом;
  * - ассеты в css со строками запроса и хэшами в урлах не попадают в нужные лоадеры;
  * - завести sass/scss, resolve-url-loader и jade/pug;
  * - настроить сборку для прода;
  * - настроить всё это для vue
+ *
+ * https://github.com/MillerRen/vue-boilerplate/blob/master/build/webpack.prod.conf.js#L65-L84
+ *
  */
 
 let webpackConfig = {

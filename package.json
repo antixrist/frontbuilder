@@ -96,6 +96,7 @@
     "vee-validate": "^2.0.0-beta.13",
     "vue": "^2.0.3",
     "vue-head": "^2.0.6",
+    "vue-helmet": "^1.1.5",
     "vue-lazyload": "^0.8.3",
     "vue-resizesensor": "^0.1.0",
     "vue-resource": "^1.0.3",
