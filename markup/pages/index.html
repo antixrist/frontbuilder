@@ -1,47 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="./css/css.css">
   </head>
   <body>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem earum fuga impedit iste laudantium
+      perspiciatis soluta voluptatum. Aspernatur, delectus!</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem earum fuga impedit iste laudantium
+      perspiciatis soluta voluptatum. Aspernatur, delectus!</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem earum fuga impedit iste laudantium
+      perspiciatis soluta voluptatum. Aspernatur, delectus!</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem earum fuga impedit iste laudantium
+      perspiciatis soluta voluptatum. Aspernatur, delectus!</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem earum fuga impedit iste laudantium
+      perspiciatis soluta voluptatum. Aspernatur, delectus!</p>
 
-
-
-<!--
-    <script>
-      document.write('<link rel="stylesheet" href="/css/' + 'entry.' + 'css">');
-      //      document.write('<link rel="stylesheet" href="/css/di' + 'r/entry' + '2.css">');
-      document.write('<link rel="stylesheet" href="/css/css.css">');
-    </script>
--->
-
-    <p>Lorem ipsum dolor sit amet, <mark>consectetur</mark> adipisicing elit. Animi doloribus magni modi non omnis quasi vel. Ad dignissimos laborum magni minus, perspiciatis rerum sunt suscipit? Ab aut odio officia repellat!</p>
-    <p>Lorem ipsum dolor sit amet, <mark>consectetur</mark> adipisicing elit. Animi doloribus magni modi non omnis quasi vel. Ad dignissimos laborum magni minus, perspiciatis rerum sunt suscipit? Ab aut odio officia repellat!</p>
-    <p>Lorem ipsum dolor sit amet, <mark>consectetur</mark> adipisicing elit. Animi doloribus magni modi non omnis quasi vel. Ad dignissimos laborum magni minus, perspiciatis rerum sunt suscipit? Ab aut odio officia repellat!</p>
-    <p>Lorem ipsum dolor sit amet, <mark>consectetur</mark> adipisicing elit. Animi doloribus magni modi non omnis quasi vel. Ad dignissimos laborum magni minus, perspiciatis rerum sunt suscipit? Ab aut odio officia repellat!</p>
-    <p>Иконка: <i class="fa fa-user"></i></p>
+    <p><i class="fa fa-user"></i></p>
 
     <div id="app">
       <p>
+        <!-- use router-link component for navigation. -->
+        <!-- specify the link by passing the `to` prop. -->
+        <!-- <router-link> will be rendered as an `<a>` tag by default -->
         <router-link exact to="/">Home</router-link>
-        <router-link exact to="/another">another</router-link>
-        <router-link exact to="/another-2">another 2</router-link>
+        <router-link exact to="/another">Another</router-link>
+        <router-link exact to="/another-2">Another 2</router-link>
       </p>
+
       <router-view></router-view>
     </div>
 
-    <script src="./js/common.js"></script>
+    <script src="./js/vendor.js"></script>
     <script src="./js/js.js"></script>
-
-    <!--
-        <script src="/js/common.js"></script>
-        <script src="/js/js.js"></script>
-        <script src="/js/components.js"></script>
-        <script>
-          console.log('config outside', js.config);
-        </script>
-    -->
   </body>
 </html>

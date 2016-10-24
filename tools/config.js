@@ -57,7 +57,7 @@ export default {
       //jquery: 'window.jQuery',
     },
 
-    useHMR: true,
+    useHMR: false,
     hmrEntries: [
       // при ошибках страница перезагрузится
       // 'webpack/hot/dev-server',
@@ -150,9 +150,9 @@ export default {
       baseDir:   (isProduction) ? './build/' : './dev/'
     },
     middleware: [
-      history({
-        // logger: console.log.bind(console)
-      }),
+      // history({
+      //   // logger: console.log.bind(console)
+      // }),
       compression({filter: function shouldCompress (req, res) {
         if (req.headers['x-no-compression']) {
           return false

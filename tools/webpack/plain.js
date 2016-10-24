@@ -21,10 +21,23 @@ let plugins = [
       return obj;
     }, {})
   }),
+  
+  // split vendor js into its own file
   new webpack.optimize.CommonsChunkPlugin({
-    name: 'common',
-    children: true,
-    minChunks: 2
+    name: 'vendor',
+    minChunks: function (module, count) {
+      // any required modules inside node_modules are extracted to vendor
+      return (module.resource &&
+              /\.js$/.test(module.resource) &&
+              module.resource.indexOf(path.join(cwd, 'node_modules')) === 0
+             ) || count >= 2
+      ;
+    }
+  }),
+
+  new webpack.optimize.AggressiveMergingPlugin({
+    minSizeReduce: 1.5,
+    moveToParents: true
   })
 ];
 
@@ -41,34 +54,55 @@ if (isProduction) {
       }
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.MinChunkSizePlugin({minChunkSize: 10 * 1024}),
+    new webpack.optimize.LimitChunkCountPlugin({maxChunks: 15}),
   );
 } else {
   
 }
 
-const destPath = isProduction ? 'build' : 'dev';
+/**
+ * @param {string} dirname
+ * @returns {string}
+ */
+function cleanupDirname (dirname) {
+  return dirname.replace(/^\.?\//, '').replace(/\/$/, '');
+}
+
+// экспортить эти переменные из конфига
+let sourcePath = '/markup/';
+let destPath = isProduction ? '/build/' : '/dev/';
+
+sourcePath = cleanupDirname(sourcePath);
+destPath = cleanupDirname(destPath);
 
 /**
  * todo
- * - завести ассеты в css и style-loader: вставка тега с контентом, вставка тега с урлом, конкатенация всех css'ок в
- * одну и всё такая же вставка тега с урлом или контентом;
- * - ассеты в css со строками запроса и хэшами в урлах не попадают в нужные лоадеры;
- * - завести sass/scss, resolve-url-loader и jade/pug;
+ * - завести ассеты в css и style-loader: вставка тега с css-контентом, вставка тега с урлом, конкатенация всех css'ок в одну и всё такая же вставка тега с урлом или контентом;
+ * - завести sass/scss, resolve-url-loader и jade/pug->html и минификация html;
+ * - postcss с autoprefixer'ом;
  * - настроить сборку для прода;
  * - настроить всё это для vue
  * - сделать нормальный bower/npm/git пакет для antixrist/md-shadows-scss
  *
- * https://github.com/MillerRen/vue-boilerplate/blob/master/build/webpack.prod.conf.js#L65-L84
+ * Склонировать `https://github.com/webpack/webpack` и прогнать локально примеры:
+ * https://github.com/webpack/webpack/tree/master/examples/common-chunk-and-vendor-chunk
+ * https://github.com/webpack/webpack/tree/master/examples/css-bundle
+ * https://github.com/webpack/webpack/tree/master/examples/http2-aggressive-splitting
  *
  */
 
 let webpackConfig = {
-  entry: entriesFinder.sync('markup/js/!(_*).js'),
+  entry: entriesFinder.sync(`${sourcePath}/js/!(_*).js`),
   
   output: {
     filename: '[name].js',
     library: '[name]',
-    chunkFilename: '[name].js?[chunkhash]',
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
+    chunkFilename: '[name].[chunkhash:6].js',
+    pathinfo: !isProduction,
     // hotUpdateChunkFilename: '[name].hot-update.js?[hash]',
     path: path.join(cwd, `/${destPath}/js/`),
     publicPath: './js/',
@@ -90,44 +124,41 @@ let webpackConfig = {
   module: {
     preLoaders: [
       {
-        test:   /\.js$/,
+        test:   /\.js$/i,
         loader: 'source-map-loader'
       }
     ],
     loaders:    [
       {
         loader:  'babel?cacheDirectory',
-        test:    /\.jsx?$/,
+        test:    /\.jsx?$/i,
         exclude: [/node_modules/, /bower_components/]
       }, {
-        test:   /\.json$/,
+        test:   /\.json$/i,
         loader: 'json'
       }, {
-        test:   /\.html$/,
+        test:   /\.html$/i,
         loader: 'html'
       }, {
-        test:    /\.(jade|pug)$/,
+        test:    /\.(jade|pug)$/i,
         loaders: ['html', 'jade-html']
       }, {
-        test:    /\.(jpe?g|png|gif|svg)$/i,
+        test:    /\.(jpe?g|png|gif|svg)($|\?)/i,
         loaders: [
-          `url?limit=${10 * 1024}&name=img/[name]-[hash].[ext]&context=./markup/`, // &context=./markup/
+          `url?limit=${10 * 1024}&name=[path][name].[hash:6].[ext]&context=./${sourcePath}/`,
           'img?config=imagemin'
         ]
       }, {
-        test: /\.(eot|woff2?|ttf|otf)(\?.*)?$/,
-        loader: 'url',
-        query: {
-          limit: 30 * 1024, // 30 Kb
-          name: 'fonts/[name]-[hash].[ext]',
-        }
+        test: /\.(eot|woff2?|ttf|otf)($|\?)/i,
+        loader: `url?limit=${30 * 1024}&name=[path][name].[hash:6].[ext]&context=./${sourcePath}/`,
       }, {
         // todo: style-loader парит мозги с ассетами. заставить
-        test: /\.css$/,
-        loader: 'style!css?importLoaders=1&sourceMap'
+        test: /\.css($|\?)/i,
+        // loader: 'style!css?importLoaders=1&sourceMap'
+        loader: 'style!css?importLoaders=1'
       }, {
         // https://github.com/bholloway/resolve-url-loader/
-        test: /\.(sass|scss)$/,
+        test: /\.(sass|scss)$/i,
         loader: 'style!css?sourceMap!sass'
       }
     ],
