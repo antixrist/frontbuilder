@@ -86,6 +86,8 @@ destPath = cleanupDirname(destPath);
  * - настроить всё это для vue
  * - сделать нормальный bower/npm/git пакет для antixrist/md-shadows-scss
  *
+ * https://github.com/davezuko/react-redux-starter-kit/blob/master/build/webpack.config.js#L111-L131
+ * 
  * Склонировать `https://github.com/webpack/webpack` и прогнать локально примеры:
  * https://github.com/webpack/webpack/tree/master/examples/common-chunk-and-vendor-chunk
  * https://github.com/webpack/webpack/tree/master/examples/css-bundle
