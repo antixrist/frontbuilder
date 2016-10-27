@@ -47,6 +47,8 @@
     "vue2-animate": "^1.0.4",
     "material-shadows": "git://github.com/antixrist/md-shadows-scss.git#^3.0.1",
     "hover": "^2.1.0",
-    "open-color": "git://github.com/yeun/open-color.git#^1.4.0"
+    "open-color": "git://github.com/yeun/open-color.git#^1.4.0",
+    "PACE": "pace#^1.0.2",
+    "shave": "^0.1.5"
   }
 }
