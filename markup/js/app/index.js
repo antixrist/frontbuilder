@@ -11,3 +11,12 @@ const app = new Vue({
 });
 
 export {app, router, store};
+
+/**
+ * todo:
+ *
+ * Пример dropdown'а на tether'е
+ * https://github.com/JosephusPaye/Keen-UI/blob/gh-pages/src/mixins/ShowsDropdown.js
+ * https://github.com/JosephusPaye/Keen-UI/blob/gh-pages/src/UiMenu.vue
+ * https://github.com/JosephusPaye/Keen-UI/blob/gh-pages/src/UiPopover.vue
+ */
