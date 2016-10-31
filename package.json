@@ -107,7 +107,7 @@
     "vue-resizesensor": "^0.1.0",
     "vue-resource": "^1.0.3",
     "vue-router": "^2.0.1",
-    "vue-socket.io": "^1.0.2",
+    "vue-socket.io": "^2.0.0",
     "vue-text-mask": "^0.1.2",
     "vue-touch-ripple": "^2.2.1",
     "vuex": "^2.0.0",
