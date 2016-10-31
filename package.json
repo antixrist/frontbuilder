@@ -1,5 +1,5 @@
 {
-  "name": "builder",
+  "name": "frontbuilder",
   "version": "1.1.0",
   "description": "",
   "main": "index.js",
@@ -9,8 +9,8 @@
     "server:production": "cross-env NODE_ENV=production gulp server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "antixrist <ya.antixrist@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-helper-vue-jsx-merge-props": "^2.0.1",
@@ -114,7 +114,11 @@
     "vuex-persistedstate": "^0.3.0",
     "vuex-router-sync": "^3.0.0"
   },
-  "peerDependencies": {
+  "optionalDependencies": {
     "posix": "^4.1.1"
+  },
+  "repository": {
+    "url": "https://github.com/antixrist/frontbuilder",
+    "type": "git"
   }
 }
