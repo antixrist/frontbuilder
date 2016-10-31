@@ -12,7 +12,7 @@ export default webpackConfig;
 // import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin';
 // import OccurrenceOrderPlugin from 'webpack/lib/optimize/OccurrenceOrderPlugin';
 // // import ExtractTextPlugin from 'extract-text-webpack-plugin';
-// 
+//
 // // const cwd = process.cwd();
 //
 // let plugins = [
