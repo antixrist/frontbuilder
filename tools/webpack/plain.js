@@ -1,7 +1,17 @@
 import * as _ from 'lodash';
 import path from 'path';
-import webpack from 'webpack';
+// import webpack from 'webpack';
 // import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import IgnorePlugin from 'webpack/lib/IgnorePlugin';
+import NoErrorsPlugin from 'webpack/lib/NoErrorsPlugin';
+import DefinePlugin from 'webpack/lib/DefinePlugin';
+import CommonsChunkPlugin from 'webpack/lib/optimize/CommonsChunkPlugin';
+import AggressiveMergingPlugin from 'webpack/lib/optimize/AggressiveMergingPlugin';
+import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin';
+import OccurenceOrderPlugin from 'webpack/lib/optimize/OccurenceOrderPlugin';
+import DedupePlugin from 'webpack/lib/optimize/DedupePlugin';
+import MinChunkSizePlugin from 'webpack/lib/optimize/MinChunkSizePlugin';
+import LimitChunkCountPlugin from 'webpack/lib/optimize/LimitChunkCountPlugin';
 import {entriesFinder} from './utils';
 
 const cwd = process.cwd();
@@ -10,9 +20,9 @@ const isTesting    = process.env.NODE_ENV == 'testing';
 
 let plugins = [
   // new ExtractTextPlugin('[name].css', {allChunks: true}),
-  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
-  new webpack.NoErrorsPlugin(),
-  new webpack.DefinePlugin({
+  new IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
+  new NoErrorsPlugin(),
+  new DefinePlugin({
     'IS_PRODUCTION': isProduction,
     'CWD': JSON.stringify(cwd),
     'process.env': _.keys(process.env).reduce((obj, key) => {
@@ -23,7 +33,7 @@ let plugins = [
   }),
   
   // split vendor js into its own file
-  new webpack.optimize.CommonsChunkPlugin({
+  new CommonsChunkPlugin({
     name: 'vendor',
     minChunks: function (module, count) {
       // any required modules inside node_modules are extracted to vendor
@@ -35,7 +45,7 @@ let plugins = [
     }
   }),
 
-  new webpack.optimize.AggressiveMergingPlugin({
+  new AggressiveMergingPlugin({
     minSizeReduce: 1.5,
     moveToParents: true
   })
@@ -43,7 +53,7 @@ let plugins = [
 
 if (isProduction) {
   plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
+    new UglifyJsPlugin({
       compress: {
         drop_console: true,
         drop_debugger: true
@@ -53,10 +63,10 @@ if (isProduction) {
         warnings: false
       }
     }),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.MinChunkSizePlugin({minChunkSize: 10 * 1024}),
-    new webpack.optimize.LimitChunkCountPlugin({maxChunks: 15}),
+    new OccurenceOrderPlugin(),
+    new DedupePlugin(),
+    new MinChunkSizePlugin({minChunkSize: 10 * 1024}),
+    new LimitChunkCountPlugin({maxChunks: 15}),
   );
 } else {
   
