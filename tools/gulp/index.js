@@ -35,6 +35,10 @@ import {toArray} from '../utils';
 // $.util
 // $.data
 // $.named
+// $.image
+// $.inline
+// $.inject
+// $.size
 
 
 os.platform() !== 'win32' && (function () {
