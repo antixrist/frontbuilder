@@ -5,16 +5,22 @@ export default webpackConfig;
 // import * as _ from 'lodash';
 // import config from '../config';
 // import webpack from 'webpack';
-//
+// import DefinePlugin from 'webpack/lib/DefinePlugin';
+// import IgnorePlugin from 'webpack/lib/IgnorePlugin';
+// import NoErrorsPlugin from 'webpack/lib/NoErrorsPlugin';
+// import CommonsChunkPlugin from 'webpack/lib/optimize/CommonsChunkPlugin';
+// import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin';
+// import OccurrenceOrderPlugin from 'webpack/lib/optimize/OccurrenceOrderPlugin';
 // // import ExtractTextPlugin from 'extract-text-webpack-plugin';
+// 
 // // const cwd = process.cwd();
 //
 // let plugins = [
-//   // new ExtractTextPlugin('[name].css', {allChunks: true}),
-//   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
-//   new webpack.NoErrorsPlugin(),
-//   new webpack.DefinePlugin(config.webpack.frontendConstants || {}),
-//   new webpack.optimize.CommonsChunkPlugin({
+//   new ExtractTextPlugin('[name].css', {allChunks: true}),
+//   new IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
+//   new NoErrorsPlugin(),
+//   new DefinePlugin(config.webpack.frontendConstants || {}),
+//   new CommonsChunkPlugin({
 //     name: config.webpack.commonChunkName,
 //     children: true,
 //     minChunks: 2
@@ -23,7 +29,7 @@ export default webpackConfig;
 //
 // if (config.isProduction) {
 //   plugins.push(
-//     new webpack.optimize.UglifyJsPlugin({
+//     new UglifyJsPlugin({
 //       compress: {
 //         drop_console: config.isProduction,
 //         drop_debugger: config.isProduction
@@ -33,7 +39,7 @@ export default webpackConfig;
 //         warnings: false
 //       }
 //     }),
-//     new webpack.optimize.OccurenceOrderPlugin(),
+//     new OccurrenceOrderPlugin(),
 //   );
 // } else {
 //
