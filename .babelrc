@@ -5,6 +5,7 @@
 //    "stage-3"
   ],
   "plugins": [
+    "closure-elimination",
     "transform-es5-property-mutators",
 
     // stage-1 (included "stage-2", "stage-3"):
