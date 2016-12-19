@@ -2,19 +2,15 @@ import _ from 'lodash';
 import del from 'del';
 import path from 'path';
 import once from 'once';
-// import glob from 'glob';
 import gulp from 'gulp';
 import csso from 'gulp-csso';
 import changed from 'gulp-changed';
 import imagemin from 'gulp-imagemin';
 import webpack from 'webpack';
-// import through2 from 'through2';
 import BrowserSync from 'browser-sync';
-// import functionDone from 'function-done';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import WebpackHotMiddleware from 'webpack-hot-middleware';
 import HotModuleReplacementPlugin from 'webpack/lib/HotModuleReplacementPlugin';
-import { log } from 'gulp-util';
 
 import webpackConfig from '../webpack';
 import {
@@ -29,10 +25,10 @@ import {
   appendMissingHMRToEntries
 } from '../webpack/utils';
 
-const browserSync = BrowserSync.create();
-
 let COMPILER = null;
+
 const HMR_MODE = !DISABLE_HMR;
+const browserSync = BrowserSync.create();
 
 gulp.task('clean', done => del(path.join(cwd, pathes.target, '**'), { read: false }));
 
