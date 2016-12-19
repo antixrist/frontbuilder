@@ -23,7 +23,6 @@ export default function (webpackConfig) {
       query: { limit: 65536, mimetype: 'application/vnd.ms-fontobject' }
     },
     {
-      loader: 'advanced-url-loader',
       test: /\.svg$/,
       query: { limit: 2048, mimetype: 'image/svg+xml' }
     },
