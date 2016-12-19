@@ -21,7 +21,7 @@ const store = new Vuex.Store({
   
   strict: isDevelopment,
   plugins: [
-    createLogger(),
+    ...(isDevelopment ? [createLogger()] : []),
     createPersistedState()
   ]
 });
