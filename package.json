@@ -1,11 +1,11 @@
 {
   "name": "frontbuilder",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "gulpfile.js",
   "homepage": "https://github.com/antixrist/frontbuilder",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/antixrist/frontbuilder.git"
+    "type": "git",
+    "url": "https://github.com/antixrist/frontbuilder.git"
   },
   "author": {
     "name": "antixrist",
