@@ -1,8 +1,9 @@
 node_modules
 bower_components
-dev
-build
-tmp
+/dev
+/dist
+/build
+/tmp
 .DS_Store
 ._.DS_Store
 
@@ -11,6 +12,7 @@ tmp
 
 .idea
 npm-debug.log
+yarn-error.log
 phantomjsdriver.log
 /nbproject/*
 

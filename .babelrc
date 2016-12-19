@@ -1,37 +1,45 @@
 {
+  "sourceMaps": "both",
+  "ignore": ["node_modules", "bower_components"],
+  "env": {
+    // плагины и пресеты в режиме разработки настраивать здесь:
+    "development": {
+      "presets": [
+        ["env", {
+          "loose": false,
+          "modules": false,
+          "useBuiltIns": false,
+          "targets": {
+            "browsers": ["last 2 versions"]
+          }
+        }]
+      ],
+      "plugins": [
+        "transform-export-extensions",
+        "transform-object-rest-spread",
+        "syntax-jsx",
+        "transform-vue-jsx"
+      ]
+    }
+  },
+
+  // плагины и пресеты для продакшена здесь:
   "presets": [
-    "es2015"
-//    "stage-2",
-//    "stage-3"
+    ["env", {
+      "loose": true,
+      "modules": false,
+      "useBuiltIns": true,
+      "targets": {
+        "browsers": ["last 5 versions", "ie 8-9", "> 2%"]
+      }
+    }]
   ],
   "plugins": [
-    "closure-elimination",
-    "transform-es5-property-mutators",
-
-    // stage-1 (included "stage-2", "stage-3"):
+//    "lodash",
     "transform-export-extensions",
     "transform-object-rest-spread",
-    "transform-class-properties",
-    "syntax-trailing-function-commas",
-    // "transform-async-to-generator", // вот из-за него не работает async/await
-    "transform-exponentiation-operator",
-    // end of stage-1
-
-    "syntax-async-functions",
-    "transform-promise-to-bluebird",
-//    "transform-async-to-bluebird",
-//    ["transform-async-to-module-method", {
-//      "module": "bluebird",
-//      "method": "coroutine"
-//    }],
-
-//    "babel-plugin-bluebird-async-functions",
-    "transform-regenerator",
-    "transform-runtime",
-    "transform-vue-jsx"
+    "syntax-jsx",
+    "transform-vue-jsx",
+    "closure-elimination"
   ]
-//  "ignore": [
-//    "**/babel_ignore_*.js",
-//    "*/js/vendor/*.js"
-//  ]
 }

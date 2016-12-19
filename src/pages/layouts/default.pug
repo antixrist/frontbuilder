@@ -1,0 +1,70 @@
+//- todo: при ошибках в компиляции шаблонов webpack перестаёт вотчить и выполняться
+-
+  var { config } = htmlWebpackPlugin.options;
+  var allChunks = htmlWebpackPlugin.files.chunks;
+
+  var publicPath = htmlWebpackPlugin.files.publicPath;
+  var modernizrPath = publicPath +'js/vendor/modernizr-2.8.3.min.js';
+
+  // эти переменные надо переопределять для каждой страницы в блоке `vars`
+  var pageEntry = 'main';
+  var chunks = [];
+
+block vars
+
+-
+  var cssFiles = allChunks[pageEntry] && allChunks[pageEntry].css ? allChunks[pageEntry].css : [];
+  var jsFiles = chunks
+    .map(function (chunk) {
+      return allChunks[chunk] && allChunks[chunk].entry ? allChunks[chunk].entry : null;
+    })
+    .filter(function (chunk) { return !!chunk; })
+  ;
+
+html.no-js(lang="ru")
+  head
+    meta(http-equiv="Content-type", content="text/html; charset=utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+    link(type="text/plain", rel="author", href=publicPath +"humans.txt")
+
+    title
+    meta(name="description", content="")
+
+    block meta
+    block styles-before
+
+    //- выводим все имеющиеся стили для заданной `pageEntry`
+    each file in cssFiles
+      link(href=file, rel="stylesheet")
+
+    block styles-after
+
+    //- после них выводим modernizr
+    script(src=modernizrPath)
+  body
+    <!--[if lte IE 9]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+    <![endif]-->
+
+    block header
+
+    block content
+      //- сюда воткнётся vue-приложение
+      #app
+
+    block header
+
+    block scripts-before
+
+    each file in jsFiles
+      script(src=file)
+
+    block scripts-after
+
+    //-
+      if config.isProduction
+        //- Google Analytics: change UA-XXXXX-Y to be your site's ID.
+        script.
+          window.ga=function () {ga.q.push(arguments)};ga.q=[];ga.l=+new Date;ga('create','UA-XXXXX-Y','auto');ga('send','pageview');
+        script(src="//www.google-analytics.com/analytics.js", async, defer)

@@ -1,172 +1,92 @@
-import webpackConfig from './plain';
+import _ from 'lodash';
+import path from 'path';
+import glob from 'glob';
+import ProgressBarPlugin from 'progress-bar-webpack-plugin';
+import { cwd, isDevelopment, pathes, prependEachEntriesWith } from '../config';
+import * as setup from './setup';
 
-export default webpackConfig;
+const SCRIPTS_SOURCES = _.get(pathes, 'scripts.source') || '.';
+const SCRIPTS_TARGET = _.get(pathes, 'scripts.target') || '.';
 
-// import * as _ from 'lodash';
-// import config from '../config';
-// import webpack from 'webpack';
-// import DefinePlugin from 'webpack/lib/DefinePlugin';
-// import IgnorePlugin from 'webpack/lib/IgnorePlugin';
-// import NoErrorsPlugin from 'webpack/lib/NoErrorsPlugin';
-// import CommonsChunkPlugin from 'webpack/lib/optimize/CommonsChunkPlugin';
-// import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin';
-// import OccurrenceOrderPlugin from 'webpack/lib/optimize/OccurrenceOrderPlugin';
-// // import ExtractTextPlugin from 'extract-text-webpack-plugin';
-//
-// // const cwd = process.cwd();
-//
-// let plugins = [
-//   new ExtractTextPlugin('[name].css', {allChunks: true}),
-//   new IgnorePlugin(/^\.\/locale$/, /moment$/), // fix for moment
-//   new NoErrorsPlugin(),
-//   new DefinePlugin(config.webpack.frontendConstants || {}),
-//   new CommonsChunkPlugin({
-//     name: config.webpack.commonChunkName,
-//     children: true,
-//     minChunks: 2
-//   })
-// ];
-//
-// if (config.isProduction) {
-//   plugins.push(
-//     new UglifyJsPlugin({
-//       compress: {
-//         drop_console: config.isProduction,
-//         drop_debugger: config.isProduction
-//       },
-//       mangle: false,
-//       compressor: {
-//         warnings: false
-//       }
-//     }),
-//     new OccurrenceOrderPlugin(),
-//   );
-// } else {
-//
-// }
-//
-// // todo: изучить, взять необходимое
-// // https://github.com/Litor/ubase-vue/blob/master/src/apptools/webpack/index.js
-//
-// // // https://www.npmjs.com/package/style-loader
-// // https://www.npmjs.com/package/css-loader
-// // https://www.npmjs.com/package/html-loader
-// // https://www.npmjs.com/package/img-loader
-//
-//
-// let webpackConfig = {
-//   entry: config.webpack.entry,
-//
-//   output: {
-//     filename: '[name].js',
-//     library: '[name]',
-//     chunkFilename: '[name].js?[chunkhash]',
-//     // hotUpdateChunkFilename: '[name].hot-update.js?[hash]',
-//     path: config.webpack.outputPath,
-//     publicPath: config.webpack.outputPublicPath
-//   },
-//
-//   resolve: {
-//     modulesDirectories: ['node_modules'],
-//     extensions: ['', '.js', '.jsx', '.json', '.vue', '.scss', '.sass', '.less', '.jade', '.pug', '.html'],
-//     alias: {vue: 'vue/dist/vue.js'}
-//   },
-//
-//   plugins,
-//   verbose: false,
-//   // displayModules: false,
-//   debug: !config.isProduction,
-//   devtool: config.isProduction ? '#source-map' : '#inline-source-map',
-//   // watch: false, // will set automated
-//   watchOptions: config.webpack.watchOptions || {},
-//
-//   module: {
-//     preLoaders: [{
-//       test: /\.js$/,
-//       loader: 'source-map-loader'
-//     }],
-//     loaders: [{
-//       loader: 'babel?cacheDirectory',
-//       test: /\.jsx?$/,
-//       exclude: [/node_modules/, /bower_components/]
-//     }, {
-//       test: /\.json/,
-//       loader: 'json'
-//     }, {
-//       test: /\.html$/,
-//       loader: 'vue-html'
-//     }, {
-//       // todo: разобраться с подгрузкой jade->html и урлов в тегах (без vue)
-//       test: /\.jade$/,
-//       loader: 'jade-html!vue-html'
-//     }, {
-//       test: /\.(jpe?g|png|gif|svg)$/i,
-//       loaders: [
-//         `url?${config.webpack.setupLoaders.url.qs}`,
-//         'img?config=imagemin'
-//       ]
-//     }, {
-//       test: /\.vue$/,
-//       loader: 'vue'
-//       // }, {
-//       //   test: /\.html$/,
-//       //   loader: 'html'
-//       // }, {
-//       // https://github.com/bholloway/resolve-url-loader/
-//       //   test: /\.sass/,
-//       //   loaders: '['style', 'css', 'sass']
-//       // }, {
-//       //   test: /\.(eot|woff|ttf|svg|png|jpg)$/,
-//       //   loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
-//       // }
-//     }],
-//     vue: {
-//       transformToRequire: {
-//         img: ['src', 'data-src']
-//       },
-//       loaders: {
-//         // css:  ExtractTextPlugin.extract('css'),
-//         // less: ExtractTextPlugin.extract('style!css!less'),
-//         // sass: ExtractTextPlugin.extract('style!css!sass'),
-//       },
-//       sassLoader: config.webpack.setupLoaders.sass,
-//       postcss: {
-//         plugins: [
-//           // require('postcss-cssnext')()
-//         ],
-//         options: {}
-//       },
-//       // todo: разобраться с подгрузкой урлов в тегах.
-//       // https://github.com/vuejs/vue-loader/blob/master/lib/template-compiler.js#L10
-//       // https://github.com/vuejs/laravel-elixir-vue-2/blob/master/index.js
-//       // https://github.com/Litor/ubase-vue/blob/5d41eb6231d9c78bd8b1d26104314cfe532d1712/src/apptools/webpack/webpack.loaders.js#L91-L117
-//       html: Object.assign({
-//         minimize: config.isProduction
-//       }, config.webpack.setupLoaders.html),
-//     },
-//     noParse: config.webpack.noParse || []
-//   },
-//   externals: config.webpack.externals || {},
-//
-//   sassLoader: config.webpack.setupLoaders.sass, // todo: настроить НЕ через vue
-//
-//   imagemin: config.webpack.setupLoaders.imagemin,
-//   htmlLoader: Object.assign({
-//     minimize: config.isProduction
-//   }, config.webpack.setupLoaders.html),
-//
-//   // for imports/exports/expose
-//   resolveLoader: {
-//     modulesDirectories: ['node_modules'],
-//     moduleTemplates: ['*-loader', '*'],
-//     extensions: ['', '.js']
-//   }
-// };
-//
-//
-// // \tars\tasks\main\dev.js
-// // \tars\tasks\js\processing.js
-// // \tars\tasks\js\webpack-processing.js
-// // \webpack.config.js
-//
-// export default webpackConfig;
+/** контекст для резолвинга */
+const context = path.join(cwd, pathes.source);
+/**
+ * Основной webpack-конфиг.
+ * Настраивать можно любые опции - никаких побочных эффектов
+ * на остальных этапах настройки сборки быть не должно
+ */
+const config = {
+  context,
+  /**
+   * Ищем в директории-контексте вот такие файлы: `/\/[^_]{1}[^\\\\\/]*\.jsx?/`
+   * (т.е. js/jsx и имена у которых не начинаются с нижнего подчёркивания)
+   * и из полученного массива собираем формат для вебпака:
+   * { 'entry1': './entry1.js', 'entry2': './entry2.jsx' }
+   */
+  entry: glob.sync(`${SCRIPTS_SOURCES}/!(_)*.js?(x)`, {cwd: context}).reduce((entries, file) => {
+    const entryName    = path.basename(file, path.extname(file));
+    entries[entryName] = './'+ file;
+    entries[entryName] = prependEachEntriesWith.concat(entries[entryName]);
+
+    return entries;
+  }, {}),
+  output: {
+    filename: isDevelopment
+      ? `${SCRIPTS_TARGET}/[name].js`
+      : `${SCRIPTS_TARGET}/[name].[chunkhash:5].js`
+    ,
+    chunkFilename: isDevelopment
+      ? `${SCRIPTS_TARGET}/[name].js`
+      : `${SCRIPTS_TARGET}/[name].[chunkhash:5].js`
+    ,
+    hotUpdateChunkFilename: isDevelopment
+      ? `${SCRIPTS_TARGET}/[id].hot-update.js`
+      : `${SCRIPTS_TARGET}/[id].[hash:5].hot-update.js`
+    ,
+    /** папка назначения */
+    path: path.join(cwd, pathes.target),
+    /** `publicPath` будет подставляться во все урлы */
+    publicPath: pathes.public,
+
+    library:                '[name]',
+    libraryTarget:          'umd',
+    umdNamedDefine:         true,
+
+    // опция будет вставлять комментарии с путями для каждого модуля
+    pathinfo: isDevelopment,
+    // значение по умолчанию
+    devtoolModuleFilenameTemplate: 'webpack:///[resource-path]?[loaders]'
+  },
+  devtool: isDevelopment ? 'inline-source-map' : 'cheap-module-source-map',
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.json5'],
+    modules: ['node_modules'],
+    alias: {}
+  },
+  resolveLoader: {
+    moduleExtensions: ['-loader']
+  },
+  module: {},
+  watchOptions: {
+    aggregateTimeout: 200,
+  },
+  plugins: [
+    // new ProgressBarPlugin()
+  ],
+  stats: !isDevelopment ? {
+    colors: true,
+    chunks: false,
+    modules: false,
+    origins: false,
+    entrypoints: true,
+  } : 'minimal'
+};
+
+setup.scripts(config);
+setup.styles(config);
+setup.assets(config);
+setup.texts(config);
+setup.optimize(config);
+setup.vue(config);
+
+export default config;

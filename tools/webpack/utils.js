@@ -1,53 +1,80 @@
-import * as _ from 'lodash';
-import glob from 'glob';
-import path from 'path';
+import _ from 'lodash';
+import prettyTime from 'pretty-hrtime';
+import config from './';
+import formatError from 'gulp-cli/lib/versioned/^4.0.0/formatError';
+import { log, colors, PluginError } from 'gulp-util';
 
-const cwd = process.cwd();
+const { cyan, magenta, red } = colors;
 
 /**
- * По паттерну в заданной директории ищет нужные файлы
- * и возвращает их в пригодном для webpack'а формате
+ * todo: написать это дерьмо нормально
  *
- * @param pattern
- * @param {string|function} [context]
- * @param {function} [cb]
- * @returns {Promise}
+ * @param webpackConfig
+ * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array, externals: {}}}
  */
-export function entriesFinder (pattern, context = cwd, cb = () => {}) {
-  if (_.isFunction(context)) {
-    cb = context;
-    context = cwd;
-  }
+export function extractFromConfigSafely (webpackConfig) {
+  const resolve = _.get(webpackConfig, 'resolve') || {};
+  _.set(webpackConfig, 'resolve', resolve);
   
-  return new Promise((resolve, reject) => {
-    glob(pattern, {}, function (err, files) {
-      if (err) {
-        cb(err);
-        return reject(err);
-      }
-      
-      files = files ? files : [];
-      files = Array.isArray(files) ? files : [files];
-      
-      let entries = changeFilesArrayToWebpackFormat(files, context);
-      
-      cb(null, entries);
-      resolve(entries);
-    })
-  });
+  const extensions = _.get(resolve, 'extensions') || [];
+  _.set(resolve, 'extensions', extensions);
+  
+  const output = _.get(webpackConfig, 'output') || {};
+  _.set(webpackConfig, 'output', output);
+
+  const module = _.get(webpackConfig, 'module') || {};
+  _.set(webpackConfig, 'module', module);
+
+  const rules = _.get(webpackConfig, 'module.rules') || [];
+  _.set(webpackConfig, 'module.rules', rules);
+
+  const plugins = _.get(webpackConfig, 'plugins') || [];
+  _.set(webpackConfig, 'plugins', plugins);
+
+  const externals = _.get(webpackConfig, 'externals') || {};
+  _.set(webpackConfig, 'externals', externals);
+
+  const stats = _.get(webpackConfig, 'stats') || {};
+  _.set(webpackConfig, 'stats', stats);
+
+  return { output, extensions, module, resolve, rules, plugins, stats, externals };
 }
 
-/**
- * По паттерну в заданной директории синхронно ищет нужные файлы
- * и возвращает их в пригодном для webpack'а формате
- *
- * @param pattern
- * @param {string} [context]
- * @returns {[]|{}}
- */
-entriesFinder.sync = function (pattern, context = cwd) {
-  return changeFilesArrayToWebpackFormat(glob.sync(pattern, context));
-};
+export function compilerCallback ({ done = () => {}, breakOnError = false, name = 'webpack' }) {
+  return (err, stats) => {
+    const statsJson = stats.toJson();
+    const hrBuildTime = [0, statsJson.time * 1000000];
+    const hrBuildTimePretty = prettyTime(hrBuildTime);
+
+    err = err || statsJson.errors[0] || null;
+  
+    if (err && breakOnError) {
+      return done(new PluginError(name, err));
+    } else
+    if (err && !breakOnError) {
+      /**
+       * мимикрируем под gulp'овое сообщение об ошибке,
+       * делая его точно таким же, как при `done(new PluginError('webpack', err))`
+       */
+      log('\'' + cyan(name) + '\'', red('errored after'), magenta(hrBuildTimePretty));
+      log(formatError({ name, error: new PluginError(name, err) }));
+    } else {
+      /** если ошибок нет, то покажем webpack'овскую статистику */
+      log(`${cyan(name)}:`);
+      console.log(stats.toString(config.stats || 'verbose'));
+    }
+
+    /**
+     * Если `done.called` === true, значит в эта функция вызывается компилером не в первый раз.
+     * А значит можно показать сообщение о времени выполнения текущей сборки.
+     * Просто webpack пишет время вверху статистики, а статистика у него большааая..
+     * Поэтому время сборки лучше написать ещё и после статистики, чтобы наглядней было.
+     */
+    done.called && log('Finished \''+ cyan(name) +'\' after '+ magenta(hrBuildTimePretty));
+    done.called = true;
+    done();
+  };
+}
 
 /**
  * На входе список точек входа в любом формате.
@@ -55,47 +82,56 @@ entriesFinder.sync = function (pattern, context = cwd) {
  * только каждая точка входа будет превращена вот в такую:
  * ['webpack/hot/only-dev-server', 'webpack-hot-middleware/client?reload=true', 'myEntryFile.js']
  *
- * @param {string|[]|{}} appEntries
- * @param {[]} [hmrEntries]
- * @param {string} [context]
- * @returns {Array}
+ * @param {string|string[]} chunk
+ * @returns {[]}
  */
-export function insertHMREntriesToAppEntries (appEntries = [], hmrEntries = [], context = cwd) {
-  if (_.isString(appEntries)) {
-    return insertHMREntriesToAppEntries([appEntries], hmrEntries, context);
-  } else
-  if (_.isArray(appEntries)) {
-    appEntries = hmrEntries.concat(appEntries);
-  } else
-  if (_.isPlainObject(appEntries)) {
-    appEntries = _.clone(appEntries);
-    _.forEach(appEntries, (entry, name) => {
-      appEntries[name] = hmrEntries.concat(entry);
-    });
-  }
-  
-  return appEntries;
+function appendMissingHMRToChunk (chunk) {
+  let wbpkHotIdx, wbpkHotMdlwrIdx;
+
+  chunk           = _.isArray(chunk) ? chunk : [chunk];
+  wbpkHotIdx      = _.findIndex(chunk, f => /^webpack\/hot\//.test(f));
+  wbpkHotMdlwrIdx = _.findIndex(chunk, f => /^webpack-hot-middleware/.test(f));
+
+  /**
+   * - 'webpack/hot/dev-server': при ошибках страница перезагрузится
+   * - 'webpack/hot/only-dev-server': при ошибках страница перезагружаться не будет (state приложения сохранится)
+   * - 'webpack-hot-middleware/client?reload=true': https://github.com/glenjamin/webpack-hot-middleware
+   *
+   * 'webpack/hot/dev-server' || 'webpack/hot/only-dev-server' - любой на выбор, обязательно;
+   * 'webpack-hot-middleware/client' - обязателен.
+   */
+
+  wbpkHotIdx < 0      && chunk.push('webpack/hot/only-dev-server');
+  wbpkHotMdlwrIdx < 0 && chunk.push('webpack-hot-middleware/client?reload=true');
+
+  /** отсортируем в правильном порядке */
+  chunk = _(chunk)
+    .uniq()
+    .sortBy(item => {
+      if (/^webpack\/hot\//.test(item)) { return 0; }
+      if (/^webpack-hot-middleware/.test(item)) { return 1; }
+
+      return 99;
+    })
+    .value()
+  ;
+
+  return chunk;
 }
 
 /**
- * На вход получает список файлов,
- * на выход отдаёт список (plain object) именованных точек входа
- * (имя точки входа == имя файла без расширения)
- *
- * @param {|string[]} files
- * @param {string} [context]
- * @returns {{}}
+ * @param {string|string[]|{}} entry
+ * @returns {string[]|{}}
  */
-function changeFilesArrayToWebpackFormat (files, context = cwd) {
-  files = files ? files : [];
-  files = _.isArray(files) ? files : [files];
-  
-  return files.reduce((entries, file) => {
-    let entry    = path.basename(file, path.extname(file));
-    let filename = path.resolve(context, file);
-    let filenameRelativeToCwd = path.relative(context, filename);
-    entries[entry] = `./${filenameRelativeToCwd}`;
-    
-    return entries;
-  }, {});
+export function appendMissingHMRToEntries (entry) {
+  entry = _.isArray(entry) || _.isPlainObject(entry) ? entry : [entry];
+
+  if (_.isArray(entry)) {
+    entry = appendMissingHMRToChunk(entry)
+  } else
+  if (_.isPlainObject(entry)) {
+    _.forEach(entry, (file, name) => entry[name] = appendMissingHMRToChunk(file));
+  }
+
+  return entry;
 }

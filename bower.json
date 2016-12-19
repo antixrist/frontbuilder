@@ -1,60 +1,19 @@
 {
   "name": "frontbuilder",
   "description": "",
-  "main": "index.js",
+  "main": "gulpfile.js",
   "authors": [
     "Лёха <kartashov.al.and@yandex.ru>"
   ],
   "license": "MIT",
   "homepage": "",
+  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
+    "src/components/",
     "test",
     "tests"
-  ],
-  "version": "1.1.0",
-  "dependencies": {
-    "PACE": "pace#^1.0.2",
-    "SassMagic": "git://github.com/W3cplus/SassMagic.git",
-    "Scut": "scut#^1.4.0",
-    "accoutrement-fonts": "git://github.com/oddbird/accoutrement-type.git#^1.0.4",
-    "angled-edges": "^1.1.2",
-    "autosize": "^3.0.17",
-    "css-element-queries": "git://github.com/marcj/css-element-queries.git#^0.3.2",
-    "draggabilly": "^2.1.1",
-    "family.scss": "^1.0.8",
-    "flexiblegs-scss": "^5.5.3",
-    "flexiblegs-scss-plus": "^5.5.3",
-    "font-awesome": "fontawesome#^4.6.3",
-    "gridlex": "^2.2.2",
-    "hover": "^2.1.0",
-    "include-media": "^1.4.8",
-    "install": "^1.0.4",
-    "jquery.scroolly": "^0.0.1",
-    "lazy-progressive-enhancement": "git://github.com/tvler/lazy-progressive-enhancement.git",
-    "logerr": "*",
-    "matches-selector": "^2.0.1",
-    "material-colors": "^1.1.1",
-    "material-shadows": "git://github.com/antixrist/md-shadows-scss.git#^3.0.1",
-    "open-color": "git://github.com/yeun/open-color.git#^1.4.0",
-    "pixelperfectcss-scss": "^1.0.2",
-    "reframe.js": "^0.3.1",
-    "sass-flex-mixin": "^1.0.3",
-    "sassdash": "^0.8.0",
-    "scrollbear": "git://github.com/changbenny/scrollbear.git#^0.1.0",
-    "shave": "^0.1.5",
-    "steady": "git://github.com/wpotools/Steady.js.git#^2.0.0",
-    "typi": "^2.3.0",
-    "vue2-animate": "^1.0.4",
-    "webfontloader": "^1.6.26",
-    "wenk": "^1.0.2",
-    "themify-icons": "^0.1.2"
-  },
-  "repository": {
-    "url": "https://github.com/antixrist/frontbuilder",
-    "type": "git"
-  },
-  "author": "Лёха <kartashov.al.and@yandex.ru>"
+  ]
 }

@@ -1,0 +1,15 @@
+{
+  "sourceMaps": "both",
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
+  "plugins": [
+    "transform-export-extensions",
+    "transform-object-rest-spread",
+    "closure-elimination"
+  ]
+}

@@ -1,165 +1,143 @@
-import * as _ from 'lodash';
-import path from 'path';
-import compression from 'compression';
+// import 'clarify';
+import os from 'os';
 import history from 'connect-history-api-fallback';
-import {entriesFinder} from './webpack/utils';
+import compression from 'compression';
 
-const cwd = process.cwd();
-const isProduction = process.env.NODE_ENV == 'production';
-const useNotifierInDevMode = true;
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-const destPath = isProduction ? 'build' : 'dev';
+const cwd           = process.cwd();
+const NODE_ENV      = process.env.NODE_ENV;
+const isProduction  = process.env.NODE_ENV == 'production';
+const isDevelopment = process.env.NODE_ENV == 'development';
+const DISABLE_HMR   = process.env.DISABLE_HMR && (process.env.DISABLE_HMR === '1' || process.env.DISABLE_HMR === 'true');
 
-export default {
+const pathes = {
+  /** здесь указываем относительно cwd */
+  source: 'src',
+  target: isDevelopment ? 'dev' : 'build',
+  public: '/',
+
+  /** во всех последующих относительно `pathes.source` или `pathes.target` соответственно */
+  scripts: {
+    source: 'js',
+    target: 'js',
+  },
+  pages: {
+    source: 'pages',
+    /** `pathes.pages.target` не нужен, потому что они всегда будут создаваться в `pathes.public` */
+  },
+  styles: {
+    /** `pathes.styles.source` не нужен, потому что стили надо инклюдить напрямую в js точки входа */
+    target: 'css',
+  },
+  assets: {
+    /** `pathes.assets.source` не нужен, потому что стили надо инклюдить напрямую в js точки входа */
+    target: 'assets',
+  },
+  /** папка, из которой всё сожержимое будет просто скопировано "как есть". само собой - сохраняя иерархию */
+  files: {
+    source: 'root',
+    target: '',
+  },
+};
+
+const prependEachEntriesWith = [];
+// prependEachEntriesWith.push('babel-polyfill');
+
+// todo: const minifyImages = {};
+
+const minifyHtml = isDevelopment
+  ? false
+  : {
+    removeAttributeQuotes:       false,
+    collapseInlineTagWhitespace: true,
+    collapseWhitespace:          true,
+    conservativeCollapse:        false,
+    keepClosingSlash:            true,
+  }
+;
+
+/** для `autoprefixer`а (не забывать переносить настройки для браузеров в `.babelrc`) */
+const browsers = isDevelopment
+  ? ['last 2 versions']
+  : ['last 5 versions', 'ie 8-9', '> 2%']
+;
+
+const sass = {
+  outputStyle: 'expanded',
+  data: `$NODE_ENV: ${process.env.NODE_ENV};`,
+};
+
+const browserSync = {
+  logLevel:        'info',
+  logConnections:  true,
+  reloadOnRestart: true,
+  ui:              false,
+  open:            !isDevelopment,
+  reloadDelay:     0,
+  reloadDebounce:  100,
+  ghostMode:       false,
+
+  startPath: '/',
+  port:      (isDevelopment) ? 13666 : 1313,
+  server:    {
+    index:     'index.html',
+    directory: false,
+    baseDir:   pathes.target
+  },
+  middleware: [
+    history({
+      logger: () => {}
+    }),
+    compression({filter: function shouldCompress (req, res) {
+      if (req.headers['x-no-compression']) {
+        return false
+      }
+
+      return compression.filter(req, res)
+    }})
+  ]
+};
+
+export {
   cwd,
   isProduction,
-  useNotifierInDevMode,
-  destPath,
-  
-  // для невиндовых систем,
-  // чтобы можно было работать с большим количеством файлов (сперва руками установить `posix`)
-  ulimit: 4096,
-  
-  webpack: {
-    entry: entriesFinder.sync('markup/js/!(_*).js'),
-    outputPath: path.join(cwd, `/${destPath}/js/`),
-    // outputPublicPath нужен для require.ensure и file-loader'а.
-    // если нужен относительный путь,
-    // то обязательно переопределить config.webpack.hmr.publicPath,
-    // чтобы он был абсолютным. иначе hmr работать не будет.
-    outputPublicPath: './js/',
-    watchOptions: {
-      aggregateTimeout: 200,
-    },
-    commonChunkName: 'common',
-    frontendConstants: {
-      'IS_PRODUCTION': isProduction,
-      'CWD': JSON.stringify(process.cwd()),
-      'process.env': _.keys(process.env).reduce((obj, key) => {
-        obj[key] = JSON.stringify(process.env[key]);
-
-        return obj;
-      }, {})
-    },
-
-    noParse: [
-      // /moment/,
-      // /bluebird/,
-      ///jsnetworkx/,
-      // /d3\.js/,
-      ///vue\.common\.js/,
-      // /angular\/angular\.js/,
-      // /lodash/,
-      // /dist\/jquery\.js/
-    ],
-    externals: {
-      //lodash: 'window._',
-      //jquery: 'window.jQuery',
-    },
-
-    useHMR: false,
-    hmrEntries: [
-      // при ошибках страница перезагрузится
-      // 'webpack/hot/dev-server',
-      // при ошибках страница перезагружаться не будет (state приложения сохранится)
-      'webpack/hot/only-dev-server',
-      // https://github.com/glenjamin/webpack-hot-middleware#documentation
-      'webpack-hot-middleware/client?reload=true'
-    ],
-    hmr: {
-      // если не определить publicPath,
-      // то он автоматически установится в config.webpack.outputPublicPath.
-      // должен быть абсолютным!
-      publicPath: '/js/',
-      // quiet: false, // display no info to console (only warnings and errors)
-      // noInfo: false, // display nothing to the console
-      watchOptions: {
-        aggregateTimeout: 200,
-        poll: true
-      },
-      stats: {
-        colors: true
-      }
-    },
-    
-    // это не список лоадеров, а конфиг к конкретным
-    setupLoaders: {
-      url: {
-        // без ведущего '?'
-        qs: `limit=${10 * 1024}&name=[path][name]-[hash].[ext]&context=./markup/`
-      },
-      html: {
-        ignoreCustomFragments: [/\{\{.*?}}/],
-
-        minimize: isProduction,
-        // minimize options:
-        collapseBooleanAttributes: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: false,
-        removeComments: true,
-        removeEmptyAttributes: false,
-        removeRedundantAttributes: false,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true
-      },
-      sass: {
-        precision:    10,
-        quiet:        true,
-        includePaths: ['node_modules'],
-        importer:     require('node-sass-import-once'),
-        importOnce:   {
-          index: true,
-          css:   true,
-          bower: true
-        }
-      },
-      imagemin: {
-        minimize: isProduction,
-        gifsicle: { interlaced: true },
-        jpegtran: {
-          progressive: true,
-          arithmetic: false
-        },
-        optipng: { optimizationLevel: 5 },
-        pngquant: {
-          floyd: 0.5,
-          speed: 2
-        },
-        svgo: {
-          plugins: [
-            { removeTitle: true },
-            { convertPathData: false }
-          ]
-        }
-      },
-    }
-  },
-
-  browserSync: {
-    ui:        false,
-    open:      false,
-    //reloadDelay: 1000,
-    //reloadDebounce: 1000,
-    ghostMode: false,
-
-    startPath: '/',
-    port:      (isProduction) ? 1313 : 13666,
-    server:    {
-      index:     'index.html',
-      directory: false,
-      baseDir:   (isProduction) ? './build/' : './dev/'
-    },
-    middleware: [
-      // history({
-      //   // logger: console.log.bind(console)
-      // }),
-      compression({filter: function shouldCompress (req, res) {
-        if (req.headers['x-no-compression']) {
-          return false
-        }
-
-        return compression.filter(req, res)
-      }})
-    ]
-  }
+  isDevelopment,
+  pathes,
+  sass,
+  browsers,
+  minifyHtml,
+  prependEachEntriesWith,
+  NODE_ENV,
+  DISABLE_HMR,
+  browserSync
 };
+
+/** для невиндовых систем, чтобы система не залипала при вотчинге большого количества файлов */
+const ulimit = 4096;
+os.platform() !== 'win32' && (function () {
+  let posix;
+  
+  try {
+    posix = require('posix');
+  } catch (ex) {
+    return false;
+  }
+  
+  if (posix) {
+    try {
+      posix.setrlimit('nofile', { soft: ulimit || 4096 });
+      return true;
+    } catch (e) {
+      console.warn('Error while ulimit setting');
+      return false;
+    }
+  }
+  return false;
+})();
+
+/** ну вот так. сюда будут попадать настройки для vue из разных секций -
+ * из настройки стилей, из настройки шаблонизаторов. Чтобы по 2 раза не писать.
+ * А потом в конфигураторе vue просто подцепим этот уже настроенный конфиг
+ */
+export let vueLoaders = {};

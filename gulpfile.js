@@ -1,5 +1,3 @@
-require('babel-register')({
-  // plugins: ['transform-async-to-generator']
-});
-
+require('babel-polyfill');
+require('babel-register');
 module.exports = require('./tools/gulp');

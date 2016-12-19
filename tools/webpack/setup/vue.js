@@ -1,0 +1,31 @@
+import _ from 'lodash';
+import { vueLoaders } from '../../config';
+import { extractFromConfigSafely } from '../utils';
+import postcssConfig from '../../../postcss.config.js';
+
+export default function (webpackConfig) {
+  const { rules, plugins, resolve, extensions } = extractFromConfigSafely(webpackConfig);
+  
+  !extensions.includes('.vue') && extensions.push('.vue');
+  
+  let postcss = (_.isFunction(postcssConfig))
+    ? postcssConfig({env: process.env.NODE_ENV})
+    : postcssConfig
+  ;
+  
+  rules.push({
+    test: /\.vue$/,
+    loader: 'vue-loader',
+    options: {
+      loaders: {
+        ...vueLoaders,
+      },
+      postcss,
+      preserveWhitespace: false,
+      transformToRequire: {
+        img: ['src', 'data-src'],
+        link: ['href']
+      },
+    }
+  });
+};

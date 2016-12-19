@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<%
+const pageEntry = 'admin';
+const pageChunks = ['manifest', 'common', pageEntry];
+const chunks = htmlWebpackPlugin.files.chunks;
+%>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title></title>
+
+    <%
+    if (chunks[pageEntry] && chunks[pageEntry].css) {
+      chunks[pageEntry].css.forEach(function (css) {
+        %> <link href="<%= css %>" rel="stylesheet"> <%
+      });
+    }
+    %>
+  </head>
+  <body>
+    <%
+    pageChunks.forEach(function (chunk) {
+      const entry = chunks[chunk] && chunks[chunk].entry ? chunks[chunk].entry : null;
+      if (entry) {
+        %> <script src="<%= entry %>"></script> <%
+      }
+    });
+    %>
+  </body>
+</html>

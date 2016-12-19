@@ -1,360 +1,194 @@
 import _ from 'lodash';
-import config from '../config';
-import os from 'os';
 import del from 'del';
 import path from 'path';
+import once from 'once';
+// import glob from 'glob';
 import gulp from 'gulp';
-import gutil from 'gulp-util';
+import csso from 'gulp-csso';
+import changed from 'gulp-changed';
+import imagemin from 'gulp-imagemin';
 import webpack from 'webpack';
-import watcher from 'glob-watcher';
-import runner from 'run-sequence';
-import through2 from 'through2';
-import sourcemaps from 'gulp-sourcemaps';
-import functionDone from 'function-done';
-import browserSync from 'browser-sync';
+// import through2 from 'through2';
+import BrowserSync from 'browser-sync';
+// import functionDone from 'function-done';
+import WebpackDevMiddleware from 'webpack-dev-middleware';
+import WebpackHotMiddleware from 'webpack-hot-middleware';
+import HotModuleReplacementPlugin from 'webpack/lib/HotModuleReplacementPlugin';
+import { log } from 'gulp-util';
 
 import webpackConfig from '../webpack';
-import {notifier} from './utils';
-import {toArray} from '../utils';
+import {
+  pathes,
+  cwd,
+  DISABLE_HMR,
+  browserSync as bsConfig
+} from '../config';
+import {
+  extractFromConfigSafely,
+  compilerCallback as webpackCompilerCallback,
+  appendMissingHMRToEntries
+} from '../webpack/utils';
 
-// import gulpPlugins from 'gulp-load-plugins';
-// const $ = gulpPlugins();
+const browserSync = BrowserSync.create();
 
-// $.if
-// $.rename
-// $.cached
-// $.changed
-// $.newer
-// $.remember
-// $.notify
-// $.plumber
-// $.pug
-// $.sass
-// $.rename
-// $.sourcemaps
-// $.util
-// $.data
-// $.named
-// $.image
-// $.inline
-// $.inject
-// $.size
+let COMPILER = null;
+const HMR_MODE = !DISABLE_HMR;
 
+gulp.task('clean', done => del(path.join(cwd, pathes.target, '**'), { read: false }));
 
-os.platform() !== 'win32' && (function () {
-  const ulimit = config.ulimit || 4096;
-  let posix;
-  
-  try {
-    posix = require('posix');
-  } catch (ex) {
-    return false;
-  }
-  
-  if (posix) {
-    try {
-      posix.setrlimit('nofile', { soft: ulimit });
-      return true;
-    } catch (ex) {
-      console.log('Error while ulimit setting');
-      return false;
-    }
-  }
-  return false;
-})();
-
-
-
-
-global.builder = {};
-Object.assign(global.builder, config);
-global.builder.runtime = {};
-
-
-
-
-// import * as jsTasks from './scripts';
-
-// http://nipstr.com/#path
-// https://www.npmjs.com/package/path-rewriter
-// https://www.sitepoint.com/reskinnable-svg-symbols-how-to-make-them-and-why/
-
-import * as jsTasks from './scripts';
-
-gulp.task('scripts', function (done) {
-  jsTasks.builder(() => done());
-});
-
-
-gulp.task('server', function (done) {
-  let browserSyncConfig = config.browserSync;
-  let {middleware, logConnections, logLevel, reloadOnRestart} = browserSyncConfig;
-
-  browserSyncConfig = Object.assign(browserSyncConfig, {
-    logLevel:        logLevel || 'info',
-    middleware:      toArray(middleware),
-    logConnections:  !_.isUndefined(logConnections) ? !!logConnections : true,
-    reloadOnRestart: !_.isUndefined(reloadOnRestart) ? !!reloadOnRestart : true,
-  });
-
-
-  jsTasks.watcher(function ({instance, error, stats, webpackConfig, middleware}) {
-    const hmr = !!config.webpack.useHMR;
-    // при обычном watch-mode данная функция будет срабатывать всегда,
-    // когда будут изменяться зависимости.
-    // а при hrm-mode она сработает единожды.
-
-    if (hmr) {
-      browserSyncConfig.middleware = browserSyncConfig.middleware.concat(_.values(middleware));
-      browserSync.init(browserSyncConfig);
-    } else {
-      // для обычного watch-mode gulp-коллбек надо запускать один раз,
-      // чтобы таск нормально завершился.
-      // webpack продолжит вотчить зависимости и вызывать текущую функцию,
-      // когда билд будет готов.
-      if (!done.called) {
-        // поэтому при первом запуске этой функции запускаем сервер
-        browserSync.init(browserSyncConfig);
-        done.called = true;
-        done();
-      } else {
-        // при всех остальных вызовах - перезагружаем сервер
-        browserSync.reload();
-      }
-    }
-  });
-});
-
-
-import sass from 'gulp-sass';
-import plumber from 'gulp-plumber';
-import sassImportOnce from 'node-sass-import-once';
-
-const postcssPLugins = (function () {
-  let plugins = [];
-
-  plugins.push({
-    'postcss-input-range': {
-      method: 'clone'
-    },
-    'postcss-gradientfixer': {},
-    'postcss-flexboxfixer': {},
-    'postcss-flexbugs-fixes': {}
-  });
-
-  if (config.isProduction) {
-    plugins.push({
-      'autoprefixer': {
-        browsers: ['> 1%', 'last 5 versions', 'ie >= 9']
-      },
-    });
-  } else {
-    plugins.push({
-      'autoprefixer': {
-        browsers: ['last 2 versions']
-      },
-    });
-  }
-
-})();
-
-/**
- * @param {string} url
- * @returns {boolean}
- */
-function isUrlShouldBeIgnored (url) {
-  return url.indexOf('/') === 0 ||
-    url.indexOf('#') === 0 ||
-    url.indexOf("data:") === 0 ||
-    // isUrl(url) ||
-    /^[a-z]+:\/\//.test(url)
-  ;
-}
-
-/**
- * Trims whitespace and quotes from css 'url()' values
- *
- * @param {string} value - string to trim
- * @returns {string} - the trimmed string
- */
-function trimUrlValue (value) {
-  var beginSlice, endSlice;
-  value = value.trim();
-  beginSlice = value.charAt(0) === '\'' || value.charAt(0) === '"' ? 1 : 0;
-  endSlice = value.charAt(value.length - 1) === '\'' ||
-             value.charAt(value.length - 1) === '"' ?
-             -1 : undefined;
-  return value.slice(beginSlice, endSlice).trim();
-}
-
-/**
- * @param {string} url
- * @returns {string}
- */
-function wrapUrlDecl (url) {
-  return `url(${url})`;
-}
-
-/**
- * @param {string} from
- * @param {string} to
- * @param {string} contents
- * @returns {string}
- */
-function resolveUrlsToEntryPoint (from, to, contents) {
-  let re = /[:,\s]url\s*\((.*?)\)/ig;
-  return contents.replace(re, function (str, matched) {
-    let url = trimUrlValue(matched);
-
-    if (isUrlShouldBeIgnored(url)) {
-      return str;
-    }
-
-    let resolvedUrl = path.resolve(from, url);
-    let relativeUrl = path.relative(to, resolvedUrl);
-
-    return wrapUrlDecl(relativeUrl);
-  });
-}
-
-gulp.task('styles', function () {
-  const destPath = `./dev/css`;
+gulp.task('files', done => {
+  const source = path.join(cwd, pathes.source, pathes.files.source);
+  const target = path.join(cwd, pathes.target, pathes.files.target);
 
   return gulp
-    .src('./markup/styles/*.scss', {read: false})
-    .pipe(plumber({
-      errorHandler (error) {
-        notifier.error('An error occurred while compiling css', error);
-        this.emit('end');
-      }
-    }))
-    .pipe(through2.obj(function (file, enc, callback) {
-      let vinylEntryPoint = file;
-      let vinylResultFile = vinylEntryPoint;
-
-      functionDone(function () {
-        return gulp
-          .src(file.path)
-          .pipe(sourcemaps.init({identityMap: false}))
-          .pipe(through2.obj(function(file, enc, cb) {
-            let contents = file.contents.toString();
-            contents = resolveUrlsToEntryPoint(
-              path.dirname(vinylEntryPoint.path),
-              path.dirname(vinylEntryPoint.path),
-              contents
-            );
-            file.contents = Buffer.from(contents, enc);
-            cb(null, file);
-          }))
-          .pipe(sass({
-            precision: 10,
-            quiet: true,
-            includePaths: ['node_modules'],
-            importer (uri, prev, done) {
-              sassImportOnce.call(this, uri, prev, function ({file, contents}) {
-                if (!contents || !file) {
-                  return done.apply(this, arguments);
-                }
-
-                contents = resolveUrlsToEntryPoint(
-                  path.dirname(file),
-                  path.dirname(vinylEntryPoint.path),
-                  contents
-                );
-                done({file, contents});
-              });
-            },
-            importOnce: {
-              index: true,
-              css: true,
-              bower: false
-            }
-          }))
-          .pipe(sourcemaps.write(''))
-          .pipe(through2.obj(function(file, enc, cb) {
-            vinylResultFile = file;
-
-            cb(null, file);
-          }))
-        ;
-      }, function (err, result) {
-        if (err) { return callback(err); }
-
-        callback(null, vinylResultFile);
-      });
-    }))
-    .pipe(sourcemaps.init({loadMaps: true}))
-    // .pipe(require('gulp-replace-task')({
-    //   patterns: [
-    //     {
-    //       match: /%=staticPrefixForCss=%|%=static=%|__static__/gim,
-    //       replacement: tars.config.staticPrefixForCss
-    //     }
-    //   ],
-    //   usePrefix: false
-    // }))
-    // .pipe(postcss(postProcessors))
-    // .pipe(rename({ suffix: tars.options.build.hash }))
-    // .pipe(sourcemaps.write(inlineSourcemaps ? '' : '.'))
-    .pipe(sourcemaps.write('.', {
-      sourceRoot: './markup/styles/'
-    }))
-    .pipe(gulp.dest(destPath))
-    // .pipe(browserSync.reload({ stream: true }))
-    .pipe(notifier.success(`(S)CSS files have been compiled`))
+    .src(source +'/**/*.*', {cwd: source})
+    .pipe(changed(target, { hasChanged: changed.compareSha1Digest }))
+    .pipe(gulp.dest(target))
   ;
 });
 
-
-gulp.task('default', (done) => {
-  if (config.webpack.hmr.enabled) {
-    // webpackConfig.watch = true;
+gulp.task('webpack', done => {
+  /** todo: gulp перехватывает ошибки, а у ошибок вебпака своё форматирование и оно проёпывается */
+  try {
+    webpack(webpackConfig, webpackCompilerCallback({ done, breakOnError: true }));
+  } catch (err) {
+    console.error(err);
   }
+});
 
-  webpack(webpackConfig, (error, stats) => {
-
-    if (!error) {
-      error = stats.toJson().errors[0];
-    }
-
-    if (error) {
-      notifier.error('JavaScript has not been processed', error);
-    } else {
-      console.log(stats.toString({
-        colors: true
-      }));
-
-      notifier.success('JavaScript has been processed', {notStream: true});
-
-      // if (config.webpack.hmr.enabled) {
-      //   browserSync.reload();
-      // }
-    }
-
-    // Task never errs in watch mode, it waits and recompiles
-    // if (!tars.options.watch.isActive && error) {
-    if (!webpackConfig.watch && error) {
-      done(
-        new gutil.PluginError(
-          'webpack-processing',
-          new Error('An error occured during webpack build process')
-        )
-      );
-    } else {
-      if (!done.called) {
-        done.called = true;
-        done();
-      }
+gulp.task('watch:setup', done => {
+  _.merge(webpackConfig, {
+    /** хак-хак-хуяк. если не указать домен в publicPath'е, то в blob'нутых стилях не будут грузиться картинки */
+    output: {
+      publicPath: [
+        'http://localhost:',
+        bsConfig.port,
+        webpackConfig.output.publicPath[0] != '/' ? '/' : '',
+        webpackConfig.output.publicPath
+      ].join('')
     }
   });
 
+  if (HMR_MODE) {
+    /** отключим вотчер, если нужен hmr (вместе они не работают, только по отдельности) */
+    webpackConfig.watch = false;
 
-  // jsTasks.builder();
-  // runner('js:build', cb);
+    /** Добавим webpack'овскую hmr-магию в точки входа */
+    /** todo: проверить не на объкте, а на массиве или обычной строке */
+    webpackConfig.entry = appendMissingHMRToEntries(webpackConfig.entry);
+
+    const { output, plugins, stats } = extractFromConfigSafely(webpackConfig);
+
+    /** добавим hmr-плагин, если его нету в конфиге */
+    if (!_.some(plugins, (plugin) => plugin instanceof HotModuleReplacementPlugin)) {
+      plugins.push(new HotModuleReplacementPlugin());
+    }
+
+    /** мимикрируем под запуск таска 'webpack:watch' */
+    // log('Starting', '\'' + chalk.cyan('webpack:watch') + '\'...');
+
+    /** todo: `compilerCallbackDoneFn.called` - это такой грязный workaround для собственной же обёртки :-/ */
+    const compilerCallbackDoneFn = () => {};
+    compilerCallbackDoneFn.called = true;
+    const compilerCallback = webpackCompilerCallback({
+      done: compilerCallbackDoneFn,
+      name: 'webpack:watch',
+      breakOnError: false
+    });
+
+    COMPILER = webpack(webpackConfig);
+    const webpackHotMiddleware = WebpackHotMiddleware(COMPILER);
+    const webpackDevMiddleware = WebpackDevMiddleware(COMPILER, {
+      stats,
+      publicPath: output.publicPath,
+      /** Кастомный defaultReporter из node_modules/webpack-dev-middleware/middleware.js */
+      reporter (reporterOptions) {
+        const { stats, state, options } = reporterOptions;
+
+        stats && compilerCallback(null, stats);
+      }
+    });
+
+    bsConfig.middleware = !!bsConfig.middleware ? bsConfig.middleware : [];
+    bsConfig.middleware = _.isArray(bsConfig.middleware) ? bsConfig.middleware : [bsConfig.middleware];
+    bsConfig.middleware.push(webpackHotMiddleware, webpackDevMiddleware);
+
+    /** дождёмся, пока сбилдятся бандлы */
+    webpackDevMiddleware.waitUntilValid(function () {
+      done();
+    });
+  } else {
+    webpackConfig.watch = true;
+    done();
+  }
 });
 
-gulp.task('default2', (cb) => {
-  console.log('config', config);
-  console.log('tasks', gulp.tasks);
-  cb();
+gulp.task('webpack:watch', done => {
+  if (COMPILER) { return done(); }
+
+  done = once(done);
+
+  try {
+    webpack(webpackConfig, webpackCompilerCallback({
+      breakOnError: false,
+      done () {
+        /** todo: чего я здесь хотел понаписать? */
+        done.apply(null, arguments);
+      }
+    }));
+  } catch (err) {
+    console.error(err);
+    done();
+  }
 });
+
+gulp.task('minify:styles', done => {
+  // todo: 'svgo'
+  const source = path.join(cwd, pathes.target);
+
+  return gulp
+    .src(source +'/**/*.css')
+    .pipe(csso({
+      debug: false,
+      sourceMap: true,
+      restructure: true,
+    }))
+    .pipe(gulp.dest(source))
+  ;
+});
+gulp.task('minify:images', done => {
+  const source = path.join(cwd, pathes.target);
+
+  return gulp
+    .src(source +'/**/*.@(jpg|jpeg|png|gif|svg)')
+    .pipe(imagemin())
+    .pipe(gulp.dest(source))
+  ;
+});
+
+gulp.task('server', done => {
+  done = once(done);
+  
+  browserSync.init(bsConfig);
+  done();
+});
+
+gulp.task('watch', done => {
+  gulp
+    .watch(path.join(cwd, pathes.source, pathes.files.source, '**/*.*'))
+    .on('all', gulp.series('files'))
+  ;
+  gulp
+    .watch(path.join(cwd, pathes.target, '**/*.*'))
+    .on('change', browserSync.reload)
+  ;
+});
+
+gulp.task('dev', gulp.series('clean', 'files', 'watch:setup', 'webpack:watch', 'server', 'watch'));
+gulp.task('default', gulp.series('dev'));
+gulp.task('build', gulp.series(
+  'clean',
+  gulp.parallel('files', 'webpack'),
+  // todo: 'sprites'
+  gulp.parallel('minify:styles', 'minify:images')
+));

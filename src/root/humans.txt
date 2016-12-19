@@ -1,0 +1,13 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+    antixrist -- maintainer
+
+# THANKS
+    <name>
+
+# TECHNOLOGY COLOPHON
+
+    Babel, Webpack, Gulp, Vue.js,
+    CSS3, HTML5, HTML5Boilerplate, jQuery, Modernizr, Normalize.css
