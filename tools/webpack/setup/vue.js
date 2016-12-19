@@ -8,6 +8,9 @@ export default function (webpackConfig) {
   
   !extensions.includes('.vue') && extensions.push('.vue');
   
+  // resolve.alias = resolve.alias || {};
+  // resolve.alias['vue$'] = 'vue/dist/vue.common.js';
+    
   let postcss = (_.isFunction(postcssConfig))
     ? postcssConfig({env: process.env.NODE_ENV})
     : postcssConfig
