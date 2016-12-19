@@ -52,24 +52,24 @@ export default function (webpackConfig) {
      */
     _.merge({}, {
       loader: 'url-loader',
-      exclude: /node_modules/,
+      // exclude: /node_modules/,
       query: {
         name: isDevelopment
           ? `${ASSETS_TARGET}/[path][name].[ext]`
           : `${ASSETS_TARGET}/[path][name].[md5:hash:base64:7].[ext]`
       }
     }, item),
-    _.merge({}, {
-      loader: 'url-loader',
-      include: /node_modules/,
-      query: {
-        name: isDevelopment
-          ? `${ASSETS_TARGET}/[1].[ext]`
-          : `${ASSETS_TARGET}/[1].[md5:hash:base64:7].[ext]`
-        ,
-        regExp: 'node_modules[\\\\\/](.*)'
-      }
-    }, item),
+    // _.merge({}, {
+    //   loader: 'url-loader',
+    //   include: /node_modules/,
+    //   query: {
+    //     name: isDevelopment
+    //       ? `${ASSETS_TARGET}/[1].[ext]`
+    //       : `${ASSETS_TARGET}/[1].[md5:hash:base64:7].[ext]`
+    //     ,
+    //     regExp: 'node_modules[\\\\\/](.*)'
+    //   }
+    // }, item),
   ]));
 
   rules.push(
