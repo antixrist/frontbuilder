@@ -1,6 +1,6 @@
 {
-  "name": "frontbuilder",
-  "version": "1.0.0",
+  "name": "towers",
+  "version": "2.0.0",
   "main": "gulpfile.js",
   "homepage": "https://github.com/antixrist/frontbuilder",
   "repository": {
@@ -14,8 +14,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "gulp dev",
-    "build": "cross-env NODE_ENV=production gulp build",
     "dev:simple": "cross-env DISABLE_HMR=true gulp dev",
+    "build": "cross-env NODE_ENV=production gulp build",
+    "build:simple": "gulp build",
     "server": "cross-env NODE_ENV=production gulp server",
     "server:prod": "cross-env NODE_ENV=production gulp server",
     "webpack": "del-cli ./dev && mkdir dev && webpack",
@@ -25,14 +26,18 @@
     "test": "echo lol"
   },
   "dependencies": {
+    "animate.css": "^3.5.2",
     "axios": "^0.15.3",
     "bluebird": "^3.4.6",
+    "bootstrap": "4.0.0-alpha.5",
+    "font-awesome": "^4.7.0",
     "function-done": "^2.1.1",
     "jquery": "^3.1.1",
     "json5": "^0.5.1",
     "localforage": "^1.4.3",
     "lodash": "^4.17.2",
     "modernizr": "^3.3.1",
+    "modernizr-mixin": "^3.0.7",
     "normalize.css": "^5.0.0",
     "once": "^1.4.0",
     "vee-validate": "^2.0.0-beta.18",

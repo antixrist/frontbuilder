@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&subset=cyrillic');
+
+@import 'base/vars';
+@import 'base/vendors/index';
+
+html, body {
+  overflow-x: hidden;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  min-height: 100%;
+}
+
+html,
+button,
+input,
+optgroup,
+select,
+textarea {
+  // http://www.cssfontstack.com/
+  // https://gist.github.com/jacrook/9009655
+  font-family: 'Roboto',
+               -apple-system,
+               BlinkMacSystemFont,
+               'avenir next',
+               avenir,
+               helvetica,
+               'helvetica neue',
+               Ubuntu,
+               'segoe ui',
+               arial,
+               sans-serif;
+}

@@ -1,5 +1,7 @@
 import _ from 'lodash';
+import LoaderOptionsPlugin from 'webpack/lib/LoaderOptionsPlugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import sassImportOnce from 'node-sass-import-once';
 import { isDevelopment, pathes, sass as sassConfig, vueLoaders } from '../../config';
 import { extractFromConfigSafely } from '../utils';
 
@@ -28,36 +30,41 @@ export default function (webpackConfig) {
        * `resolve-url-loader` это исправляет.
        */
       { loader: 'resolve-url-loader', query: { sourceMap: true, keepQuery: true } },
-      { loader: 'sass-loader',
-        /** опции для node-sass'а. `sourceMap` обязательны! иначе резолвинг ассетов работать не будет */
-        query: _.merge({}, sassConfig, {
-          sourceMap: true,
-          sourceMapContents: true,
-          /** импортёр игнорируется, если используется ExtractTextPlugin :( */
-          // importer: function (uri, prev, done) {
-          //   /** js/json файлы require'им напрямую, а обработкой результата займётся sassImporterBuilder */
-          //   if (/\.js(x?|on5?)?$/.test(uri)) {
-          //     /**
-          //      * сюда надо как-то воткнуть webpack'овский `require`,
-          //      * потому что сейчас используется системный и лоадеры не работают
-          //      */
-          //     return sassImporterBuilder(/./, filepath => require(filepath)).call(this, uri, prev, done);
-          //   }
-          //
-          //   /** всё остальное отдаём на откуп sassImportOnce'у */
-          //   if (/\.(sass|scss|css)$/.test(uri)) {
-          //     return sassImportOnce.call(this, uri, prev, done);
-          //   }
-          // },
-          // importOnce: {
-          //   css: true,
-          //   index: true,
-          //   bower: false
-          // }
-        })
-      }
+      { loader: 'sass-loader', query: {
+        ...sassConfig,
+        sourceMap: true,
+        sourceMapContents: true,
+      } }
     ]
   };
+  
+  // plugins.push(
+  //   new LoaderOptionsPlugin({
+  //     test: /\.(scss|sass)$/,
+  //     options: {
+  //       sassLoader: {
+  //         ...sassConfig,
+  //         sourceMap: true,
+  //         sourceMapContents: true,
+  //         /** импортёр ваще косячный */
+  //         // importer: sassImportOnce,
+  //         // importer (uri, prev, done) {
+  //         //   console.log('sassImportOnce', uri, prev);
+  //         //   /** всё остальное отдаём на откуп sassImportOnce'у */
+  //         //   return sassImportOnce.call(this, uri, prev, done);
+  //         // },
+  //         // importOnce: {
+  //         //   css: true,
+  //         //   index: true,
+  //         //   bower: false
+  //         // }
+  //       },
+  //       /** это пиздец */
+  //       context: webpackConfig.context,
+  //       output: webpackConfig.output,
+  //     },
+  //   }),
+  // );
   
   /**
    * Здесь прикол в том, что ExtractTextPlugin в режиме разработки нам не нужен.

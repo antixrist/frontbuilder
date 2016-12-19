@@ -1,13 +1,3 @@
-.qwe {
-  font-size: 12px;
-  transition: opacity .1s ease-out;
-  display: flex;
-  color: rgba(255, 255, 255, 1);
-
-
-  @if $NODE_ENV == production {
-    .production-selector {
-      font-size: 400px;
-    }
-  }
-}
+@import 'shared/index';
+@import 'templates/base';
+@import 'pages/home';

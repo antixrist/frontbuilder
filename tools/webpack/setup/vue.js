@@ -20,10 +20,10 @@ export default function (webpackConfig) {
     test: /\.vue$/,
     loader: 'vue-loader',
     options: {
+      postcss: postcss,
       loaders: {
         ...vueLoaders,
       },
-      postcss,
       preserveWhitespace: false,
       transformToRequire: {
         img: ['src', 'data-src'],
