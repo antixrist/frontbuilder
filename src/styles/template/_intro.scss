@@ -1,12 +1,15 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&subset=cyrillic');
+@import '~normalize.css/normalize';
+@import '~sanitize.css/sanitize';
+@import '~html5-boilerplate/src/css/main.css';
 
-@import 'base/vars';
-@import 'base/vendors/index';
-
+/**
+ * 1. Edge 12+, Internet Explorer 11-
+ */
 html, body {
-  overflow-x: hidden;
   height: 100%;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar; /* 1 */
 }
 
 body {
@@ -32,4 +35,20 @@ textarea {
                'segoe ui',
                arial,
                sans-serif;
+}
+
+@-moz-document url-prefix () {
+  fieldset { display: table-cell; }
+}
+
+// Internet Explorer 11-
+pre {
+  overflow: auto;
+}
+
+* > *:first-child {
+  margin-top: 0;
+}
+* > *:last-child {
+  margin-bottom: 0;
 }

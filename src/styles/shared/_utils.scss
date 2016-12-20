@@ -1,95 +1,41 @@
 @import '~modernizr-mixin/stylesheets/modernizr';
+@import '~sassdash/index';
 
-@mixin box () {
+@import 'utils/box';
 
-}
+/** todo: */
+@mixin at-root {
 
-@mixin unbox ($dims, $fixed: false) {
+  @at-root {
 
-  @if $fixed == true {
-    // position: fixed;
-  } @else {
-    // margin: -$dims;
+    @content;
   }
 
 }
 
-@function bounds ($bounds) {
-  $length: length($bounds);
-
-  $x: null;
-  $y: null;
-  $top: null;
-  $right: null;
-  $bottom: null;
-  $left: null;
-
-  @if $length == 1 {
-    $top: nth($bounds, 1);
-    $right: $top;
-    $bottom: $top;
-    $left: $top;
-  }
-  @elseif $length == 2 {
-    $top: nth($bounds, 1);
-    $right: nth($bounds, 2);
-    $bottom: $top;
-    $left: $right;
-  }
-  @elseif $length == 3 {
-    $top: nth($bounds, 1);
-    $right: nth($bounds, 2);
-    $bottom: nth($bounds, 3);
-    $left: $right;
-  }
-  @elseif $length == 4 {
-    $top: nth($bounds, 1);
-    $right: nth($bounds, 2);
-    $bottom: nth($bounds, 3);
-    $left: nth($bounds, 4);
-  }
-
-  @if ($top != null and $top == $bottom) {
-    $y: $top;
-  }
-  @if ($right != null and $right == $left) {
-    $x: $right;
-  }
-
-  $bounds: (
-             x: $x,
-             y: $y,
-             top: $top,
-             right: $right,
-             bottom: $bottom,
-             left: $left,
-           );
-
-  $remove-keys: ();
-  @each $side, $size in $bounds {
-    @if $size == null {
-      $remove-keys: append($remove-keys, $side);
-    }
-  }
-
-  $bounds: map-remove($bounds, $remove-keys...);
-
-  @return $bounds;
+@mixin va-middle () {
+  // флексбоксами
 }
 
-$bounds: bounds(1px);
-$bounds: bounds(1px 2px);
-$bounds: bounds(1px 2px 3em);
-$bounds: bounds(1px 2px 3px 4px);
+@mixin va-middle-legacy () {
+  // таблицами
+}
 
-$bounds: bounds(null 2px);
-$bounds: bounds(1px null);
+@mixin x-stack () {
+  // для .input-group
+}
 
-$bounds: bounds(null 2px 3px);
-$bounds: bounds(1px null 3px);
-$bounds: bounds(1px 2px null);
+@mixin y-stack (
 
-$bounds: bounds(null 2px 3px 4px);
-$bounds: bounds(1px null 3px 4px);
-$bounds: bounds(1px 2px null 4px);
-$bounds: bounds(1px 2px 3px null);
+) {
+  // для вертикальных списков
+}
+
+@mixin fullpage-width {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
