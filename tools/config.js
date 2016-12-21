@@ -5,11 +5,14 @@ import compression from 'compression';
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-const cwd           = process.cwd();
-const NODE_ENV      = process.env.NODE_ENV;
-const isProduction  = process.env.NODE_ENV == 'production';
-const isDevelopment = process.env.NODE_ENV == 'development';
-const DISABLE_HMR   = process.env.DISABLE_HMR && (process.env.DISABLE_HMR === '1' || process.env.DISABLE_HMR === 'true');
+const cwd            = process.cwd();
+const NODE_ENV       = process.env.NODE_ENV;
+const isProduction   = process.env.NODE_ENV == 'production';
+const isDevelopment  = process.env.NODE_ENV == 'development';
+const DISABLE_HMR    =
+        process.env.DISABLE_HMR && (process.env.DISABLE_HMR === '1' || process.env.DISABLE_HMR === 'true');
+const EXTRACT_STYLES =
+        process.env.EXTRACT_STYLES && (process.env.EXTRACT_STYLES === '1' || process.env.EXTRACT_STYLES === 'true');
 
 const pathes = {
   /** здесь указываем относительно cwd */
@@ -110,6 +113,7 @@ export {
   prependEachEntriesWith,
   NODE_ENV,
   DISABLE_HMR,
+  EXTRACT_STYLES,
   browserSync
 };
 

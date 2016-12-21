@@ -14,7 +14,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "gulp dev",
-    "dev:simple": "cross-env DISABLE_HMR=true gulp dev",
+    "dev:simple": "cross-env DISABLE_HMR=true EXTRACT_STYLES=true gulp dev",
     "build": "cross-env NODE_ENV=production gulp build",
     "build:simple": "gulp build",
     "server": "cross-env NODE_ENV=production gulp server",

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import LoaderOptionsPlugin from 'webpack/lib/LoaderOptionsPlugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import sassImportOnce from 'node-sass-import-once';
-import { isDevelopment, pathes, sass as sassConfig, vueLoaders } from '../../config';
+import { isDevelopment, EXTRACT_STYLES, pathes, sass as sassConfig, vueLoaders } from '../../config';
 import { extractFromConfigSafely } from '../utils';
 
 const STYLES_TARGET = _.get(pathes, 'styles.target') || '.';
@@ -71,7 +71,7 @@ export default function (webpackConfig) {
    * Поэтому подменяем вызов плагина, если находимся в режиме разработки.
    */
   let loadersWrapper;
-  if (isDevelopment) {
+  if (isDevelopment && !EXTRACT_STYLES) {
     loadersWrapper = fakeExtractTextPluginExtract;
   } else {
     loadersWrapper = ExtractTextPlugin.extract;
