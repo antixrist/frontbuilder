@@ -46,7 +46,7 @@ module.exports = function (ctx) {
 
   plugins.push(
     require('postcss-pseudo-content-insert'),
-    require('postcss-focus'),
+    // require('postcss-focus'),
     require('postcss-single-charset')(),
     require('postcss-easings')({
       easings: require('postcss-easings').easings

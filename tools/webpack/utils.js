@@ -10,7 +10,8 @@ const { cyan, magenta, red } = colors;
  * todo: написать это дерьмо нормально
  *
  * @param webpackConfig
- * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array, externals: {}}}
+ * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array,
+ *   externals: {}}}
  */
 export function extractFromConfigSafely (webpackConfig) {
   const resolve = _.get(webpackConfig, 'resolve') || {};
@@ -47,7 +48,7 @@ export function compilerCallback ({ done = () => {}, breakOnError = false, name 
     const hrBuildTimePretty = prettyTime(hrBuildTime);
 
     err = err || statsJson.errors[0] || null;
-  
+
     if (err && breakOnError) {
       return done(new PluginError(name, err));
     } else
@@ -57,6 +58,7 @@ export function compilerCallback ({ done = () => {}, breakOnError = false, name 
        * делая его точно таким же, как при `done(new PluginError('webpack', err))`
        */
       log('\'' + cyan(name) + '\'', red('errored after'), magenta(hrBuildTimePretty));
+      // console.error(err);
       log(formatError({ name, error: new PluginError(name, err) }));
     } else {
       /** если ошибок нет, то покажем webpack'овскую статистику */

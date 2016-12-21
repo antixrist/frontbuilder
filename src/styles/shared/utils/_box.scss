@@ -148,6 +148,24 @@
   }
 }
 
+@mixin stretch ($sides: x y, $important: false) {
+  @each $side in (x y) {
+    @if index($sides, $side) != null {
+      position: absolute;
+
+      @if $side == x {
+        left:  0;
+        right: 0;
+        width: 100%;
+      }
+      @elseif $side == y {
+        top:    0;
+        bottom: 0;
+      }
+    }
+  }
+}
+
 @mixin box (
   $bounds,
   $sides: null,

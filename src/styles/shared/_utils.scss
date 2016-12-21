@@ -1,41 +1,20 @@
 @import '~modernizr-mixin/stylesheets/modernizr';
-@import '~sassdash/index';
-
+@import 'utils/variables';
+@import 'utils/bem';
 @import 'utils/box';
+@import 'utils/selectors';
+@import 'utils/states';
+@import 'utils/content';
 
-/** todo: */
-@mixin at-root {
 
-  @at-root {
+.qweqwe {
+  asd: 321;
 
-    @content;
+  .zxc {
+    qwe: 432;
+
+    @include state-is (hover, focus) {
+      qweqwe: qwe;
+    }
   }
-
-}
-
-@mixin va-middle () {
-  // флексбоксами
-}
-
-@mixin va-middle-legacy () {
-  // таблицами
-}
-
-@mixin x-stack () {
-  // для .input-group
-}
-
-@mixin y-stack (
-
-) {
-  // для вертикальных списков
-}
-
-@mixin fullpage-width {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
 }

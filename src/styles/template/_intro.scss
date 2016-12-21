@@ -37,6 +37,10 @@ textarea {
                sans-serif;
 }
 
+/**
+ * Fix firefox fieldset display:
+ * http://stackoverflow.com/questions/17408815
+ */
 @-moz-document url-prefix () {
   fieldset { display: table-cell; }
 }
@@ -44,6 +48,39 @@ textarea {
 // Internet Explorer 11-
 pre {
   overflow: auto;
+}
+
+blockquote {
+  font-style: italic;
+  padding: 1em 1em 1em 2em;
+}
+
+menu,
+ol,
+ul,
+dl {
+  padding-left: 1.5em;
+}
+
+li,
+dd {
+  margin-bottom: .5em;
+}
+
+p,
+ul,
+ol,
+blockquote,
+table,
+hr,
+dd,
+menu {
+  margin: 0 0 1em;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 * > *:first-child {

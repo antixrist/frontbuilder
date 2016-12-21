@@ -123,7 +123,9 @@ gulp.task('webpack:watch', done => {
   if (COMPILER) { return done(); }
 
   done = once(done);
-
+  
+  /** todo: ошибки sass-компиляции в режиме обычного watch'а не показываются :( */
+  
   try {
     webpack(webpackConfig, webpackCompilerCallback({
       breakOnError: false,
