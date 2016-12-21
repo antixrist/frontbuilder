@@ -1,0 +1,64 @@
+@import '~sassdash/index';
+
+@function extract-currents ($selectors...) {
+  $retVal: ();
+
+  @each $selector in $selectors {
+
+  }
+}
+
+
+
+// из обычной строки, разделённой запятыми, получает нормальный список селекторов
+@function parse-selectors ($selectors...) {
+  $s: ();
+  @each $selector in $selectors {
+    $tmp: _split($selector, ',');
+    @each $item in $tmp {
+      $s: append($s, _trim($item), comma);
+    }
+  }
+
+  @return $s;
+}
+
+// Повышает специфичность
+// `.className` => `.className.className`
+// осторожно! `h1` => `h1h1`
+@mixin power () {
+  $selectors: ();
+
+  @each $selector in & {
+    $current: _last($selector);
+    $parents: _drop-right($selector, 1);
+
+    $splitted: _split($current, ':');
+
+    $current: nth($splitted, 1);
+    $power: if($current != '*', $current, '');
+
+    $states: _drop($splitted, 1);
+    $states: _join($states, ':');
+    $states: if($states != '' and $states != null, ':#{$states}', null);
+
+    $selectors: append($selectors, #{$parents} #{$power}#{$current}#{$states}, comma);
+  }
+
+  @at-root #{$selectors} {
+    @content;
+  }
+}
+
+// Проксирует стили на указанный селектор
+@mixin proxy ($target...) {
+  @if $target == & or $target == null {
+    & {
+      @content;
+    }
+  } @else {
+    & #{$target} {
+      @content;
+    }
+  }
+}

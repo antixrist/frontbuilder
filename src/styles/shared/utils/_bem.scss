@@ -1,0 +1,62 @@
+@import '~sassdash/index';
+
+$bem-element-delimiter: '__' !default;
+$bem-element-block-name-include: true;
+$bem-modifier-delimiter: '--' !default;
+$bem-modifier-block-name-include: true;
+
+@mixin e ($names...) {
+  $selectors: ();
+
+  @each $selector in & {
+    $parents: _drop-right($selector, 1);
+    $current: _last($selector);
+
+    $splitted: _split($current, ':');
+    $current: nth($splitted, 1);
+    $states: _drop($splitted, 1);
+    $states: _join($states, ':');
+    $states: if($states != '' and $states != null, ':#{$states}', null);
+
+    //$current: if($block-name-include == true, $current, '');
+
+    @each $name in $names {
+      @if $bem-element-block-name-include == true {
+        $selectors: append($selectors, #{$parents} #{$current}#{$states}#{$bem-element-delimiter}#{$name}, comma);
+      } @else {
+        $selectors: append($selectors, '#{$parents} #{$current}#{$states} .#{$bem-element-delimiter}#{$name}', comma);
+      }
+    }
+  }
+
+  @at-root #{$selectors} {
+    @content;
+  }
+}
+
+@mixin m ($names...) {
+  $selectors: ();
+
+  @each $selector in & {
+    $parents: _drop-right($selector, 1);
+    $current: _last($selector);
+
+    $splitted: _split($current, ':');
+    $current: nth($splitted, 1);
+    $states: _drop($splitted, 1);
+    $states: _join($states, ':');
+    $states: if($states != '' and $states != null, ':#{$states}', null);
+
+    @each $name in $names {
+      @if $bem-modifier-block-name-include == true {
+        $selectors: append($selectors, #{$parents} #{$current}#{$bem-modifier-delimiter}#{$name}#{$states}, comma);
+      } @else {
+        $selectors: append($selectors, '#{$parents} #{$current}.#{$bem-modifier-delimiter}#{$name}#{$states}', comma);
+      }
+    }
+  }
+
+  @at-root #{$selectors} {
+    @content;
+  }
+}

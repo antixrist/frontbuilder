@@ -1,0 +1,136 @@
+@import '~sassdash/index';
+@import 'selectors';
+
+$states: (
+  hover:      '&.is-hovered',
+  focus:      '&.is-focused',
+  focusable:  '&.is-focusable',
+  active:     '&.is-active',
+  valid:      '&.is-valid',
+  invalid:    '&.is-invalid',
+  checked:    '&.is-checked',
+  required:   '&.is-required',
+  disabled:   '&.is-disabled, fieldset.is-disabled &',
+  hidden:     '&.is-hidden',
+
+  loading:    '&.is-loading',
+  loaded:     '&.is-loaded',
+  success:    '&.is-success',
+  info:       '&.is-info',
+  warning:    '&.is-warning',
+  danger:     '&.is-danger',
+  invisible:  '&.is-invisible',
+  expandable: '&.is-expandable',
+  expanded:   '&.is-expanded',
+  collapsable:'&.is-collapsable',
+  collapsed:  '&.is-collapsed',
+) !default;
+
+$required-states: (
+  normal:        '&',
+  hover:         '&:hover',
+  focus:         '&:focus',
+  active:        '&:active',
+  link:          '&:link',
+  visited:       '&:visited',
+  valid:         '&:valid',
+  invalid:       '&:invalid',
+  checked:       '&:checked, &[checked]',
+  indeterminate: '&:indeterminate',
+  required:      '&[required]',
+  disabled:      '&[disabled], fieldset[disabled] &',
+  hidden:        '&[hidden]',
+);
+
+@function get-states-selectors ($needed-states, $context: null) {
+  $states-selectors: ();
+
+  @each $state in $needed-states {
+    @if (map-has-key($required-states, $state) or map-has-key($states, $state)) {
+      @if (map-has-key($required-states, $state)) {
+        $selector: map-get($required-states, $state);
+        @if ($selector != null) {
+          $states-selectors: join($states-selectors, parse-selectors($selector), comma);
+        }
+      }
+
+      @if (map-has-key($states, $state)) {
+        $selector: map-get($states, $state);
+        @if ($selector != null) {
+          $states-selectors: join($states-selectors, parse-selectors($selector), comma);
+        }
+      }
+    } @else {
+      $states-selectors: join($states-selectors, parse-selectors($state), comma);
+    }
+  }
+
+  @if $context != null {
+    $tmp: ();
+    @each $selector in $context {
+      @each $state-selector in $states-selectors {
+        $parents: _drop-right($selector, 1);
+        $element: _last($selector);
+
+        $state-selector: _replace($state-selector, '&', $element);
+        $state-selector: $parents $state-selector;
+
+        $tmp: append($tmp, $state-selector, comma);
+      }
+    }
+    $states-selectors: $tmp;
+  }
+
+  @return $states-selectors;
+}
+
+@mixin state-is ($needed-states...) {
+  $tmp: get-states-selectors($needed-states, &);
+  @debug(inspect($tmp));
+
+  $states-selectors: ();
+
+  @each $state in $needed-states {
+    @if (map-has-key($required-states, $state) or map-has-key($states, $state)) {
+      @if (map-has-key($required-states, $state)) {
+        $selector: map-get($required-states, $state);
+        @if ($selector != null) {
+          $states-selectors: join($states-selectors, parse-selectors($selector), comma);
+        }
+      }
+
+      @if (map-has-key($states, $state)) {
+        $selector: map-get($states, $state);
+        @if ($selector != null) {
+          $states-selectors: join($states-selectors, parse-selectors($selector), comma);
+        }
+      }
+    } @else {
+      $states-selectors: join($states-selectors, parse-selectors($state), comma);
+    }
+  }
+
+  $tmp: ();
+  @each $selector in & {
+    @each $state-selector in $states-selectors {
+      $parents: _drop-right($selector, 1);
+      $element: _last($selector);
+
+      $state-selector: _replace($state-selector, '&', $element);
+      $state-selector: $parents $state-selector;
+
+      $tmp: append($tmp, $state-selector, comma);
+    }
+  }
+  $states-selectors: $tmp;
+
+  @at-root #{$states-selectors} {
+    @content;
+  }
+}
+
+@mixin is ($states...) {
+  @include state-is ($states...) {
+    @content;
+  }
+}
