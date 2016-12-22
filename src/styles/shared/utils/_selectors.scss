@@ -1,24 +1,14 @@
 @import '~sassdash/index';
 @import '~sassy-strings/stylesheets/SassyStrings';
 
-/// @access private
-/// @param  {String}  $selector
-/// @return {String}  $selector
-@function selector-to-string ($selector) {
-  $list-separator: list-separator($selector);
-
-  @if type_of($selector == list) {
-    $selector: unquote(inspect($selector)); //cast to string
-    //@if $list-separator == comma {
-    //  $selector: str-slice($selector, 2, -2); //remove brackets
-    //}
+// Парсит входные параметры и возвращает comma-лист с селекторами
+$parse-selectors-memo: () !default;
+@function parse-selectors ($items...) {
+  $memo-key: inspect($items);
+  @if map-has-key($parse-selectors-memo, $memo-key) {
+    @return map-get($parse-selectors-memo, $memo-key);
   }
 
-  @return $selector;
-}
-
-// Парсит входные параметры и возвращает comma-лист с селекторами
-@function parse-selectors ($items...) {
   $retVal: ();
 
   @each $item in $items {
@@ -51,6 +41,10 @@
     }
   }
 
+  $parse-selectors-memo: map-merge($parse-selectors-memo, (
+    $memo-key: $retVal
+  )) !global;
+
   @return $retVal;
 }
 
@@ -59,14 +53,9 @@
   @return _map($rules, unquote);
 }
 
-@function rule-states ($rule) {
-  $states: _split($rule, ':');
-  @if (length($states) > 0) {
-    $states: _drop($states);
-    $states: _map($states, _trim);
-    $states: _compact($states);
-    $states: _difference($states, (before, after));
-  }
+@function stringify-states ($states) {
+  $states: if(_is-list($states), $states, ($states,));
+  $states: if(length($states) > 0, ':#{_join($states, ':')}', '');
 
   @return $states;
 }
@@ -85,17 +74,9 @@
   }
 
   @return (
-    str: $str,
-    attrs: $attrs
-  );
-}
-
-
-@function stringify-states ($states) {
-  $states: if(_is-list($states), $states, ($states,));
-  $states: if(length($states) > 0, ':#{_join($states, ':')}', '');
-
-  @return $states;
+            str: $str,
+            attrs: $attrs
+          );
 }
 
 @function _parse-rule ($rule) {
@@ -135,7 +116,13 @@
   );
 }
 
+$parse-rule-memo: () !default;
 @function parse-rule ($rule) {
+  $memo-key: inspect($rule);
+  @if map-has-key($parse-rule-memo, $memo-key) {
+    @return map-get($parse-rule-memo, $memo-key);
+  }
+
   $attrs: ();
   $states: ();
 
@@ -179,10 +166,20 @@
   $rule: _set($rule, before, $before);
   $rule: _set($rule, after, $after);
 
+  $parse-rule-memo: map-merge($parse-rule-memo, (
+    $memo-key: $rule
+  )) !global;
+
   @return $rule;
 }
 
+$stringify-rule-memo: () !default;
 @function stringify-rule ($rule) {
+  $memo-key: inspect($rule);
+  @if map-has-key($stringify-rule-memo, $memo-key) {
+    @return map-get($stringify-rule-memo, $memo-key);
+  }
+
   $attrs: map-get($rule, 'attrs');
   $states: map-get($rule, 'states');
   $before: map-get($rule, 'before');
@@ -204,11 +201,19 @@
     $retVal: '#{$retVal}#{$rule}#{stringify-states($states)}';
   }
 
+  $stringify-rule-memo: map-merge($stringify-rule-memo, (
+    $memo-key: $retVal
+  )) !global;
+
   @return $retVal;
 }
 
 @function rule-has-states ($rule) {
-  @return length(rule-states($rule)) > 0;
+  @return str-index($rule, ':') > 0;
+}
+
+@function rule-has-attrs ($rule) {
+  @return str-index($rule, '[') > 0;
 }
 
 @function selector-has-states ($selector) {
@@ -221,88 +226,76 @@
   @return false;
 }
 
-@function rule-without-states (
-  $rule,
-  $whitelist: (before, after)
-) {
-  $splitted: _split($rule, ':');
-  @if (_is-list($whitelist) and length($whitelist) > 1) {
-    $splitted: _intersection($splitted, join((_first($splitted),), $whitelist));
-  }
-  $rule: _join($splitted, ':');
-
-  @return $rule;
-}
-
-@mixin sibling-self (
-  /** todo: */
-  $attrs: false,
-  $states: false
-) {
-  $selectors: ();
-
-  @each $selector in parse-selectors(&) {
-    $rules: selector-rules($selector);
-    $rule: _last($rules);
-    $rule: rule-without-states($rule);
-
-    $selectors: append($selectors, '#{$selector} + #{$rule}', comma);
+@function selector-has-states ($selector) {
+  @each $rule in selector-rules($selector) {
+    @if (rule-has-attrs($rule) == true) {
+      @return true;
+    }
   }
 
-  $selectors: _uniq($selectors);
-
-  @at-root #{$selectors} {
-    @content;
-  }
-}
-
-@function get-states-string ($states) {
-  $states: if(_is-list($states), $states, ($states,));
-  $states: if(length($states) > 0, ':#{_join($states, ':')}', '');
-
-  @return $states;
+  @return false;
 }
 
 @function cleanup-rule ($rule) {
-  $rule-states: rule-states($rule);
-  $rule: rule-without-states($rule, $whitelist: null);
-
-  $new-rule-states: ();
-  @each $rule-state in $rule-states {
-    $idx-start: str-last-index($rule-state, '[');
-    $idx-end: str-last-index($rule-state, ']');
-
-    @while $idx-start != null and $idx-end != null {
-      $rule: $rule + str-slice($rule-state, $idx-start, $idx-end);
-      $rule-state: str-slice($rule-state, 0, $idx-start - 1) + str-slice($rule-state, $idx-end + 1);
-
-      $idx-start: str-last-index($rule-state, '[');
-      $idx-end: str-last-index($rule-state, ']');
-    }
-
-    $new-rule-states: append($new-rule-states, $rule-state);
-  }
-
-  @return '#{$rule}#{get-states-string($new-rule-states)}';
+  @return stringify-rule(parse-rule($rule));
 }
 
+$cleanup-selectors-memo: () !default;
 @function cleanup-selectors ($selectors...) {
-  $new-selectors: ();
-  $selectors: parse-selectors($selectors);
+  $memo-key: inspect($selectors);
+  @if map-has-key($cleanup-selectors-memo, $memo-key) {
+    @return map-get($cleanup-selectors-memo, $memo-key);
+  }
 
-  @each $selector in $selectors {
+  $retVal: ();
+  @each $selector in parse-selectors($selectors) {
     $new-selector: ();
-    $rules: selector-rules($selector);
 
-    @each $rule in $rules {
+    @each $rule in selector-rules($selector) {
       $new-rule: cleanup-rule($rule);
       $new-selector: append($new-selector, $new-rule, space);
     }
 
-    $new-selectors: append($new-selectors, $new-selector, comma);
+    $retVal: append($retVal, $new-selector, comma);
   }
 
-  @return $new-selectors;
+  $cleanup-selectors-memo: map-merge($cleanup-selectors-memo, (
+    $memo-key: $retVal
+  )) !global;
+
+  @return $retVal;
+}
+
+$sibling-self-selectors-memo: () !default;
+@function sibling-self-selectors () {
+  $memo-key: inspect(&);
+  @if map-has-key($sibling-self-selectors-memo, $memo-key) {
+    @return map-get($sibling-self-selectors-memo, $memo-key);
+  }
+
+  $retVal: ();
+
+  @each $selector in parse-selectors(&) {
+    $rules: selector-rules($selector);
+    $rule: _last($rules);
+    $rule: parse-rule($rule);
+
+    $retVal: append($retVal, '#{$selector} + #{map-get($rule, 'rule')}', comma);
+  }
+
+  $retVal: _uniq($retVal);
+
+  $sibling-self-selectors-memo: map-merge($sibling-self-selectors-memo, (
+    $memo-key: $retVal
+  )) !global;
+
+  @return $retVal;
+}
+
+@mixin sibling-self () {
+  @at-root #{sibling-self-selectors()} {
+    @content;
+  }
 }
 
 // Повышает специфичность
@@ -330,23 +323,4 @@
   @at-root #{$selectors} {
     @content;
   }
-}
-
-/**
- * Return a list of all of the rules within the selector
- */
-@function rules ($selector) {
-  @return _split(_trim(selector-to-string($selector)), ' ');
-}
-
-/**
- * For each of the given elements, create a combined rule, applying the given
- * prefix.
- */
-@function combined-rule ($prefix, $elements) {
-  $rules: ();
-  @each $element in $elements {
-    $rules: append($rules, unquote($prefix + $element), comma);
-  }
-  @return $rules;
 }
