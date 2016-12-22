@@ -1,63 +1,128 @@
 @import '~sassdash/index';
+@import '~sassy-strings/stylesheets/SassyStrings';
 
-@function extract-current ($selectors, $with-states: false) {
-  $retVal: ();
+/// @access private
+/// @param  {String}  $selector
+/// @return {String}  $selector
+@function selector-to-string ($selector) {
+  $list-separator: list-separator($selector);
 
-  @debug('$selectors: #{$selectors}');
-
-  @each $selector in $selectors {
-    //@debug('$selector: #{$selector}');
-
-    $current: _last($selector);
-    @if $with-states == true {
-      $retVal: append($retVal, $current, comma);
-    } @else {
-      $splitted: _split($current, ':');
-      $current: nth($splitted, 1);
-      //$states: _drop($splitted, 1);
-      //$states: _join($states, ':');
-      //$states: if($states != '' and $states != null, ':#{$states}', null);
-
-      $retVal: append($retVal, $current, comma);
-    }
+  @if type_of($selector == list) {
+    $selector: unquote(inspect($selector)); //cast to string
+    //@if $list-separator == comma {
+    //  $selector: str-slice($selector, 2, -2); //remove brackets
+    //}
   }
 
-  $retVal: _uniq($retVal);
+  @return $selector;
+}
 
-  @debug('$retVal: #{$retVal}');
+// Парсит входные параметры и возвращает comma-лист с селекторами
+@function parse-selectors ($items...) {
+  $retVal: ();
+
+  @each $item in $items {
+    @if _is-list-like($item) {
+      @if list-separator($item) == comma {
+        @each $selector in $item {
+          $retVal: join($retVal, parse-selectors($selector), comma);
+        }
+      } @else {
+        $has-comma: str-index(inspect($item), ',') != null;
+        @if $has-comma == true {
+          @each $selector in $item {
+            $retVal: join($retVal, parse-selectors($selector), comma);
+          }
+        } @else {
+          $retVal: append($retVal, _map($item, _trim), comma);
+        }
+      }
+    } @else {
+      $has-comma: str-index(inspect($item), ',') != null;
+      @if $has-comma == true {
+        @each $selector in _split($item, ',') {
+          $retVal: join($retVal, parse-selectors($selector), comma);
+        }
+      } @else {
+        $item: unquote($item);
+        $item: _trim($item);
+        $retVal: append($retVal, $item, comma);
+      }
+    }
+  }
 
   @return $retVal;
 }
 
-.qweqwe,
-.qweqwe-2 {
-
-  //.asd {
-    &:hover,
-    .zxc {
-      //@debug('#{&} + #{extract-current(&)}');
-      @each $item in extract-current(&) {
-        //@debug('$item: #{$item}');
-        & + #{$item} {
-          zxc: 123;
-        }
-      }
-    }
-  //}
+@function selector-rules ($selector) {
+  $rules: if(_is-list($selector), $selector, _split($selector, ' '));
+  @return _map($rules, unquote);
 }
 
-// из обычной строки, разделённой запятыми, получает нормальный список селекторов
-@function parse-selectors ($selectors...) {
-  $s: ();
-  @each $selector in $selectors {
-    $tmp: _split($selector, ',');
-    @each $item in $tmp {
-      $s: append($s, _trim($item), comma);
+@function rule-states ($rule) {
+  $states: _drop(_split($rule, ':'));
+  $states: _map($states, _trim);
+  $states: _map($states, _compact);
+  $states: _difference($states, (before, after));
+
+  @return $states;
+}
+
+@function rule-has-states ($rule) {
+  @return length(rule-states($rule)) > 0;
+}
+
+@function selector-has-states ($selector) {
+  @each $rule in selector-rules($selector) {
+    @if (rule-has-states($rule) == true) {
+      @return true;
     }
   }
 
-  @return $s;
+  @return false;
 }
+
+/**
+ * Return a list of all of the rules within the selector
+ */
+@function rules ($selector) {
+  @return _split(_trim(selector-to-string($selector)), ' ');
+}
+
+/**
+ * For each of the given elements, create a combined rule, applying the given
+ * prefix.
+ */
+@function combined-rule ($prefix, $elements) {
+  $rules: ();
+  @each $element in $elements {
+    $rules: append($rules, unquote($prefix + $element), comma);
+  }
+  @return $rules;
+}
+
+@mixin sibling-self () {
+  $lastRule: _last(rules(&));
+
+  & + #{$lastRule} {
+    @content;
+  }
+}
+
+//.qweqwe,
+//.qweqwe-2 {
+//  .asd:hover {
+//    @debug(type_of(&));
+//    @debug(type_of(rules(&)));
+//
+//    $add: '.qwe, .zxc';
+//    & + {
+//      #{$add} {
+//        qweqwe: 123;
+//      }
+//    }
+//  }
+//}
 
 // Повышает специфичность
 // `.className` => `.className.className`
@@ -83,18 +148,5 @@
 
   @at-root #{$selectors} {
     @content;
-  }
-}
-
-// Проксирует стили на указанный селектор
-@mixin proxy ($target...) {
-  @if $target == & or $target == null {
-    & {
-      @content;
-    }
-  } @else {
-    & #{$target} {
-      @content;
-    }
   }
 }

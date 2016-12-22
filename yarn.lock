@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"SassMagic@github:W3cplus/SassMagic":
+  version "1.0.0"
+  resolved "https://codeload.github.com/W3cplus/SassMagic/tar.gz/b083128f87a1aa7c659c0d35555db7eab34dcc5c"
+
 abbrev@1:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
@@ -6567,6 +6571,10 @@ sass-loader@^4.1.0:
 sassdash@^0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/sassdash/-/sassdash-0.8.2.tgz#42d59b4932f13034695604bd8437e2b598afd368"
+
+sassy-strings@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/sassy-strings/-/sassy-strings-1.1.4.tgz#9f63e9b2cc3e3e0eee4ec0dc9cf30ece111d1b20"
 
 sax@~1.2.1:
   version "1.2.1"

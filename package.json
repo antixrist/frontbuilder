@@ -26,6 +26,7 @@
     "test": "echo lol"
   },
   "dependencies": {
+    "SassMagic": "github:W3cplus/SassMagic",
     "accoutrement-color": "^2.0.1",
     "animate.css": "^3.5.2",
     "axios": "^0.15.3",
@@ -48,6 +49,7 @@
     "rem": "^0.7.0-3",
     "sanitize.css": "^4.1.0",
     "sassdash": "^0.8.2",
+    "sassy-strings": "^1.1.4",
     "tether": "^1.4.0",
     "vee-validate": "^2.0.0-beta.18",
     "vue": "^2.1.6",

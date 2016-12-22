@@ -13,7 +13,7 @@ $states: (
   disabled:   '&.is-disabled, fieldset.is-disabled &',
   hidden:     '&.is-hidden',
 
-  loading:    '&.is-loading',
+  progress:   '&.in-progress',
   loaded:     '&.is-loaded',
   success:    '&.is-success',
   info:       '&.is-info',

@@ -1,62 +1,130 @@
+//@import '~SassMagic';
 @import '~sassdash/index';
+@import 'selectors';
 
-$bem-element-delimiter: '__' !default;
-$bem-element-block-name-include: true;
-$bem-modifier-delimiter: '--' !default;
-$bem-modifier-block-name-include: true;
 
-@mixin e ($names...) {
-  $selectors: ();
+.qweqwe,
+.qweqwe-2 {
+  .asdasd,
+  .asdasd-2 {
+    $selectors: parse-selectors((&, ('.zxczxc .ewqewq', '.zxczxc-3, .ewqewq-3'), '.zxczxc-4'));
 
-  @each $selector in & {
-    $parents: _drop-right($selector, 1);
-    $current: _last($selector);
+    @debug('$selectors: #{inspect($selectors)}');
 
-    $splitted: _split($current, ':');
-    $current: nth($splitted, 1);
-    $states: _drop($splitted, 1);
-    $states: _join($states, ':');
-    $states: if($states != '' and $states != null, ':#{$states}', null);
+    @each $selector in $selectors {
+      $rules: selector-rules($selector);
+      @debug('$rules: #{list-separator($rules)} #{inspect($rules)}');
+    }
 
-    //$current: if($block-name-include == true, $current, '');
-
-    @each $name in $names {
-      @if $bem-element-block-name-include == true {
-        $selectors: append($selectors, #{$parents} #{$current}#{$states}#{$bem-element-delimiter}#{$name}, comma);
-      } @else {
-        $selectors: append($selectors, '#{$parents} #{$current}#{$states} .#{$bem-element-delimiter}#{$name}', comma);
-      }
+    @at-root #{$selectors} {
+      asdasdasd: 123;
     }
   }
+}
 
-  @at-root #{$selectors} {
+
+
+
+//$splitted: _split($current, ':');
+//$states: _drop($splitted, 1);
+//$states: _join($states, ':');
+//$states: if($states != '' and $states != null, ':#{$states}', null);
+
+/// BEM
+/// @access public
+/// @author Marcmintel
+/// @link https://medium.com/@marcmintel/pushing-bem-to-the-next-level-with-sass-3-4-5239d2371321
+
+$bem-element-separator: '__' !default;
+$bem-modifier-separator: '--' !default;
+
+/**
+ * Return whether the last rule in the given selector is a modifier
+ */
+@function lastRuleIsModifier($selector) {
+  $lastRule: _last(rules($selector));
+
+  @if(str-index($lastRule, $bem-modifier-separator)) {
+    @return true;
+  }
+  @else {
+    @return false;
+  }
+}
+
+/**
+ * Return the last rule without the modifier
+ */
+@function lastRuleWithoutModifier($selector) {
+  $lastRule: _last(rules($selector));
+  @return _first(str-explode($lastRule, $bem-modifier-separator));
+}
+
+/// @access private
+/// @param  {String}  $selector
+/// @return {Boolean} `true` or `false`
+@function containsModifier($selector) {
+  $selector: selector-to-string($selector);
+  @if str-index($selector, $bem-modifier-separator) {
+    @return true;
+  } @else {
+    @return false;
+  }
+}
+
+/// @param  {String}  $selector
+/// @access private
+/// @return {String}
+@function getBlock($selector) {
+  $selector: selector-to-string($selector);
+  $modifierStart: str-index($selector, $bem-modifier-separator) - 1;
+  @return str-slice($selector, 0, $modifierStart);
+}
+
+@mixin block($block) {
+  .#{$block} {
     @content;
   }
 }
 
-@mixin m ($names...) {
-  $selectors: ();
+/**
+ * Append the given elements to the previous selector.
+ * If the last rule was a modifier start a new rule from the point of the
+ * modifier.
+ *
+ * Example:
+ * [In]:  .foo__bar--zulu {
+ *          @include element(alpha) { font-weight: 700; }
+ *        }
+ * [Out]: .foo__bar--zulu .foo__bar__alpha { font-weight: 700; }
+ */
+@mixin element($elements...) {
+  $selector: stringify(&);
 
-  @each $selector in & {
-    $parents: _drop-right($selector, 1);
-    $current: _last($selector);
+  @if(lastRuleIsModifier($selector)) {
+    $withoutModifier: lastRuleWithoutModifier($selector);
 
-    $splitted: _split($current, ':');
-    $current: nth($splitted, 1);
-    $states: _drop($splitted, 1);
-    $states: _join($states, ':');
-    $states: if($states != '' and $states != null, ':#{$states}', null);
-
-    @each $name in $names {
-      @if $bem-modifier-block-name-include == true {
-        $selectors: append($selectors, #{$parents} #{$current}#{$bem-modifier-delimiter}#{$name}#{$states}, comma);
-      } @else {
-        $selectors: append($selectors, '#{$parents} #{$current}.#{$bem-modifier-delimiter}#{$name}#{$states}', comma);
+    @at-root {
+      #{$selector} {
+        #{combined-rule($withoutModifier + $bem-element-separator, $elements)} {
+          @content;
+        }
       }
     }
   }
+  @else {
+    @at-root {
+      #{combined-rule($selector + $bem-element-separator, $elements)} {
+        @content;
+      }
+    }
+  }
+}
 
-  @at-root #{$selectors} {
-    @content;
+@mixin modifier($modifier) {
+  @at-root {
+    #{&}#{$bem-modifier-separator + $modifier} {
+      @content;
+    }
   }
 }
