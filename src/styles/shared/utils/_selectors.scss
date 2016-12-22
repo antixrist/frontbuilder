@@ -82,6 +82,10 @@
   @return false;
 }
 
+@function rule-without-states ($rule) {
+  @return _first(_split($rule, ':'));
+}
+
 /**
  * Return a list of all of the rules within the selector
  */

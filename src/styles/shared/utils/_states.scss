@@ -86,7 +86,6 @@ $required-states: (
 
 @mixin state-is ($needed-states...) {
   $tmp: get-states-selectors($needed-states, &);
-  @debug(inspect($tmp));
 
   $states-selectors: ();
 
