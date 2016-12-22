@@ -134,17 +134,26 @@ $required-states: (
   }
 }
 
-.qweqwe,
-.qweqwe-2 {
-  .zxc,
-  .asd {
-    &:after {
-      @include state-is (focus, hover) {
+.block-type-1,
+.block-type-2 {
+
+  .block-item,
+  .block-item--variant {
+
+    &:first-child {
+      &:after {
+        border-top: none;
+      }
+
+      @include state-is (hover, focus) {
+        background: #f00;
+
         @include sibling-self {
-          @include state-is (active, valid) {
-            asdasd: 321;
+          @include state-is (active) {
+            color: #0f0;
+
             .inner {
-              qweqwe: 123;
+              padding: 10px;
 
               &:before {
                 content: '54321';
