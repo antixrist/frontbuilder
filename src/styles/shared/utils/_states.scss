@@ -39,7 +39,7 @@ $required-states: (
   indeterminate: '&:indeterminate',
   required:      '&[required]',
   disabled:      '&[disabled], fieldset[disabled] &',
-  hidden:        '&[hidden]',
+  hidden:        '&[hidden], [hidden] &',
 );
 
 @function get-states-selectors ($needed-states, $context: null) {
@@ -85,8 +85,6 @@ $required-states: (
 }
 
 @mixin state-is ($needed-states...) {
-  $tmp: get-states-selectors($needed-states, &);
-
   $states-selectors: ();
 
   @each $state in $needed-states {
@@ -110,7 +108,7 @@ $required-states: (
   }
 
   $tmp: ();
-  @each $selector in & {
+  @each $selector in parse-selectors(&) {
     @each $state-selector in $states-selectors {
       $parents: _drop-right($selector, 1);
       $element: _last($selector);

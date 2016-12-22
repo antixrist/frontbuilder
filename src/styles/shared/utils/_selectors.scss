@@ -90,25 +90,6 @@
   @return $rule;
 }
 
-/**
- * Return a list of all of the rules within the selector
- */
-@function rules ($selector) {
-  @return _split(_trim(selector-to-string($selector)), ' ');
-}
-
-/**
- * For each of the given elements, create a combined rule, applying the given
- * prefix.
- */
-@function combined-rule ($prefix, $elements) {
-  $rules: ();
-  @each $element in $elements {
-    $rules: append($rules, unquote($prefix + $element), comma);
-  }
-  @return $rules;
-}
-
 @mixin sibling-self () {
   $selectors: ();
 
@@ -152,4 +133,23 @@
   @at-root #{$selectors} {
     @content;
   }
+}
+
+/**
+ * Return a list of all of the rules within the selector
+ */
+@function rules ($selector) {
+  @return _split(_trim(selector-to-string($selector)), ' ');
+}
+
+/**
+ * For each of the given elements, create a combined rule, applying the given
+ * prefix.
+ */
+@function combined-rule ($prefix, $elements) {
+  $rules: ();
+  @each $element in $elements {
+    $rules: append($rules, unquote($prefix + $element), comma);
+  }
+  @return $rules;
 }
