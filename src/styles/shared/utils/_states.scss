@@ -107,33 +107,13 @@ $required-states: (
     }
   }
 
-  //@debug('== $states-values: #{$states-values}');
-  //@debug('== parse-selectors(&): #{parse-selectors(&)}');
-
   $tmp: ();
   @each $selector in parse-selectors(&) {
-    //@debug('$selector: #{$selector}');
-
     $parents: _drop-right($selector, 1);
     $element: _last($selector);
 
-//@debug('
-//  $parents: #{$parents}
-//  $element: #{$element}
-//  $states-values: #{$states-values}
-//');
-
     @each $state-value in $states-values {
       $rule: _replace($state-value, '&', $element);
-
-      //$rule: _last($element);
-      //$rule-states: rule-states($rule);
-      //$rule-states: if(_is-list($rule-states), $rule-states, ($rule-states,));
-      //$rule-states: if(length($rule-states) > 0, ':#{_join($rule-states, ':')}', '');
-      //$state-selector: rule-without-states($element);
-      //$state-selector: _replace($state-selector, '&', $element);
-
-      //@debug('= $rule: #{$rule}');
 
       $state-selector: '#{$parents} #{$rule}';
       $state-selector: cleanup-selectors($state-selector);
@@ -142,8 +122,6 @@ $required-states: (
     }
   }
   $states-selectors: $tmp;
-
-  //@debug('=== $states-selectors: #{inspect($states-selectors)}');
 
   @at-root #{$states-selectors} {
     @content;
@@ -159,6 +137,35 @@ $required-states: (
 .block-type-1,
 .block-type-2 {
 
+  &:hover {
+    .item[checked] {
+
+      &:before:active[disabled] {
+        @each $selector in parse-selectors(&) {
+          $rules: selector-rules($selector);
+
+          @each $rule in $rules {
+@debug('
+$rule: #{inspect($rule)}
+');
+
+            $rule: parse-rule($rule);
+
+@debug('
+= $rule: #{inspect($rule)}
+= $rule: #{stringify-rule($rule)}
+');
+
+          }
+        }
+      }
+    }
+
+    .asd:checked:after:hover {
+
+    }
+  }
+
   .block-item,
   .block-item--variant {
 
@@ -172,7 +179,6 @@ $required-states: (
         //  //@debug('$sels: #{$sels}');
         //}
       }
-
 
       @include state-is (hover, checked) {
         background: #f00;

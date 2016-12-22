@@ -71,6 +71,142 @@
   @return $states;
 }
 
+@function _parse-str-attrs ($str) {
+  $attrs: ();
+  $idx-start: str-last-index($str, '[');
+  $idx-end: str-last-index($str, ']');
+
+  @while $idx-start != null and $idx-end != null {
+    $attrs: append($attrs, str-slice($str, $idx-start, $idx-end), comma);
+    $str: str-slice($str, 0, $idx-start - 1) + str-slice($str, $idx-end + 1);
+
+    $idx-start: str-last-index($str, '[');
+    $idx-end: str-last-index($str, ']');
+  }
+
+  @return (
+    str: $str,
+    attrs: $attrs
+  );
+}
+
+
+@function stringify-states ($states) {
+  $states: if(_is-list($states), $states, ($states,));
+  $states: if(length($states) > 0, ':#{_join($states, ':')}', '');
+
+  @return $states;
+}
+
+@function _parse-rule ($rule) {
+  $attrs: ();
+  $states: ();
+
+  $splitted: _split($rule, ':');
+  @if (length($splitted) > 1) {
+    $states: _drop($splitted);
+    $states: _map($states, _trim);
+    $states: _compact($states);
+    $rule: _first($splitted);
+  }
+
+  $_states: ();
+  @each $state in $states {
+    @if _ends-with($state, ']') {
+      $tmp: _parse-str-attrs($state);
+      $state: map-get($tmp, 'str');
+      $attrs: join($attrs, map-get($tmp, 'attrs'), comma);
+    }
+    $_states: append($_states, $state, comma);
+  }
+  $states: $_states;
+
+  $tmp: _parse-str-attrs($rule);
+  $rule: map-get($tmp, 'str');
+  $attrs: join($attrs, map-get($tmp, 'attrs'), comma);
+
+  $attrs: _map($attrs, unquote);
+  $states: _map($states, unquote);
+
+  @return (
+    rule: $rule,
+    attrs: $attrs,
+    states: $states
+  );
+}
+
+@function parse-rule ($rule) {
+  $attrs: ();
+  $states: ();
+
+  $rule: _replace($rule, '::after', ':after');
+  $rule: _replace($rule, '::before', ':before');
+
+  $before: null;
+  $after: null;
+
+  $tmp: _split($rule, ':before');
+  @if length($tmp) > 1 {
+    $before: _last($tmp);
+    $rule: _join(_drop-right($tmp, 1), '');
+    $before: _parse-rule('BEFORE#{$before}');
+  }
+
+  $tmp: _split($rule, ':after');
+  @if length($tmp) > 1 {
+    $after: _last($tmp);
+    $rule: _join(_drop-right($tmp, 1), '');
+    $after: _parse-rule('AFTER#{$after}');
+  }
+
+  $rule: _parse-rule($rule);
+
+  @if ($before != null) {
+    $rule: _set($rule, 'attrs', join(_get($rule, 'attrs'), _get($before, 'attrs'), comma));
+    $before: _set($before, 'rule', unquote(':before'));
+    $before: map-remove($before, 'attrs');
+  }
+
+  @if ($after != null) {
+    $rule: _set($rule, 'attrs', join(_get($rule, 'attrs'), _get($after, 'attrs'), comma));
+    $after: _set($after, 'rule', unquote(':before'));
+    $after: map-remove($after, 'attrs');
+  }
+
+  $rule: _set($rule, 'attrs', _uniq(_get($rule, 'attrs')));
+  $rule: _set($rule, 'states', _uniq(_get($rule, 'states')));
+
+  $rule: _set($rule, before, $before);
+  $rule: _set($rule, after, $after);
+
+  @return $rule;
+}
+
+@function stringify-rule ($rule) {
+  $attrs: map-get($rule, 'attrs');
+  $states: map-get($rule, 'states');
+  $before: map-get($rule, 'before');
+  $after: map-get($rule, 'after');
+  $rule: map-get($rule, 'rule');
+
+  $retVal: '#{$rule}#{_join($attrs)}#{stringify-states($states)}';
+
+  @if $before != null {
+    $rule: map-get($before, 'rule');
+    $states: map-get($before, 'states');
+
+    $retVal: '#{$retVal}#{$rule}#{stringify-states($states)}';
+  }
+  @if $after != null {
+    $rule: map-get($after, 'rule');
+    $states: map-get($after, 'states');
+
+    $retVal: '#{$retVal}#{$rule}#{stringify-states($states)}';
+  }
+
+  @return $retVal;
+}
+
 @function rule-has-states ($rule) {
   @return length(rule-states($rule)) > 0;
 }
@@ -85,16 +221,17 @@
   @return false;
 }
 
-@function rule-without-states ($rule) {
+@function rule-without-states (
+  $rule,
+  $whitelist: (before, after)
+) {
   $splitted: _split($rule, ':');
-  $splitted: _intersection($splitted, (_first($splitted), before, after));
+  @if (_is-list($whitelist) and length($whitelist) > 1) {
+    $splitted: _intersection($splitted, join((_first($splitted),), $whitelist));
+  }
   $rule: _join($splitted, ':');
 
   @return $rule;
-}
-
-@function rule-without-filters ($rule) {
-  @return _first(_split($rule, ':'));
 }
 
 @mixin sibling-self (
@@ -128,7 +265,7 @@
 
 @function cleanup-rule ($rule) {
   $rule-states: rule-states($rule);
-  $rule: rule-without-filters($rule);
+  $rule: rule-without-states($rule, $whitelist: null);
 
   $new-rule-states: ();
   @each $rule-state in $rule-states {
