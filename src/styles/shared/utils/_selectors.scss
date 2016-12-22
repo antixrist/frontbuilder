@@ -1,14 +1,50 @@
 @import '~sassdash/index';
 
-@function extract-currents ($selectors...) {
+@function extract-current ($selectors, $with-states: false) {
   $retVal: ();
 
-  @each $selector in $selectors {
+  @debug('$selectors: #{$selectors}');
 
+  @each $selector in $selectors {
+    //@debug('$selector: #{$selector}');
+
+    $current: _last($selector);
+    @if $with-states == true {
+      $retVal: append($retVal, $current, comma);
+    } @else {
+      $splitted: _split($current, ':');
+      $current: nth($splitted, 1);
+      //$states: _drop($splitted, 1);
+      //$states: _join($states, ':');
+      //$states: if($states != '' and $states != null, ':#{$states}', null);
+
+      $retVal: append($retVal, $current, comma);
+    }
   }
+
+  $retVal: _uniq($retVal);
+
+  @debug('$retVal: #{$retVal}');
+
+  @return $retVal;
 }
 
+.qweqwe,
+.qweqwe-2 {
 
+  //.asd {
+    &:hover,
+    .zxc {
+      //@debug('#{&} + #{extract-current(&)}');
+      @each $item in extract-current(&) {
+        //@debug('$item: #{$item}');
+        & + #{$item} {
+          zxc: 123;
+        }
+      }
+    }
+  //}
+}
 
 // из обычной строки, разделённой запятыми, получает нормальный список селекторов
 @function parse-selectors ($selectors...) {

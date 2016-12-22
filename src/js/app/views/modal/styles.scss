@@ -1,0 +1,54 @@
+@import '../../../../styles/shared/utils';
+
+html.modal-opened {
+  height: 100%;
+  overflow: hidden;
+
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+.modal {
+  @include stretch(x y);
+  position: fixed;
+  overflow: hidden;
+}
+
+.modal__overlay {
+  @include stretch(x y);
+}
+
+.modal__outer {
+  @include stretch(x y);
+  z-index: 2;
+  overflow: hidden;
+}
+.modal__outer-scrollable {
+  @include stretch(x y);
+  overflow-y: auto;
+}
+.modal__body {
+  @include box(1em);
+}
+.modal__content {
+  /*background: #fff;*/
+  box-shadow: 0 0 10px rgba(#000, .6);
+  position: relative;
+}
+
+.modal__y-outer {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+.modal__y {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+.modal__x {
+  text-align: left;
+  display: inline-block;
+}

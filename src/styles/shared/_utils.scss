@@ -5,16 +5,3 @@
 @import 'utils/selectors';
 @import 'utils/states';
 @import 'utils/content';
-
-
-.qweqwe {
-  asd: 321;
-
-  .zxc {
-    qwe: 432;
-
-    @include state-is (hover, focus) {
-      qweqwe: qwe;
-    }
-  }
-}
