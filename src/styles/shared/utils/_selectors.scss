@@ -83,7 +83,11 @@
 }
 
 @function rule-without-states ($rule) {
-  @return _first(_split($rule, ':'));
+  $splitted: _split($rule, ':');
+  $splitted: _intersection($splitted, (_first($splitted), before, after));
+  $rule: _join($splitted, ':');
+
+  @return $rule;
 }
 
 /**
@@ -106,27 +110,22 @@
 }
 
 @mixin sibling-self () {
-  $lastRule: _last(rules(&));
+  $selectors: ();
 
-  & + #{$lastRule} {
+  @each $selector in parse-selectors(&) {
+    $rules: selector-rules($selector);
+    $rule: _last($rules);
+    $rule: rule-without-states($rule);
+
+    $selectors: append($selectors, '#{$selector} + #{$rule}', comma);
+  }
+
+  $selectors: _uniq($selectors);
+
+  @at-root #{$selectors} {
     @content;
   }
 }
-
-//.qweqwe,
-//.qweqwe-2 {
-//  .asd:hover {
-//    @debug(type_of(&));
-//    @debug(type_of(rules(&)));
-//
-//    $add: '.qwe, .zxc';
-//    & + {
-//      #{$add} {
-//        qweqwe: 123;
-//      }
-//    }
-//  }
-//}
 
 // Повышает специфичность
 // `.className` => `.className.className`

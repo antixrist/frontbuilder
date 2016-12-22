@@ -3,26 +3,25 @@
 @import 'selectors';
 
 
-.qweqwe,
-.qweqwe-2 {
-  .asdasd,
-  .asdasd-2 {
-    $selectors: parse-selectors((&, ('.zxczxc .ewqewq', '.zxczxc-3, .ewqewq-3'), '.zxczxc-4'));
-
-    @debug('$selectors: #{inspect($selectors)}');
-
-    @each $selector in $selectors {
-      $rules: selector-rules($selector);
-      @debug('$rules: #{list-separator($rules)} #{inspect($rules)}');
-    }
-
-    @at-root #{$selectors} {
-      asdasdasd: 123;
-    }
-  }
-}
-
-
+//.qweqwe,
+//.qweqwe-2 {
+//  .asdasd,
+//  .asdasd-2 {
+//    $selectors: parse-selectors((&, ('.zxczxc .ewqewq', '.zxczxc-3, .ewqewq-3'), '.zxczxc-4'));
+//
+//    @debug('$selectors: #{inspect($selectors)}');
+//
+//    @each $selector in $selectors {
+//      $rules: selector-rules($selector);
+//      @debug('$rules: #{list-separator($rules)} #{inspect($rules)}');
+//    }
+//
+//    @at-root #{$selectors} {
+//      asdasdasd: 123;
+//    }
+//  }
+//}
+//
 
 
 //$splitted: _split($current, ':');

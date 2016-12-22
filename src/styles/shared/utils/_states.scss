@@ -133,3 +133,26 @@ $required-states: (
     @content;
   }
 }
+
+.qweqwe,
+.qweqwe-2 {
+  .zxc,
+  .asd {
+    &:after {
+      @include state-is (focus, hover) {
+        @include sibling-self {
+          @include state-is (active, valid) {
+            asdasd: 321;
+            .inner {
+              qweqwe: 123;
+
+              &:before {
+                content: '54321';
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
