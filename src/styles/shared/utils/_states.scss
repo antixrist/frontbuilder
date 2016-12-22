@@ -85,41 +85,65 @@ $required-states: (
 }
 
 @mixin state-is ($needed-states...) {
-  $states-selectors: ();
+  $states-values: ();
 
   @each $state in $needed-states {
     @if (map-has-key($required-states, $state) or map-has-key($states, $state)) {
       @if (map-has-key($required-states, $state)) {
-        $selector: map-get($required-states, $state);
-        @if ($selector != null) {
-          $states-selectors: join($states-selectors, parse-selectors($selector), comma);
+        $state-value: map-get($required-states, $state);
+        @if ($state-value != null) {
+          $states-values: join($states-values, parse-selectors($state-value), comma);
         }
       }
 
       @if (map-has-key($states, $state)) {
-        $selector: map-get($states, $state);
-        @if ($selector != null) {
-          $states-selectors: join($states-selectors, parse-selectors($selector), comma);
+        $state-value: map-get($states, $state);
+        @if ($state-value != null) {
+          $states-values: join($states-values, parse-selectors($state-value), comma);
         }
       }
     } @else {
-      $states-selectors: join($states-selectors, parse-selectors($state), comma);
+      $states-values: join($states-values, parse-selectors($state), comma);
     }
   }
 
+  //@debug('== $states-values: #{$states-values}');
+  //@debug('== parse-selectors(&): #{parse-selectors(&)}');
+
   $tmp: ();
   @each $selector in parse-selectors(&) {
-    @each $state-selector in $states-selectors {
-      $parents: _drop-right($selector, 1);
-      $element: _last($selector);
+    //@debug('$selector: #{$selector}');
 
-      $state-selector: _replace($state-selector, '&', $element);
-      $state-selector: $parents $state-selector;
+    $parents: _drop-right($selector, 1);
+    $element: _last($selector);
+
+//@debug('
+//  $parents: #{$parents}
+//  $element: #{$element}
+//  $states-values: #{$states-values}
+//');
+
+    @each $state-value in $states-values {
+      $rule: _replace($state-value, '&', $element);
+
+      //$rule: _last($element);
+      //$rule-states: rule-states($rule);
+      //$rule-states: if(_is-list($rule-states), $rule-states, ($rule-states,));
+      //$rule-states: if(length($rule-states) > 0, ':#{_join($rule-states, ':')}', '');
+      //$state-selector: rule-without-states($element);
+      //$state-selector: _replace($state-selector, '&', $element);
+
+      //@debug('= $rule: #{$rule}');
+
+      $state-selector: '#{$parents} #{$rule}';
+      $state-selector: cleanup-selectors($state-selector);
 
       $tmp: append($tmp, $state-selector, comma);
     }
   }
   $states-selectors: $tmp;
+
+  //@debug('=== $states-selectors: #{inspect($states-selectors)}');
 
   @at-root #{$states-selectors} {
     @content;
@@ -141,22 +165,34 @@ $required-states: (
     &:first-child {
       &:after {
         border-top: none;
+
+        //&:hover[checked] {
+        //  //@debug('&: #{parse-selectors(&)}');
+        //  $sels: cleanup-selectors(&);
+        //  //@debug('$sels: #{$sels}');
+        //}
       }
 
-      @include state-is (hover, focus) {
+
+      @include state-is (hover, checked) {
         background: #f00;
+        @include state-is (active, focus) {
+          background: #00f;
 
-        @include sibling-self {
-          @include state-is (active) {
-            color: #0f0;
+          @include sibling-self {
+            background: #0f0;
 
-            .inner {
-              padding: 10px;
-
-              &:before {
-                content: '54321';
-              }
-            }
+            //@include state-is (active) {
+            //  color: #0f0;
+            //
+            //  .inner {
+            //    padding: 10px;
+            //
+            //    &:before {
+            //      content: '54321';
+            //    }
+            //  }
+            //}
           }
         }
       }

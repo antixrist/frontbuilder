@@ -60,10 +60,13 @@
 }
 
 @function rule-states ($rule) {
-  $states: _drop(_split($rule, ':'));
-  $states: _map($states, _trim);
-  $states: _map($states, _compact);
-  $states: _difference($states, (before, after));
+  $states: _split($rule, ':');
+  @if (length($states) > 0) {
+    $states: _drop($states);
+    $states: _map($states, _trim);
+    $states: _compact($states);
+    $states: _difference($states, (before, after));
+  }
 
   @return $states;
 }
@@ -90,7 +93,15 @@
   @return $rule;
 }
 
-@mixin sibling-self () {
+@function rule-without-filters ($rule) {
+  @return _first(_split($rule, ':'));
+}
+
+@mixin sibling-self (
+  /** todo: */
+  $attrs: false,
+  $states: false
+) {
   $selectors: ();
 
   @each $selector in parse-selectors(&) {
@@ -106,6 +117,55 @@
   @at-root #{$selectors} {
     @content;
   }
+}
+
+@function get-states-string ($states) {
+  $states: if(_is-list($states), $states, ($states,));
+  $states: if(length($states) > 0, ':#{_join($states, ':')}', '');
+
+  @return $states;
+}
+
+@function cleanup-rule ($rule) {
+  $rule-states: rule-states($rule);
+  $rule: rule-without-filters($rule);
+
+  $new-rule-states: ();
+  @each $rule-state in $rule-states {
+    $idx-start: str-last-index($rule-state, '[');
+    $idx-end: str-last-index($rule-state, ']');
+
+    @while $idx-start != null and $idx-end != null {
+      $rule: $rule + str-slice($rule-state, $idx-start, $idx-end);
+      $rule-state: str-slice($rule-state, 0, $idx-start - 1) + str-slice($rule-state, $idx-end + 1);
+
+      $idx-start: str-last-index($rule-state, '[');
+      $idx-end: str-last-index($rule-state, ']');
+    }
+
+    $new-rule-states: append($new-rule-states, $rule-state);
+  }
+
+  @return '#{$rule}#{get-states-string($new-rule-states)}';
+}
+
+@function cleanup-selectors ($selectors...) {
+  $new-selectors: ();
+  $selectors: parse-selectors($selectors);
+
+  @each $selector in $selectors {
+    $new-selector: ();
+    $rules: selector-rules($selector);
+
+    @each $rule in $rules {
+      $new-rule: cleanup-rule($rule);
+      $new-selector: append($new-selector, $new-rule, space);
+    }
+
+    $new-selectors: append($new-selectors, $new-selector, comma);
+  }
+
+  @return $new-selectors;
 }
 
 // Повышает специфичность
