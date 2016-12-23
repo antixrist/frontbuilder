@@ -74,9 +74,9 @@ $parse-selectors-memo: () !default;
   }
 
   @return (
-            str: $str,
-            attrs: $attrs
-          );
+    str: $str,
+    attrs: $attrs
+  );
 }
 
 @function _parse-rule ($rule) {

@@ -19,12 +19,14 @@ export default function (webpackConfig) {
       { loader: 'postcss-loader', query: { sourceMap: 'inline' } }
     ]
   };
-  
+
   let sassLoader = {
     fallbackLoader: 'style-loader',
-    loader: [
+    loader: [].concat([
       { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: true } },
-      ...[!isDevelopment ? { loader: 'postcss-loader', query: { sourceMap: 'inline' } } : {}],
+    ],
+      !isDevelopment ? [{ loader: 'postcss-loader', query: { sourceMap: 'inline' } }] : [],
+    [
       /**
        * Sass не умеет резолвить и переписывать пути ассетов у подключаемых файлов.
        * `resolve-url-loader` это исправляет.
@@ -35,7 +37,7 @@ export default function (webpackConfig) {
         sourceMap: true,
         sourceMapContents: true,
       } }
-    ]
+    ])
   };
   
   // plugins.push(
