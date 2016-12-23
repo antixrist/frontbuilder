@@ -55,12 +55,6 @@ $bem-modifier-separator: '--' !default;
   @return str-slice($selector, 0, $modifierStart);
 }
 
-@mixin block($block) {
-  .#{$block} {
-    @content;
-  }
-}
-
 /**
  * Append the given elements to the previous selector.
  * If the last rule was a modifier start a new rule from the point of the
@@ -140,27 +134,38 @@ $bem-modifier-separator: '--' !default;
   }
 }
 
+@mixin b ($block) {
+  @at-root .#{$block} {
+    @content;
+  }
+}
+
+
 
 .qweqwe,
 .asdqwe {
   color: black;
 
-  .inner[checked]:invalid:before:hover {
-    border-bottom: 1px solid;
+  &:first-child {
 
-    //@include state-is (hover, focus) {
-      @include state-is (active) {
-        background: #f00;
-      //}
+    .inner[checked]:invalid:before:hover {
+      border-bottom: 1px solid;
 
-      @include m(dashed) {
-        border-bottom: 1px dashed #0f0;
+      //@include state-is (hover, focus) {
+        @include state-is (active) {
+          background: #f00;
+        //}
 
-        @include state-is (hover) {
-          background: #eee;
+        @include m(dashed) {
+          border-bottom: 1px dashed #0f0;
+
+          @include state-is (hover) {
+            background: #eee;
+          }
         }
       }
     }
+  }
 
   //  @include m(dashed) {
   //    border-bottom: 1px dashed #0f0;
@@ -184,5 +189,4 @@ $bem-modifier-separator: '--' !default;
   //      }
   //    }
   //  }
-  }
 }
