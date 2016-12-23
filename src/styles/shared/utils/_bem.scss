@@ -1,33 +1,8 @@
 //@import '~SassMagic';
 @import '~sassdash/index';
-@import 'selectors';
+//@import 'selectors';
+@import 'states';
 
-
-//.qweqwe,
-//.qweqwe-2 {
-//  .asdasd,
-//  .asdasd-2 {
-//    $selectors: parse-selectors((&, ('.zxczxc .ewqewq', '.zxczxc-3, .ewqewq-3'), '.zxczxc-4'));
-//
-//    @debug('$selectors: #{inspect($selectors)}');
-//
-//    @each $selector in $selectors {
-//      $rules: selector-rules($selector);
-//      @debug('$rules: #{list-separator($rules)} #{inspect($rules)}');
-//    }
-//
-//    @at-root #{$selectors} {
-//      asdasdasd: 123;
-//    }
-//  }
-//}
-//
-
-
-//$splitted: _split($current, ':');
-//$states: _drop($splitted, 1);
-//$states: _join($states, ':');
-//$states: if($states != '' and $states != null, ':#{$states}', null);
 
 /// BEM
 /// @access public
@@ -56,7 +31,7 @@ $bem-modifier-separator: '--' !default;
  */
 @function lastRuleWithoutModifier($selector) {
   $lastRule: _last(rules($selector));
-  @return _first(str-explode($lastRule, $bem-modifier-separator));
+  @return _first(_split($lastRule, $bem-modifier-separator));
 }
 
 /// @access private
@@ -120,10 +95,94 @@ $bem-modifier-separator: '--' !default;
   }
 }
 
-@mixin modifier($modifier) {
+@function get-modifiers ($modifiers) {
+  $selectors: ();
+
+  @each $selector in parse-selectors(&) {
+    $rules: ();
+    @each $rule in selector-rules($selector) {
+      $rules: append($rules, parse-rule($rule), comma);
+    }
+
+    $last-rule: _last($rules);
+    $parents-rules: _drop-right($rules, 1);
+
+    // todo: проверить
+    $parents-rules-with-states: ();
+    @each $rule in $parents-rules {
+      @if (rule-has-states($rule)) {
+        $rule: stringify-rule($rule);
+
+        $parents-rules-with-states: append($parents-rules-with-states, $rule, comma);
+      }
+    }
+
+    @each $modifier in $modifiers {
+      $new-rule: $last-rule;
+      $rule: map-get($new-rule, 'rule');
+
+      $new-rule: map-merge($new-rule, (
+        rule: #{$rule}#{$bem-modifier-separator}#{$modifier}
+      ));
+      $new-rule: '#{$parents-rules-with-states} #{stringify-rule($new-rule)}';
+      $selectors: append($selectors, $new-rule, comma);
+    }
+  }
+
+  @return $selectors;
+}
+
+@mixin m ($modifiers...) {
   @at-root {
-    #{&}#{$bem-modifier-separator + $modifier} {
+    #{get-modifiers($modifiers)} {
       @content;
     }
+  }
+}
+
+
+.qweqwe,
+.asdqwe {
+  color: black;
+
+  .inner[checked]:invalid:before:hover {
+    border-bottom: 1px solid;
+
+    //@include state-is (hover, focus) {
+      @include state-is (active) {
+        background: #f00;
+      //}
+
+      @include m(dashed) {
+        border-bottom: 1px dashed #0f0;
+
+        @include state-is (hover) {
+          background: #eee;
+        }
+      }
+    }
+
+  //  @include m(dashed) {
+  //    border-bottom: 1px dashed #0f0;
+  //
+  //    @include state-is (hover, focus) {
+  //      background: #eee;
+  //    }
+  //  }
+  //
+  //  @include state-is (invalid) {
+  //    background: #f00;
+  //
+  //    @include m(dashed) {
+  //      border-bottom-color: #f00;
+  //
+  //      @debug('
+  //= dashed &: #{&}');
+  //
+  //      @include state-is (hover, focus) {
+  //        background: #f00;
+  //      }
+  //    }
+  //  }
   }
 }

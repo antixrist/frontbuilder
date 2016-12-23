@@ -116,6 +116,7 @@ $parse-selectors-memo: () !default;
   );
 }
 
+// todo: :not()
 $parse-rule-memo: () !default;
 @function parse-rule ($rule) {
   $memo-key: inspect($rule);
@@ -208,8 +209,14 @@ $stringify-rule-memo: () !default;
   @return $retVal;
 }
 
+//@function rule-has-states ($rule) {
+//  @return str-index($rule, ':') > 0;
+//}
+
 @function rule-has-states ($rule) {
-  @return str-index($rule, ':') > 0;
+  $rule: if(type_of($rule) != map, parse-rule($rule), $rule);
+
+  @return length(map-get($rule, 'states')) > 0;
 }
 
 @function rule-has-attrs ($rule) {
@@ -237,7 +244,8 @@ $stringify-rule-memo: () !default;
 }
 
 @function cleanup-rule ($rule) {
-  @return stringify-rule(parse-rule($rule));
+  $rule: if(type_of($rule) == map, $rule, parse-rule($rule));
+  @return stringify-rule($rule);
 }
 
 $cleanup-selectors-memo: () !default;
@@ -264,6 +272,68 @@ $cleanup-selectors-memo: () !default;
   )) !global;
 
   @return $retVal;
+}
+
+// todo: $rules...
+$merge-rules-memo: () !default;
+@function merge-rules ($rule1, $rule2) {
+  $memo-key: #{inspect($rule1)inspect($rule2)};
+  @if map-has-key($merge-rules-memo, $memo-key) {
+    @return map-get($merge-rules-memo, $memo-key);
+  }
+
+  $Rule1: if(type_of($rule1) == map, $rule1, parse-rule($rule1));
+  $Rule2: if(type_of($rule2) == map, $rule2, parse-rule($rule2));
+
+  $before: null;
+  @if (map-get($Rule1, 'before') != null) {
+    $before: map-get($Rule1, 'before');
+
+    @if (map-get($Rule2, 'before') != null) {
+      $before: map-merge($before, (
+        rule: _get($Rule2, 'before' 'rule'),
+        states: _uniq(join(
+          map-get($before, 'states'),
+          _get($Rule2, 'before' 'states'),
+          comma
+        ))
+      ));
+    }
+  } @elseif (map-get($Rule2, 'before') != null) {
+    $before: map-get($Rule2, 'before');
+  }
+
+  $after: null;
+  @if (map-get($Rule1, 'after') != null) {
+    $after: map-get($Rule1, 'after');
+
+    @if (map-get($Rule2, 'after') != null) {
+      $after: map-merge($after, (
+        rule: _get($Rule2, 'after' 'rule'),
+        states: _uniq(join(
+          map-get($after, 'states'),
+          _get($Rule2, 'after' 'states'),
+          comma
+        ))
+      ));
+    }
+  } @elseif (map-get($Rule2, 'before') != null) {
+    $after: map-get($Rule2, 'before');
+  }
+
+  $Rule: (
+    rule: _get($Rule2, 'rule'),
+    states: _uniq(join(_get($Rule1, 'states'), _get($Rule2, 'states'), comma)),
+    attrs: _uniq(join(_get($Rule1, 'attrs'), _get($Rule2, 'attrs'), comma)),
+    before: $before,
+    after: $after
+  );
+
+  $merge-rules-memo: map-merge($merge-rules-memo, (
+    $memo-key: $Rule
+  )) !global;
+
+  @return $Rule;
 }
 
 $sibling-self-selectors-memo: () !default;
@@ -301,6 +371,7 @@ $sibling-self-selectors-memo: () !default;
 // Повышает специфичность
 // `.className` => `.className.className`
 // осторожно! `h1` => `h1h1`
+// todo: переписать с использование parse-selectors/parse-rules
 @mixin power () {
   $selectors: ();
 

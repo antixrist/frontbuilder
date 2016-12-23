@@ -43,7 +43,7 @@ $required-states: (
 );
 
 $get-states-selectors-memo: () !default;
-@function get-states-selectors ($needed-states...) {
+@function get-states-selectors ($needed-states) {
   $memo-key: inspect($needed-states);
   @if map-has-key($get-states-selectors-memo, $memo-key) {
     @return map-get($get-states-selectors-memo, $memo-key);
@@ -56,42 +56,80 @@ $get-states-selectors-memo: () !default;
       @if (map-has-key($required-states, $state)) {
         $state-value: map-get($required-states, $state);
         @if ($state-value != null) {
-          $states-values: join($states-values, parse-selectors($state-value), comma);
+          $states-values: join($states-values, $state-value, comma);
         }
       }
 
       @if (map-has-key($states, $state)) {
         $state-value: map-get($states, $state);
         @if ($state-value != null) {
-          $states-values: join($states-values, parse-selectors($state-value), comma);
+          $states-values: join($states-values, $state-value, comma);
         }
       }
     } @else {
-      $states-values: join($states-values, parse-selectors($state), comma);
+      $states-values: join($states-values, $state, comma);
     }
   }
 
-  $tmp: ();
+  $selectors: ();
   @each $selector in parse-selectors(&) {
-    $parents: _drop-right($selector, 1);
-    $element: _last($selector);
+    $Rules: ();
+    @each $rule in selector-rules($selector) {
+      $Rules: append($Rules, parse-rule($rule), comma);
+    }
+
+    $Rule-last: _last($Rules);
+    $Rules-parents: _drop-right($Rules, 1);
 
     @each $state-value in $states-values {
-      $rule: _replace($state-value, '&', $element);
+      $rule: _replace($state-value, '&', map-get($Rule-last, 'rule'));
+      $_Rule-state: parse-rule($rule);
 
-      $state-selector: '#{$parents} #{$rule}';
-      $state-selector: cleanup-selectors($state-selector);
+      $Rule-last-new: ();
 
-      $tmp: append($tmp, $state-selector, comma);
+      $pseudo: null;
+      @if map-get($Rule-last, 'before') != null {
+        $pseudo: 'before';
+      } @elseif map-get($Rule-last, 'after') != null {
+        $pseudo: 'after';
+      }
+
+      @if $pseudo != null {
+        $Rule-last-new: (
+          rule: map-get($_Rule-state, 'rule'),
+          states: map-get($Rule-last, 'states'),
+          attrs: map-get($Rule-last, 'attrs'),
+        );
+
+        $states: ();
+        $states: join($states, if(_get($_Rule-state, 'states') != null, _get($_Rule-state, 'states'), ()), comma);
+        $states: join($states, if(_get($_Rule-state, $pseudo 'states') != null, _get($_Rule-state, $pseudo 'states'), ()), comma);
+        $states: join($states, if(_get($Rule-last, $pseudo 'states') != null, _get($Rule-last, $pseudo 'states'), ()), comma);
+        $states: _uniq($states);
+        $Rule-last-new: _set($Rule-last-new, $pseudo, (
+          rule: _get($Rule-last, $pseudo 'rule'),
+          states: $states,
+        ));
+      }
+      @else {
+        $Rule-last-new: merge-rules($Rule-last, $_Rule-state);
+      }
+
+      $selector: ();
+      $_Rules-selector: append($Rules-parents, $Rule-last-new);
+      @each $_Rule in $_Rules-selector {
+        $selector: append($selector, stringify-rule($_Rule), space);
+      }
+
+      $selectors: append($selectors, $selector, comma);
     }
   }
-  $states-selectors: $tmp;
 
   $get-states-selectors-memo: map-merge($get-states-selectors-memo, (
-    $memo-key: $states-selectors
+    $memo-key: $selectors
   )) !global;
 
-  @return $states-selectors;
+  @return $selectors;
 }
 
 @mixin state-is ($needed-states...) {
