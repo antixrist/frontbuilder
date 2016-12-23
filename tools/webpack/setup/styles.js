@@ -24,7 +24,7 @@ export default function (webpackConfig) {
     fallbackLoader: 'style-loader',
     loader: [
       { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: true } },
-      { loader: 'postcss-loader', query: { sourceMap: 'inline' } },
+      ...[!isDevelopment ? { loader: 'postcss-loader', query: { sourceMap: 'inline' } } : {}],
       /**
        * Sass не умеет резолвить и переписывать пути ассетов у подключаемых файлов.
        * `resolve-url-loader` это исправляет.
