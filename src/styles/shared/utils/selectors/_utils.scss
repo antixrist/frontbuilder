@@ -1,0 +1,341 @@
+@import '~sassdash/index';
+@import '~sassy-strings/stylesheets/SassyStrings';
+
+@function cleanup-list ($list) {
+  @return _uniq($list);
+}
+
+// Парсит входные параметры и возвращает comma-лист с селекторами
+$parse-selectors-memo: () !default;
+@function parse-selectors ($items...) {
+  $memo-key: inspect($items);
+  @if map-has-key($parse-selectors-memo, $memo-key) {
+    @return map-get($parse-selectors-memo, $memo-key);
+  }
+
+  $retVal: ();
+
+  @each $item in $items {
+    @if _is-list-like($item) {
+      @if list-separator($item) == comma {
+        @each $selector in $item {
+          $retVal: join($retVal, parse-selectors($selector), comma);
+        }
+      } @else {
+        $has-comma: str-index(inspect($item), ',') != null;
+        @if $has-comma == true {
+          @each $selector in $item {
+            $retVal: join($retVal, parse-selectors($selector), comma);
+          }
+        } @else {
+          $retVal: append($retVal, _map($item, _trim), comma);
+        }
+      }
+    } @else {
+      $has-comma: str-index(inspect($item), ',') != null;
+      @if $has-comma == true {
+        @each $selector in _split($item, ',') {
+          $retVal: join($retVal, parse-selectors($selector), comma);
+        }
+      } @else {
+        $item: unquote($item);
+        $item: _trim($item);
+        $retVal: append($retVal, $item, comma);
+      }
+    }
+  }
+
+  $parse-selectors-memo: map-merge($parse-selectors-memo, (
+    $memo-key: $retVal
+  )) !global;
+
+  @return $retVal;
+}
+
+@function selector-rules ($selector) {
+  $rules: if(_is-list($selector), $selector, _split($selector, ' '));
+  @return _map($rules, unquote);
+}
+
+@function stringify-states ($states) {
+  $states: if(_is-list($states), $states, ($states,));
+  $states: if(length($states) > 0, ':#{_join($states, ':')}', '');
+
+  @return $states;
+}
+
+@function _parse-str-attrs ($str) {
+  $attrs: ();
+  $idx-start: str-last-index($str, '[');
+  $idx-end: str-last-index($str, ']');
+
+  @while $idx-start != null and $idx-end != null {
+    $attrs: append($attrs, str-slice($str, $idx-start, $idx-end), comma);
+    $str: str-slice($str, 0, $idx-start - 1) + str-slice($str, $idx-end + 1);
+
+    $idx-start: str-last-index($str, '[');
+    $idx-end: str-last-index($str, ']');
+  }
+
+  @return (
+    str: $str,
+    attrs: $attrs
+  );
+}
+
+@function _parse-rule ($rule) {
+  $attrs: ();
+  $states: ();
+
+  $splitted: _split($rule, ':');
+  @if (length($splitted) > 1) {
+    $states: _drop($splitted);
+    $states: _map($states, _trim);
+    $states: _compact($states);
+    $rule: _first($splitted);
+  }
+
+  $_states: ();
+  @each $state in $states {
+    @if _ends-with($state, ']') {
+      $tmp: _parse-str-attrs($state);
+      $state: map-get($tmp, 'str');
+      $attrs: join($attrs, map-get($tmp, 'attrs'), comma);
+    }
+    $_states: append($_states, $state, comma);
+  }
+  $states: $_states;
+
+  $tmp: _parse-str-attrs($rule);
+  $rule: map-get($tmp, 'str');
+  $attrs: join($attrs, map-get($tmp, 'attrs'), comma);
+
+  $attrs: _map($attrs, unquote);
+  $states: _map($states, unquote);
+
+  @return (
+    rule: if($rule == '' or $rule == null, '*', $rule),
+    attrs: $attrs,
+    states: $states
+  );
+}
+
+// todo: :not()
+$parse-rule-memo: () !default;
+@function parse-rule ($rule) {
+  $memo-key: inspect($rule);
+  @if map-has-key($parse-rule-memo, $memo-key) {
+    @return map-get($parse-rule-memo, $memo-key);
+  }
+
+  $attrs: ();
+  $states: ();
+
+  $rule: _replace($rule, '::after', ':after');
+  $rule: _replace($rule, '::before', ':before');
+
+  $before: null;
+  $after: null;
+
+  $tmp: _split($rule, ':before');
+  @if length($tmp) > 1 {
+    $before: _last($tmp);
+    $rule: _join(_drop-right($tmp, 1), '');
+    $before: _parse-rule('BEFORE#{$before}');
+  }
+
+  $tmp: _split($rule, ':after');
+  @if length($tmp) > 1 {
+    $after: _last($tmp);
+    $rule: _join(_drop-right($tmp, 1), '');
+    $after: _parse-rule('AFTER#{$after}');
+  }
+
+  $rule: _parse-rule($rule);
+
+  @if ($before != null) {
+    $rule: _set($rule, 'attrs', join(_get($rule, 'attrs'), _get($before, 'attrs'), comma));
+    $before: _set($before, 'rule', unquote(':before'));
+    $before: map-remove($before, 'attrs');
+  }
+
+  @if ($after != null) {
+    $rule: _set($rule, 'attrs', join(_get($rule, 'attrs'), _get($after, 'attrs'), comma));
+    $after: _set($after, 'rule', unquote(':after'));
+    $after: map-remove($after, 'attrs');
+  }
+
+  $rule: _set($rule, 'attrs', cleanup-list(_get($rule, 'attrs')));
+  $rule: _set($rule, 'states', cleanup-list(_get($rule, 'states')));
+
+  $rule: _set($rule, before, $before);
+  $rule: _set($rule, after, $after);
+
+  $parse-rule-memo: map-merge($parse-rule-memo, (
+    $memo-key: $rule
+  )) !global;
+
+  @return $rule;
+}
+
+$stringify-rule-memo: () !default;
+@function stringify-rule ($rule) {
+  $memo-key: inspect($rule);
+  @if map-has-key($stringify-rule-memo, $memo-key) {
+    @return map-get($stringify-rule-memo, $memo-key);
+  }
+
+  $attrs: map-get($rule, 'attrs');
+  $states: map-get($rule, 'states');
+  $before: map-get($rule, 'before');
+  $after: map-get($rule, 'after');
+  $rule: map-get($rule, 'rule');
+
+  $retVal: '#{$rule}#{_join($attrs)}#{stringify-states($states)}';
+
+  @if $before != null {
+    $rule: map-get($before, 'rule');
+    $states: map-get($before, 'states');
+
+    $retVal: '#{$retVal}#{$rule}#{stringify-states($states)}';
+  }
+  @if $after != null {
+    $rule: map-get($after, 'rule');
+    $states: map-get($after, 'states');
+
+    $retVal: '#{$retVal}#{$rule}#{stringify-states($states)}';
+  }
+
+  $stringify-rule-memo: map-merge($stringify-rule-memo, (
+    $memo-key: $retVal
+  )) !global;
+
+  @return $retVal;
+}
+
+//@function rule-has-states ($rule) {
+//  @return str-index($rule, ':') > 0;
+//}
+
+@function rule-has-states ($rule) {
+  $rule: if(type_of($rule) != map, parse-rule($rule), $rule);
+
+  @return length(map-get($rule, 'states')) > 0;
+}
+
+@function rule-has-attrs ($rule) {
+  @return str-index($rule, '[') > 0;
+}
+
+@function selector-has-states ($selector) {
+  @each $rule in selector-rules($selector) {
+    @if (rule-has-states($rule) == true) {
+      @return true;
+    }
+  }
+
+  @return false;
+}
+
+@function selector-has-states ($selector) {
+  @each $rule in selector-rules($selector) {
+    @if (rule-has-attrs($rule) == true) {
+      @return true;
+    }
+  }
+
+  @return false;
+}
+
+@function cleanup-rule ($rule) {
+  $rule: if(type_of($rule) == map, $rule, parse-rule($rule));
+  @return stringify-rule($rule);
+}
+
+$cleanup-selectors-memo: () !default;
+@function cleanup-selectors ($selectors...) {
+  $memo-key: inspect($selectors);
+  @if map-has-key($cleanup-selectors-memo, $memo-key) {
+    @return map-get($cleanup-selectors-memo, $memo-key);
+  }
+
+  $retVal: ();
+  @each $selector in parse-selectors($selectors) {
+    $new-selector: ();
+
+    @each $rule in selector-rules($selector) {
+      $new-rule: cleanup-rule($rule);
+      $new-selector: append($new-selector, $new-rule, space);
+    }
+
+    $retVal: append($retVal, $new-selector, comma);
+  }
+
+  $cleanup-selectors-memo: map-merge($cleanup-selectors-memo, (
+    $memo-key: $retVal
+  )) !global;
+
+  @return $retVal;
+}
+
+// todo: $rules...
+$merge-rules-memo: () !default;
+@function merge-rules ($rule1, $rule2) {
+  $memo-key: #{inspect($rule1)inspect($rule2)};
+  @if map-has-key($merge-rules-memo, $memo-key) {
+    @return map-get($merge-rules-memo, $memo-key);
+  }
+
+  $Rule1: if(type_of($rule1) == map, $rule1, parse-rule($rule1));
+  $Rule2: if(type_of($rule2) == map, $rule2, parse-rule($rule2));
+
+  $before: null;
+  @if (map-get($Rule1, 'before') != null) {
+    $before: map-get($Rule1, 'before');
+
+    @if (map-get($Rule2, 'before') != null) {
+      $before: map-merge($before, (
+        rule: _get($Rule2, 'before' 'rule'),
+        states: cleanup-list(join(
+          map-get($before, 'states'),
+          _get($Rule2, 'before' 'states'),
+          comma
+        ))
+      ));
+    }
+  } @elseif (map-get($Rule2, 'before') != null) {
+    $before: map-get($Rule2, 'before');
+  }
+
+  $after: null;
+  @if (map-get($Rule1, 'after') != null) {
+    $after: map-get($Rule1, 'after');
+
+    @if (map-get($Rule2, 'after') != null) {
+      $after: map-merge($after, (
+        rule: _get($Rule2, 'after' 'rule'),
+        states: cleanup-list(join(
+          map-get($after, 'states'),
+          _get($Rule2, 'after' 'states'),
+          comma
+        ))
+      ));
+    }
+  } @elseif (map-get($Rule2, 'before') != null) {
+    $after: map-get($Rule2, 'before');
+  }
+
+  $Rule: (
+    rule: _get($Rule2, 'rule'),
+    states: cleanup-list(join(_get($Rule1, 'states'), _get($Rule2, 'states'), comma)),
+    attrs: cleanup-list(join(_get($Rule1, 'attrs'), _get($Rule2, 'attrs'), comma)),
+    before: $before,
+    after: $after
+  );
+
+  $merge-rules-memo: map-merge($merge-rules-memo, (
+    $memo-key: $Rule
+  )) !global;
+
+  @return $Rule;
+}

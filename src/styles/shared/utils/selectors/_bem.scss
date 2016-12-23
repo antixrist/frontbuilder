@@ -1,0 +1,167 @@
+//@import '~SassMagic';
+@import '~sassdash/index';
+@import '~sassy-strings/stylesheets/SassyStrings';
+@import 'utils';
+
+$bem-element-separator: '__' !default;
+$bem-modifier-separator: '--' !default;
+
+@function parse-bem-rule ($rule) {
+  $splitted: _split($rule, $bem-modifier-separator);
+  $rule: _first($splitted);
+  $mod: if(length($splitted) > 1, _join(_drop($splitted), $bem-modifier-separator), '');
+
+  $splitted: _split($rule, $bem-element-separator);
+  $rule: _first($splitted);
+  $el: if(length($splitted) > 1, _join(_drop($splitted), $bem-element-separator), '');
+
+  @return (
+    b: $rule,
+    e: $el,
+    m: $mod
+  );
+}
+
+@function stringify-bem-rule ($rule) {
+  $rule: if(type_of($rule) != map, parse-bem-rule($rule), $rule);
+
+  $b: map-get($rule, 'b');
+  $e: map-get($rule, 'e');
+  $m: map-get($rule, 'm');
+
+  $e: if($e != null and $e != '', '#{$bem-element-separator}#{$e}', $e);
+  $m: if($m != null and $m != '', '#{$bem-modifier-separator}#{$m}', $m);
+
+  @return '#{$b}#{$e}#{$m}';
+}
+
+// todo: $parents-rules-with-states needed boolean var?
+// todo: include parents (count)?
+$get-bem-modifies-memo: () !default;
+@function get-bem-modifies ($modifiers) {
+  $memo-key: '#{inspect($modifiers)}#{&}';
+  @if map-has-key($get-bem-modifies-memo, $memo-key) {
+    @return map-get($get-bem-modifies-memo, $memo-key);
+  }
+
+  $selectors: ();
+
+  @each $selector in parse-selectors(&) {
+    $rules: ();
+    @each $rule in selector-rules($selector) {
+      $rules: append($rules, parse-rule($rule), comma);
+    }
+
+    $last-rule: _last($rules);
+    $parents-rules: _drop-right($rules, 1);
+
+    $parents-rules-with-states-or-mod: ();
+    @each $rule in $parents-rules {
+      @if (rule-has-states($rule) or map-get(parse-bem-rule(map-get($rule, 'rule')), 'm') != '') {
+        $rule: stringify-rule($rule);
+
+        $parents-rules-with-states-or-mod: append($parents-rules-with-states-or-mod, $rule, comma);
+      }
+    }
+
+    @each $modifier in $modifiers {
+      $new-rule: $last-rule;
+      $rule: map-get($new-rule, 'rule');
+
+      $bem-rule: parse-bem-rule($rule);
+      $bem-rule: map-merge($bem-rule, (
+        m: $modifier
+      ));
+
+      $new-rule: map-merge($new-rule, (
+        rule: stringify-bem-rule($bem-rule)
+      ));
+      $new-rule: '#{$parents-rules-with-states-or-mod} #{stringify-rule($new-rule)}';
+      $selectors: append($selectors, $new-rule, comma);
+    }
+  }
+
+  $get-bem-modifies-memo: map-merge($get-bem-modifies-memo, (
+    $memo-key: $selectors
+  )) !global;
+
+  @return $selectors;
+}
+
+$get-bem-elements-memo: () !default;
+@function get-bem-elements ($elements) {
+  $memo-key: '#{inspect($elements)}#{&}';
+  @if map-has-key($get-bem-modifies-memo, $memo-key) {
+    @return map-get($get-bem-modifies-memo, $memo-key);
+  }
+
+  $selectors: ();
+
+  @each $selector in parse-selectors(&) {
+    $Rules: ();
+    @each $rule in selector-rules($selector) {
+      $Rules: append($Rules, parse-rule($rule), comma);
+    }
+
+    $Rule-last: _last($Rules);
+    $Rule-last-bem: parse-bem-rule(map-get($Rule-last, 'rule'));
+
+    $parents-rules: _drop-right($Rules, 1);
+    // todo: проверить
+    $parents-rules-with-states-or-mod: ();
+    @each $rule in $parents-rules {
+      @if (rule-has-states($rule) or map-get(parse-bem-rule(map-get($rule, 'rule')), 'm') != '') {
+        $rule: stringify-rule($rule);
+
+        $parents-rules-with-states: append($parents-rules-with-states-or-mod, $rule, comma);
+      }
+    }
+    @if (rule-has-states($Rule-last) or map-get($Rule-last-bem, 'm') != '') {
+      $parents-rules-with-states-or-mod: append($parents-rules-with-states-or-mod, stringify-rule($Rule-last), comma);
+    }
+
+    @each $element in $elements {
+      $bem-rule: map-merge($Rule-last-bem, (
+        b: map-get($Rule-last-bem, 'b'),
+        e: $element,
+        m: ''
+      ));
+
+      $Rule-new: map-merge($Rule-last, (
+        rule: stringify-bem-rule($bem-rule),
+        states: ()
+      ));
+
+      $Rule-new: '#{$parents-rules-with-states-or-mod} #{stringify-rule($Rule-new)}';
+      $selectors: append($selectors, $Rule-new, comma);
+    }
+  }
+
+  $get-bem-elements-memo: map-merge($get-bem-elements-memo, (
+    $memo-key: $selectors
+  )) !global;
+
+  @return $selectors;
+}
+
+@mixin b ($block) {
+  @at-root .#{$block} {
+    @content;
+  }
+}
+
+@mixin e ($elements...) {
+  @at-root {
+    #{get-bem-elements($elements)} {
+      @content;
+    }
+  }
+}
+
+@mixin m ($modifiers...) {
+  @at-root {
+    #{get-bem-modifies($modifiers)} {
+      @content;
+    }
+  }
+}

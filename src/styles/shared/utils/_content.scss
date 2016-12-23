@@ -1,5 +1,5 @@
 @import '~sassdash/index';
-@import 'states';
+@import 'selectors';
 
 @function important ($important: false) {
   @return if($important == true, !important, null);

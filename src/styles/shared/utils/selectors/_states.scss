@@ -1,5 +1,5 @@
 @import '~sassdash/index';
-@import 'selectors';
+@import 'utils';
 
 $states: (
   hover:      '&.is-hovered',
@@ -39,12 +39,12 @@ $required-states: (
   indeterminate: '&:indeterminate',
   required:      '&[required]',
   disabled:      '&[disabled], fieldset[disabled] &',
-  hidden:        '&[hidden], [hidden] &',
+  hidden:        '&[hidden]',
 );
 
 $get-states-selectors-memo: () !default;
 @function get-states-selectors ($needed-states) {
-  $memo-key: inspect($needed-states);
+  $memo-key: '#{inspect($needed-states)}#{&}';
   @if map-has-key($get-states-selectors-memo, $memo-key) {
     @return map-get($get-states-selectors-memo, $memo-key);
   }
@@ -52,22 +52,33 @@ $get-states-selectors-memo: () !default;
   $states-values: ();
 
   @each $state in $needed-states {
+    $state-value: null;
     @if (map-has-key($required-states, $state) or map-has-key($states, $state)) {
-      @if (map-has-key($required-states, $state)) {
+      @if (map-has-key($required-states, $state) and map-get($required-states, $state) != null) {
         $state-value: map-get($required-states, $state);
-        @if ($state-value != null) {
-          $states-values: join($states-values, $state-value, comma);
-        }
       }
 
-      @if (map-has-key($states, $state)) {
-        $state-value: map-get($states, $state);
-        @if ($state-value != null) {
-          $states-values: join($states-values, $state-value, comma);
-        }
+      @if (map-has-key($states, $state) and map-get($states, $state) != null) {
+        $state-value: if($state-value != null, '#{$state-value}, #{map-get($states, $state)}', $state-value);
       }
     } @else {
-      $states-values: join($states-values, $state, comma);
+      $state-value: '&:#{$state}';
+    }
+
+    @if $state-value != null {
+      @if type_of($state-value) == string {
+        $state-value: _split($state-value, ',');
+        $state-value: if(type_of($state-value) != list, ($state-value,), $state-value);
+
+        //$tmp: $state-value;
+        //$state-value: ();
+        //@each $item in $tmp {
+        //  $state-value: join($state-value, _split($item, ' '), comma);
+        //}
+      }
+      $state-value: _map($state-value, _trim);
+
+      $states-values: join($states-values, $state-value, comma);
     }
   }
 
@@ -82,7 +93,8 @@ $get-states-selectors-memo: () !default;
     $Rules-parents: _drop-right($Rules, 1);
 
     @each $state-value in $states-values {
-      $rule: _replace($state-value, '&', map-get($Rule-last, 'rule'));
+      $rule: _replace($state-value, '&', unquote(map-get($Rule-last, 'rule')));
+
       $_Rule-state: parse-rule($rule);
 
       $Rule-last-new: ();
@@ -105,7 +117,7 @@ $get-states-selectors-memo: () !default;
         $states: join($states, if(_get($_Rule-state, 'states') != null, _get($_Rule-state, 'states'), ()), comma);
         $states: join($states, if(_get($_Rule-state, $pseudo 'states') != null, _get($_Rule-state, $pseudo 'states'), ()), comma);
         $states: join($states, if(_get($Rule-last, $pseudo 'states') != null, _get($Rule-last, $pseudo 'states'), ()), comma);
-        $states: _uniq($states);
+        $states: cleanup-list($states);
         $Rule-last-new: _set($Rule-last-new, $pseudo, (
           rule: _get($Rule-last, $pseudo 'rule'),
           states: $states,
