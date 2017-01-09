@@ -10,8 +10,7 @@ const { cyan, magenta, red } = colors;
  * todo: написать это дерьмо нормально
  *
  * @param webpackConfig
- * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array,
- *   externals: {}}}
+ * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array, externals: {}}}
  */
 export function extractFromConfigSafely (webpackConfig) {
   const resolve = _.get(webpackConfig, 'resolve') || {};
