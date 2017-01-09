@@ -68,7 +68,7 @@ const browsers = isDevelopment
 
 const sass = {
   outputStyle: 'expanded',
-  data: `$NODE_ENV: ${process.env.NODE_ENV};`,
+  // data: `$NODE_ENV: ${process.env.NODE_ENV};`,
 };
 
 const browserSync = {

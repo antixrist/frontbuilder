@@ -8,19 +8,19 @@ export default function (webpackConfig) {
   const data = [
     {
       test: /\.woff$/,
-      query: { limit: 65536, mimetype: 'application/font-woff' }
+      query: { limit: 2048, mimetype: 'application/font-woff' }
     },
     {
       test: /\.woff2$/,
-      query: { limit: 65536, mimetype: 'application/font-woff2' }
+      query: { limit: 2048, mimetype: 'application/font-woff2' }
     },
     {
       test: /\.[ot]tf$/,
-      query: { limit: 65536, mimetype: 'application/octet-stream' }
+      query: { limit: 2048, mimetype: 'application/octet-stream' }
     },
     {
       test: /\.eot$/,
-      query: { limit: 65536, mimetype: 'application/vnd.ms-fontobject' }
+      query: { limit: 2048, mimetype: 'application/vnd.ms-fontobject' }
     },
     {
       test: /\.svg$/,

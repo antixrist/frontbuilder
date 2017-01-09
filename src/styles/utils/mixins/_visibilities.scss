@@ -1,0 +1,67 @@
+@import 'functions';
+@import 'states';
+
+// Image replacement
+@mixin ir {
+  background-color: transparent;
+  border: 0;
+  overflow: hidden;
+  /* IE 6/7 fallback */
+  *text-indent: -9999px;
+
+  &:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 150%;
+  }
+}
+
+// Hide from both screenreaders and browsers
+@mixin is-hidden ($important: false) {
+  display: none important($important);
+  visibility: hidden;
+
+}
+
+// Hide visually and from screenreaders, but maintain layout
+@mixin is-invisible ($important: false) {
+  visibility: hidden important($important);
+}
+
+/*
+ * Визуально полностью скрывается, но остаётся доступным для скрин- и голосовых ридеров.
+ * http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+ * Hide visually and from screen readers, but maintain layout.
+ * Extends the to allow the element
+ * to be focusable when navigated to via the keyboard:
+ * https://www.drupal.org/node/897638
+ */
+@mixin is-visually-hidden () {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+
+  .is-focusable {
+    @include state-is (active, focus) {
+      clip: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      position: static;
+      width: auto;
+    }
+  }
+}
+
+// Скрыть только текст внутри блока
+@mixin is-text-hidden {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+}

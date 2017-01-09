@@ -40,7 +40,7 @@ export default function (webpackConfig) {
     { test: /\.json5?$/, loader: 'json5-loader' },
     {
       test: /\.jsx?$/,
-      loader: 'babel-loader?'+ JSON.stringify({...babelConfig, babelrc: false}),
+      loader: 'babel-loader?'+ JSON.stringify({...babelConfig, babelrc: false, cacheDirectory: true}),
       exclude: /(node_modules|bower_components)/,
     }
   );

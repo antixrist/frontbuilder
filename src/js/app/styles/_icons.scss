@@ -1,0 +1,53 @@
+.i {
+  @include is-text-hidden;
+  @include icon-base;
+
+  &.i--megafon {
+    @include icon('../../img/icons/megafon.png');
+  }
+
+  &.i--mts {
+    @include icon('../../img/icons/mts.png');
+  }
+
+  &.i--beeline {
+    @include icon('../../img/icons/beeline.png');
+  }
+
+  &.i--tele2 {
+    @include icon('../../img/icons/tele2.png');
+  }
+
+  &.i--google {
+    @include icon('../../img/icons/google.png');
+  }
+
+  &.i--yandex {
+    @include icon('../../img/icons/yandex.png');
+  }
+
+  &.i--double-eagle {
+    @include icon('../../img/icons/double-eagle.png');
+  }
+
+  &.i--polygon-new {
+    //@include icon('./fontello/2.svg');
+    background-image: url('./fontello/2.svg');
+    width: 25px;
+    height: 25px;
+  }
+
+  &.i--task-new {
+    //@include icon('./fontello/2.svg');
+    background-image: url('./fontello/3.svg');
+    width: 25px;
+    height: 25px;
+  }
+
+  &.i--project-new {
+    //@include icon('./fontello/2.svg');
+    background-image: url('./fontello/4.svg');
+    width: 25px;
+    height: 25px;
+  }
+}

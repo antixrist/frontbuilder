@@ -6,6 +6,10 @@ const routes = [
   {
     path: '/test',
     component: require('../views/Test.vue')
+  },
+  {
+    path: '/ui',
+    component: require('../views/ui/index.vue')
   // },
   // {
   //   path: '/login',

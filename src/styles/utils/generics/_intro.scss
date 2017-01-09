@@ -1,0 +1,104 @@
+@import '~normalize.css/normalize';
+@import '~sanitize.css/sanitize';
+@import '~html5-boilerplate/src/css/main.css';
+
+@import '../mixins';
+
+/**
+ * 1. Edge 12+, Internet Explorer 11-
+ */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar; /* 1 */
+}
+
+body {
+  min-height: 100%;
+}
+
+html,
+button,
+input,
+optgroup,
+select,
+textarea {
+  @include font($stack: systems);
+}
+
+/**
+ * Fix firefox fieldset display:
+ * http://stackoverflow.com/questions/17408815
+ */
+@-moz-document url-prefix () {
+  fieldset { display: table-cell; }
+}
+
+// Internet Explorer 11-
+pre {
+  overflow: auto;
+}
+
+blockquote {
+  font-style: italic;
+  padding: 1em 1em 1em 2em;
+}
+
+menu,
+ol,
+ul,
+dl {
+  padding-left: 1.5em;
+}
+
+li,
+dd {
+  margin-bottom: .5em;
+}
+
+p,
+ul,
+ol,
+blockquote,
+table,
+hr,
+dd,
+menu {
+  margin: 0 0 1em;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+label {
+  cursor: pointer;
+}
+
+hr {
+  @include hr($height: 1px, $color: inherit);
+}
+
+a, .link {
+  @include link();
+
+  &.not-a-link {
+    @include link-reset();
+  }
+  &.pseudo,
+  &.link--pseudo {
+    @include link-pseudo();
+  }
+  .logo &, &.logo {
+    @include link-reset();
+  }
+}
+
+:first-child {
+  margin-top: 0;
+}
+:last-child {
+  margin-bottom: 0;
+}

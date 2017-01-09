@@ -1,0 +1,77 @@
+@function important ($important: false) {
+  @return if($important == true, !important, null);
+}
+
+@function opposite-direction ($direction) {
+  @if type_of($direction) == list {
+    $opposite-direction: ();
+    @each $dir in $direction {
+      $opposite-dir: opposite-direction($dir);
+      $opposite-direction: append($opposite-direction, $opposite-dir, list-separator($direction));
+    }
+
+    @return $opposite-direction;
+  }
+
+  $opposite-direction: $direction;
+  @if $direction == top {
+    $opposite-direction: bottom;
+  }
+  @elseif $direction == bottom {
+    $opposite-direction: top;
+  }
+  @elseif $direction == left {
+    $opposite-direction: right;
+  }
+  @elseif $direction == right {
+    $opposite-direction: left;
+  }
+  @elseif $direction == x {
+    $opposite-direction: y;
+  }
+  @elseif $direction == y {
+    $opposite-direction: x;
+  }
+  @elseif $direction == horizontal {
+    $opposite-direction: vertical;
+  }
+  @elseif $direction == vertical {
+    $opposite-direction: horizontal;
+  }
+
+  @return $opposite-direction;
+}
+
+@function _flatten ($lists...) {
+  $retVal: ();
+
+  @each $item in $lists {
+    @if type_of($item) == list {
+      @each $_item in $item {
+        $retVal: join($retVal, _flatten($_item), list-separator($item));
+      }
+    } @else {
+      $retVal: append($retVal, $item, list-separator($lists));
+    }
+  }
+
+  @return $retVal;
+}
+
+@function _uniq ($list) {
+  @if type_of($list) != list {
+    @return $list;
+  }
+
+  $retVal: ();
+  $separator: list-separator($list);
+
+  @each $item in $list {
+    @if index($retVal, $item) == null {
+      $retVal: append($retVal, $item, $separator);
+    }
+  }
+
+
+  @return $retVal;
+}

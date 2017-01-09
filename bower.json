@@ -1,5 +1,5 @@
 {
-  "name": "towers",
+  "name": "frontbuilder",
   "version": "2.0.0",
   "description": "",
   "main": "gulpfile.js",
@@ -16,8 +16,6 @@
     "css-element-queries": "git://github.com/marcj/css-element-queries.git#^0.3.2",
     "draggabilly": "^2.1.1",
     "family.scss": "^1.0.8",
-    "flexiblegs-scss": "^5.5.3",
-    "flexiblegs-scss-plus": "^5.5.3",
     "font-awesome": "fontawesome#^4.6.3",
     "gridlex": "^2.2.2",
     "hover": "^2.1.0",
@@ -33,7 +31,6 @@
     "pixelperfectcss-scss": "^1.0.2",
     "reframe.js": "^0.3.1",
     "sass-flex-mixin": "^1.0.3",
-    "sassdash": "^0.8.0",
     "scrollbear": "git://github.com/changbenny/scrollbear.git#^0.1.0",
     "shave": "^0.1.5",
     "steady": "git://github.com/wpotools/Steady.js.git#^2.0.0",

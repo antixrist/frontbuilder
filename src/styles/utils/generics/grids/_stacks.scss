@@ -1,0 +1,32 @@
+@mixin x-stack () {
+  // для .input-group
+}
+
+@mixin y-stack (
+
+) {
+  // для вертикальных списков
+}
+
+
+@mixin sf-content-gutter-x ($gutter, $direction: top, $selector: '> *') {
+  $selector: if(is-string($selector), unquote($selector), null);
+  $selector: if(not is-null($selector) and $selector != '', $selector, null);
+
+  $direction: if(is-string($direction), unquote($direction), '');
+  $direction: if($direction != top and $direction != bottom, top, $direction);
+
+  @if (not is-measure($gutter)) {
+    $gutter: if(is-number($gutter), $gutter *1px, null);
+  }
+
+  @if ($gutter and $selector) {
+    & #{$selector} {
+      margin-#{$direction}: $gutter;
+
+      &:first-child {
+        margin-#{$direction}: 0;
+      }
+    }
+  }
+}

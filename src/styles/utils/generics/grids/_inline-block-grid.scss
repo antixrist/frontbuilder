@@ -1,0 +1,14 @@
+@import '../../mixins/selectors/bem';
+@import '../../mixins/grids/inline-block-grid';
+
+.ib {
+  @include ib();
+
+  @include m (full-width) {
+    @include ib($full-width: true);
+  }
+
+  @include e (item) {
+    @include ib-item();
+  }
+}

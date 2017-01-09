@@ -1,0 +1,19 @@
+//@import '../functions';
+
+@mixin list-reset ($important: false) {
+  $i: important($important);
+
+  list-style: none $i;
+  margin: 0 $i;
+  padding: 0 $i;
+  background: none $i;
+  display: block $i;
+
+  > li {
+    list-style: none $i;
+    margin: 0 $i;
+    padding: 0 $i;
+    background: none $i;
+    display: block $i;
+  }
+}

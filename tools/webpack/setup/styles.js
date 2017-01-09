@@ -15,18 +15,16 @@ export default function (webpackConfig) {
   let cssLoader = {
     fallbackLoader: 'style-loader',
     loader: [
-      { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: true } },
+      { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: 1 } },
       { loader: 'postcss-loader', query: { sourceMap: 'inline' } }
     ]
   };
 
   let sassLoader = {
     fallbackLoader: 'style-loader',
-    loader: [].concat([
-      { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: true } },
-    ],
-      !isDevelopment ? [{ loader: 'postcss-loader', query: { sourceMap: 'inline' } }] : [],
-    [
+    loader: [
+      { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: 3 } },
+      { loader: 'postcss-loader', query: { sourceMap: 'inline' } },
       /**
        * Sass не умеет резолвить и переписывать пути ассетов у подключаемых файлов.
        * `resolve-url-loader` это исправляет.
@@ -37,8 +35,18 @@ export default function (webpackConfig) {
         sourceMap: true,
         sourceMapContents: true,
       } }
-    ])
+    ]
   };
+  
+  /** https://blog.shakacode.com/migration-to-webpack-2-c9803871b931 */
+  plugins.push(
+    new LoaderOptionsPlugin({
+      options: {
+        context: webpackConfig.context,
+        output: webpackConfig.output
+      }
+    })
+  );
   
   // plugins.push(
   //   new LoaderOptionsPlugin({

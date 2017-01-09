@@ -1,0 +1,44 @@
+//@import '~sassdash/scss/sassdash';
+@import 'content/common';
+@import 'content/lists';
+@import 'content/links';
+@import 'content/inputs';
+@import 'content/buttons';
+
+$control-sizes: (
+  xxs: (font-size: 10px, height: 26px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
+  xs: (font-size: 12px, height: 31px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
+  sm: (font-size: 14px, height: 36px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
+  default: (font-size: 16px, height: 40px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
+  md: (font-size: 18px, height: 45px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
+  lg: (font-size: 20px, height: 50px, active-offset: 2px, padding: .5em 1em, line-height: 1.42857143),
+  xl: (font-size: 22px, height: 55px, active-offset: 2px, padding: .5em 1em, line-height: 1.42857143)
+) !default;
+
+@mixin control-size ($size: default, $include-offset: false) {
+  @if map-has-key($control-sizes, $size) {
+    $styles: map-get($control-sizes, $size);
+    $offset: map-get($styles, active-offset);
+    $styles: map-remove($styles, active-offset);
+
+    @include apply-styles($styles);
+
+    @if $include-offset and $offset != null {
+      @include state-is (active) {
+        @if map-has-key($styles, padding) {
+          $padding: get-bounds-map(map-get($styles, padding));
+          $padding-top: map-get($padding, top);
+          $padding-bottom: map-get($padding, bottom);
+
+          $font-size: if(map-has-key($styles, font-size), map-get($styles, font-size), $base-font-size);
+
+          padding-top: em(px($padding-top, $font-size) + $offset, $font-size);
+          padding-bottom: em(px($padding-bottom, $font-size) - $offset, $font-size);
+        } @elseif map-has-key($styles, active-offset) {
+          position: relative;
+          top: px(map-get($styles, active-offset));
+        }
+      }
+    }
+  }
+}

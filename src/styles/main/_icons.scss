@@ -1,0 +1,24 @@
+.v-checkbox {
+  .icon-checkbox {
+    transition: opacity .1s ease-out;
+    opacity: .5;
+  }
+
+  &:hover .icon-checkbox,
+  &:focus .icon-checkbox {
+    opacity: .8;
+  }
+  &:active .icon-checkbox {
+    opacity: .4;
+  }
+
+  &.is-checked {
+    .icon-checkbox {
+      opacity: 1;
+    }
+
+    &:active .icon-checkbox {
+      opacity: .4;
+    }
+  }
+}

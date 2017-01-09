@@ -1,0 +1,147 @@
+$base-font-size: 16px !default;
+
+@mixin input-after () {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+
+  &:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    @content;
+  }
+  input, select, textarea {
+    display: block;
+    width: 100%;
+  }
+}
+
+@mixin input-before () {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    @content;
+  }
+  input, select, textarea {
+    display: block;
+    width: 100%;
+  }
+}
+
+@mixin input-reset () {
+  @include is-non-focusable;
+
+  display:          inline;
+  margin:           0;
+  padding:          0;
+  vertical-align:   middle;
+  //touch-action:     none;
+  background-image: none;
+  border:           none;
+  position:         static;
+  overflow:         visible;
+  outline:          0 none;
+  color:            inherit;
+  text-align:       inherit;
+  text-decoration:  inherit;
+  cursor:           inherit;
+  white-space:      inherit;
+  line-height:      1.2;
+}
+
+@mixin input () {
+  font-size: 1rem;
+  line-height: 1.42857143;
+  display: inline-block;
+  border: 1px solid transparent;
+  text-align: left;
+  vertical-align: middle;
+  background-clip: padding-box;
+  //-webkit-appearance: none;
+  min-width: 1%;
+
+  @include state-is (focus) {
+    @include is-non-focused;
+  }
+
+  // todo: :-(
+  &[disabled], fieldset[disabled] &,
+  #{&}.is-disabled, fieldset.is-disabled & {
+    @include unselectable;
+    @include not-actionable;
+
+    cursor: default;
+    opacity: .65;
+    box-shadow: none;
+  }
+}
+
+@mixin input-block {
+  display: block;
+  min-width: 100%;
+}
+
+@mixin input-variant (
+  $color-normal: inherit,
+  $color-hover: $color-normal,
+  $color-focus: $color-hover,
+
+  $bg-color-normal: if(type_of($color-normal) == color, invert($color-normal), $color-normal),
+  $bg-color-hover: $bg-color-normal,
+  $bg-color-focus: $bg-color-hover,
+
+  $border-color-normal: $color-normal,
+  $border-color-hover: if(type_of($border-color-normal) == color, darken($border-color-normal, 10%), $border-color-normal),
+  $border-color-focus: $border-color-hover,
+
+  $shadow-normal: inset 0 1px 1px rgba(0, 0, 0, .075),
+  $shadow-hover: $shadow-normal,
+  $shadow-focus: ($shadow-normal, 0 0 8px if(type_of($border-color-focus) == color, lighten($border-color-focus, 20%), rgba(102, 175, 233, .6))),
+
+  $transition-normal: all .1s ease-out,
+  $transition-hover: $transition-normal,
+  $transition-focus: $transition-hover,
+
+  $normal: (),
+  $hover: (),
+  $focus: (),
+  $active: ()
+) {
+  border: 1px solid transparent;
+
+  color: $color-normal;
+  border-color: $border-color-normal;
+  background-color: $bg-color-normal;
+  transition: $transition-normal;
+  box-shadow: $shadow-normal;
+
+  @include apply-styles($normal);
+
+  @include state-is (hover) {
+    color: $color-hover;
+    border-color: $border-color-hover;
+    background-color: $bg-color-hover;
+    transition: $transition-hover;
+    box-shadow: $shadow-hover;
+
+    @include apply-styles($hover);
+  }
+
+  @include state-is (focus) {
+    color: $color-focus;
+    border-color: $border-color-focus;
+    background-color: $bg-color-focus;
+    transition: $transition-focus;
+    box-shadow: $shadow-focus;
+  }
+};

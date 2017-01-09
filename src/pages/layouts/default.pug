@@ -21,7 +21,8 @@ block vars
     .filter(function (chunk) { return !!chunk; })
   ;
 
-html.no-js(lang="ru")
+<!--[if lte IE 8]>     <html lang="ru" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="ru" class="no-js"> <!--<![endif]-->
   head
     meta(http-equiv="Content-type", content="text/html; charset=utf-8")
     meta(name="viewport", content="width=device-width, initial-scale=1")

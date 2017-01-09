@@ -1,0 +1,48 @@
+
+@mixin va-center () {
+  // флексбоксами
+}
+
+@mixin va-center-table () {
+  display: table;
+  width: 100%;
+}
+@mixin va-center-cell () {
+  display: table-cell;
+  margin-top: inherit;
+  vertical-align: middle;
+  width: 100%;
+}
+
+@mixin va-center-lh ($height) {
+  height: $height;
+  line-height: $height;
+}
+
+@mixin va-center-translate () {
+  transform: translate(50%, 50%);
+  margin-top: -50%;
+  margin-left: -50%;
+}
+
+@mixin va-center-ib ($selectors...) {
+  &:before {
+    content: "";
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    // A small negative right margin is set
+    // to account for the default
+    // word-spacing of inline-block.
+    margin-right: -0.25em;
+  }
+
+  $selectors: if(length($selectors) == 0, '*', $selectors);
+  @each $cell-selector in $selectors {
+    $cell-selector: unquote($cell-selector);
+    & > #{$cell-selector} {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}

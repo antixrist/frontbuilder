@@ -1,0 +1,93 @@
+@import 'functions';
+@import 'selectors/states';
+@import 'selectors/common';
+
+$transition-speed: .1s !default;
+
+@mixin is-focused ($important: false) {
+  $i: important($important);
+  // Default
+  outline: thin dotted $i;
+  // WebKit
+  //outline: 5px auto -webkit-focus-ring-color $i;
+  outline-offset: -2px $i;
+}
+
+@mixin is-non-focused ($important: false) {
+  $i: important($important);
+  outline: none $i;
+  outline-offset: 0 $i;
+}
+
+@mixin is-focusable ($important: false) {
+  @include state-is (focus) {
+    @include is-focused($important);
+  }
+}
+
+@mixin is-non-focusable ($important: false) {
+  @include state-is (focus) {
+    @include is-non-focused($important);
+  }
+}
+
+@mixin opacity-states (
+  $normal: .8,
+  $hover: 1,
+  $active: .5,
+
+  $transition-normal: opacity $transition-speed ease-out,
+  $transition-hover: opacity $transition-speed ease-out,
+  $transition-active: opacity $transition-speed ease-out,
+
+  $proxy: null
+) {
+  @include proxy ($proxy) {
+    opacity: $normal;
+    transition: $transition-normal;
+  }
+
+  @include state-is (hover, focus) {
+    @include proxy ($proxy) {
+      opacity: $hover;
+      transition: $transition-hover;
+    }
+  }
+  @include state-is (active) {
+    @include proxy ($proxy) {
+      opacity: $active;
+      transition: $transition-active;
+    }
+  }
+}
+
+@mixin list-opacity-states (
+  $items: '> *',
+
+  $normal: .8,
+  $hover: 1,
+  $active: .5,
+
+  $transition-normal: opacity $transition-speed ease-out,
+  $transition-hover: opacity $transition-speed ease-out,
+  $transition-active: opacity $transition-speed ease-out,
+
+  $proxy: null
+) {
+
+  @include state-is (hover) {
+    @include proxy ($proxy) {
+      #{$items} {
+        @include opacity-states(
+          $normal,
+          $hover,
+          $active,
+
+          $transition-normal,
+          $transition-hover,
+          $transition-active
+        );
+      }
+    }
+  }
+}

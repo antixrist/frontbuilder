@@ -1,0 +1,92 @@
+@import '../mixins';
+
+$base-radius: 4px !default;
+
+.x-stack {
+  @include x-stack;
+
+  > * {
+    border-radius: 0;
+  }
+
+  @include m(rounded) {
+    > :first-child {
+      border-top-left-radius: $base-radius;
+      border-bottom-left-radius: $base-radius;
+    }
+    > :last-child {
+      border-top-right-radius: $base-radius;
+      border-bottom-right-radius: $base-radius;
+    }
+  }
+
+  > .input,
+  .x-stack__control {
+    @include stack-item-on-top(2);
+  }
+
+  .x-stack__control,
+  > .btn,
+  > .input {
+    &:hover,
+    &:focus,
+    &:active {
+      @include stack-item-on-top(3);
+    }
+  }
+
+  @include e (on-top) {
+    @include stack-item-on-top(4);
+  }
+}
+
+.y-stack {
+  @include y-stack;
+
+  @include e(on-top) {
+    @include stack-item-on-top;
+  }
+
+  > * {
+    border-radius: 0;
+  }
+
+  @include m(rounded) {
+    > :first-child {
+      border-top-left-radius: $base-radius;
+      border-top-right-radius: $base-radius;
+    }
+    > :last-child {
+      border-bottom-left-radius: $base-radius;
+      border-bottom-right-radius: $base-radius;
+    }
+  }
+
+  > .input,
+  .y-stack__control {
+    @include stack-item-on-top(2);
+  }
+
+  .y-stack__control,
+  > .btn,
+  > .input {
+    &:hover,
+    &:focus,
+    &:active {
+      @include stack-item-on-top(3);
+    }
+  }
+
+  @include e (on-top) {
+    @include stack-item-on-top(4);
+  }
+}
+
+@for $i from 1 through 5 {
+  $suffix: if($i > 1, '--x#{$i}', '');
+  .stack__on-top#{$suffix},
+  .x-stack__on-top#{$suffix},
+  .y-stack__on-top#{$suffix} {
+    @include stack-item-on-top($i + 1);
+  }
+}

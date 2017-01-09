@@ -1,0 +1,123 @@
+//@import '../functions';
+//@import '../selectors/states';
+//@import '../selectors/common';
+//@import '../states';
+
+@mixin link (
+  $color-normal: #0d44a0,
+  $color-hover: $color-normal,
+  $color-focus: $color-hover,
+  $color-active: #ff0000,
+  $color-visited: $color-normal, //purple,
+
+  $border-color-normal: rgba($color-normal, .5),
+  $border-color-hover: rgba($color-normal, 1),
+  $border-color-focus: $border-color-hover,
+  $border-color-active: $color-active,
+  $border-color-visited: $color-visited,
+
+  $transition-normal: (color .2s ease-out, border-color .2s ease-out, text-shadow .2s ease-out),
+  $transition-hover: $transition-normal,
+  $transition-focus: $transition-hover,
+  $transition-active: (color .1s ease-out, border-color .1s ease-out, text-shadow .1s ease-out),
+  $transition-visited: $transition-normal,
+
+  $normal: (),
+  $visited: (),
+  $hover: (),
+  $focus: (),
+  $active: (),
+
+  $proxy: null
+) {
+  @include proxy ($proxy) {
+    cursor: pointer;
+    text-decoration : none;
+    border-bottom : 1px solid;
+
+    color: $color-normal;
+    border-color: $border-color-normal;
+    transition: $transition-normal;
+    text-shadow: 0 1px 0 transparent;
+
+    @include apply-styles($normal);
+  }
+
+  @include state-is (visited) {
+    @include proxy ($proxy) {
+      color: $color-visited;
+      border-color: $border-color-visited;
+      transition: $transition-visited;
+      text-shadow: 0 1px 0 transparent;
+
+      @include apply-styles($visited);
+    }
+  }
+
+  @include state-is (hover) {
+    @include proxy ($proxy) {
+      color: $color-hover;
+      border-color: $border-color-hover;
+      transition: $transition-hover;
+      text-shadow: 0 1px 0 transparent;
+
+      @include apply-styles($hover);
+    }
+
+    @include state-is (focus) {
+      @include proxy ($proxy) {
+        @include is-non-focused;
+      }
+    }
+  }
+
+  @include state-is (focus) {
+    @include proxy ($proxy) {
+      color: $color-focus;
+      border-color: $border-color-focus;
+      transition: $transition-focus;
+      text-shadow: 0 1px 0 transparent;
+
+      @include apply-styles($focus);
+
+      @include is-focused;
+    }
+  }
+
+  @include state-is (active) {
+    @include proxy ($proxy) {
+      color: $color-active;
+      border-color: $border-color-active;
+      transition: $transition-active;
+      text-shadow: 0 1px 0 transparent;
+
+      @include apply-styles($active);
+
+      @include is-non-focused;
+    }
+  }
+
+  .no-rgba & {
+    @include proxy ($proxy) {
+      border: none;
+      text-decoration: underline;
+    }
+  }
+};
+
+@mixin link-pseudo () {
+  border-bottom-style: dashed;
+}
+
+@mixin link-reset ($important: false) {
+  $i: important($important);
+
+  @include state-is (normal, hover, focus, active, visited) {
+    cursor: default $i;
+    color: inherit $i;
+    border: none $i;
+    outline: none $i;
+    box-shadow: none $i;
+    text-decoration: none $i;
+  }
+}

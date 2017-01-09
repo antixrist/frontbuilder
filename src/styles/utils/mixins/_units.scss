@@ -1,0 +1,487 @@
+$base-font-size: 16px !default;
+
+@function clear-unit ($value) {
+  @if type-of($value) != "number" {
+    @warn ('"#{$value}" is not a number!');
+    @return $value;
+  } @else {
+    $unit: unit($value);
+    @if (unitless($value)) {
+      @return $value;
+    } @elseif $unit == "px" {
+      @return $value / 1px;
+    } @elseif $unit == "rem" {
+      @return $value / 1rem;
+    } @elseif $unit == "em" {
+      @return $value / 1em;
+    } @elseif $unit == "%" {
+      @return $value / 1%;
+    } @elseif $unit == "mm" {
+      @return $value / 1mm;
+    } @elseif $unit == "cm" {
+      @return $value / 1cm;
+    } @elseif $unit == "pt" {
+      @return $value / 1pt;
+    } @elseif $unit == "pc" {
+      @return $value / 1pc;
+    } @elseif $unit == "ex" {
+      @return $value / 1ex;
+    } @elseif $unit == "ch" {
+      @return $value / 1ch;
+    } @elseif $unit == "cx" {
+      @return $value / 1cx;
+    } @elseif $unit == "in" {
+      @return $value / 1in;
+    } @elseif $unit == "vw" {
+      @return $value / 1vw;
+    } @elseif $unit == "vh" {
+      @return $value / 1vh;
+    } @elseif $unit == "vmin" {
+      @return $value / 1vmin;
+    } @elseif $unit == "vmax" {
+      @return $value / 1vmax;
+    }
+  }
+
+  @warn ('Unknown unit of "#{$value}"!');
+  @return $value;
+}
+
+@function replace-unit (
+  $value,
+  $unit: px
+) {
+  @if type-of($value) != "number" {
+    @warn ('"#{$value}" is not a number!');
+    @return $value;
+  } @else {
+    $val: clear-unit($value);
+    @if $val == 0 or unit($val) == $unit {
+      @return $val;
+    } @elseif $unit == "px" {
+      @return $val * 1px;
+    } @elseif $unit == "rem" {
+      @return $val * 1rem;
+    } @elseif $unit == "em" {
+      @return $val * 1em;
+    } @elseif $unit == "%" {
+      @return $val * 1%;
+    } @elseif $unit == "mm" {
+      @return $val * 1mm;
+    } @elseif $unit == "cm" {
+      @return $val * 1cm;
+    } @elseif $unit == "pt" {
+      @return $val * 1pt;
+    } @elseif $unit == "pc" {
+      @return $val * 1pc;
+    } @elseif $unit == "ex" {
+      @return $val * 1ex;
+    } @elseif $unit == "ch" {
+      @return $val * 1ch;
+    } @elseif $unit == "cx" {
+      @return $val / 1cx;
+    } @elseif $unit == "in" {
+      @return $val * 1in;
+    } @elseif $unit == "vw" {
+      @return $val * 1vw;
+    } @elseif $unit == "vh" {
+      @return $val * 1vh;
+    } @elseif $unit == "vmin" {
+      @return $val * 1vmin;
+    } @elseif $unit == "vmax" {
+      @return $val * 1vmax;
+    }
+  }
+
+  @warn ('Unknown unit: "#{$unit}"!');
+  @return $value;
+}
+
+@function convertor-assert (
+  $variable-name,
+  $needed-unit,
+  $given-value
+) {
+  @if type-of($given-value) != "number" {
+    @warn ('"#{$given-value}" is not a number!');
+    @return $given-value;
+  }
+
+  @if (unitless($given-value) != true and unit($given-value) != $needed-unit) {
+    @warn ('Unit of "#{$variable-name}" is not a #{$needed-unit}! Given: "#{$given-value}"');
+    @return false;
+  }
+
+  @return true;
+}
+
+//-----------------
+// PX to *
+//-----------------
+@function px2em (
+  $value,
+  $pixels-in-em: $base-font-size
+) {
+  @if (
+    convertor-assert('value', px, $value) != true or
+    convertor-assert('pixels-in-em', px, $pixels-in-em) != true
+  ) {
+    @return $value;
+  }
+
+  $value: clear-unit($value);
+  $pixels-in-em: clear-unit($pixels-in-em);
+
+  @return replace-unit($value / $pixels-in-em, em);
+}
+
+@function px2rem (
+  $value,
+  $pixels-in-rem: $base-font-size
+) {
+  @if (
+    convertor-assert('value', px, $value) != true or
+    convertor-assert('pixels-in-rem', px, $pixels-in-rem) != true
+  ) {
+    @return $value;
+  }
+
+  $value: clear-unit($value);
+  $pixels-in-rem: clear-unit($pixels-in-rem);
+
+  @return replace-unit($value / $pixels-in-rem, rem);
+}
+
+@function px2percent (
+  $value,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @if (
+    convertor-assert('value', px, $value) != true or
+    convertor-assert('pixels-in-100-percents', px, $pixels-in-100-percents) != true
+  ) {
+    @return $value;
+  }
+
+  $value: clear-unit($value);
+  $pixels-in-100-percents: clear-unit($pixels-in-100-percents);
+
+  @return replace-unit($value / $pixels-in-100-percents * 100, '%');
+}
+
+//-----------------
+// EM to *
+//-----------------
+@function em2px (
+  $value,
+  $pixels-in-em: $base-font-size
+) {
+  @if (
+    convertor-assert('value', em, $value) != true or
+    convertor-assert('pixels-in-em', px, $pixels-in-em) != true
+  ) {
+    @return $value;
+  }
+
+  $value: clear-unit($value);
+  $pixels-in-em: clear-unit($pixels-in-em);
+
+  @return replace-unit($value * $pixels-in-em, px);
+}
+
+@function em2rem (
+  $value,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-rem: $base-font-size
+) {
+  @if (
+    convertor-assert('value', em, $value) != true or
+    convertor-assert('pixels-in-em', px, $pixels-in-em) != true or
+    convertor-assert('pixels-in-rem', px, $pixels-in-rem) != true
+  ) {
+    @return $value;
+  }
+
+  $retVal: $value;
+  $retVal: em2px($retVal, $pixels-in-em);
+  $retVal: px2rem($retVal, $pixels-in-rem);
+
+  @return $retVal;
+}
+
+@function em2percent (
+  $value,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @if (
+    convertor-assert('value', em, $value) != true or
+    convertor-assert('pixels-in-em', px, $pixels-in-em) != true or
+    convertor-assert('pixels-in-100-percents', px, $pixels-in-100-percents) != true
+  ) {
+    @return $value;
+  }
+
+  $retVal: $value;
+  $retVal: em2px($retVal, $pixels-in-em);
+  $retVal: px2percent($retVal, $pixels-in-100-percents);
+
+  @return $retVal;
+}
+
+//-----------------
+// REM to *
+//-----------------
+@function rem2px (
+  $value,
+  $pixels-in-rem: $base-font-size
+) {
+  @if (
+    convertor-assert('value', rem, $value) != true or
+    convertor-assert('pixels-in-rem', px, $pixels-in-rem) != true
+  ) {
+    @return $value;
+  }
+
+  $value: clear-unit($value);
+  $pixels-in-rem: clear-unit($pixels-in-rem);
+
+  @return replace-unit($value * $pixels-in-rem, px);
+}
+
+@function rem2em (
+  $value,
+  $pixels-in-rem: $base-font-size,
+  $pixels-in-em: $base-font-size
+) {
+  @if (
+    convertor-assert('value', rem, $value) != true or
+    convertor-assert('pixels-in-rem', px, $pixels-in-rem) != true or
+    convertor-assert('pixels-in-em', px, $pixels-in-em) != true
+  ) {
+    @return $value;
+  }
+
+  $retVal: $value;
+  $retVal: rem2px($retVal, $pixels-in-rem);
+  $retVal: px2em($retVal, $pixels-in-em);
+
+  @return $retVal;
+}
+
+@function rem2percent (
+  $value,
+  $pixels-in-rem: $base-font-size,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @if (
+    convertor-assert('value', rem, $value) != true or
+    convertor-assert('pixels-in-rem', px, $pixels-in-rem) != true or
+    convertor-assert('pixels-in-100-percents', px, $pixels-in-100-percents) != true
+  ) {
+    @return $value;
+  }
+
+  $retVal: $value;
+  $retVal: rem2px($retVal, $pixels-in-rem);
+  $retVal: px2percent($retVal, $pixels-in-100-percents);
+
+  @return $retVal;
+}
+
+//-----------------
+// % to *
+//-----------------
+@function percent2px (
+  $value,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @if (
+    convertor-assert('value', '%', $value) != true or
+    convertor-assert('pixels-in-100-percents', px, $pixels-in-100-percents) != true
+  ) {
+    @return $value;
+  }
+
+  $value: clear-unit($value);
+  $pixels-in-100-percents: clear-unit($pixels-in-100-percents);
+
+  @return replace-unit($pixels-in-100-percents / 100 * $value, px);
+}
+
+@function percent2em (
+  $value,
+  $pixels-in-100-percents: $base-font-size,
+  $pixels-in-em: $base-font-size
+) {
+  @if (
+    convertor-assert('value', '%', $value) != true or
+    convertor-assert('pixels-in-100-percents', px, $pixels-in-100-percents) != true or
+    convertor-assert('pixels-in-em', px, $pixels-in-em) != true
+  ) {
+    @return $value;
+  }
+
+  $retVal: $value;
+  $retVal: percent2px($retVal, $pixels-in-100-percents);
+  $retVal: px2em($retVal, $pixels-in-em);
+
+  @return $retVal;
+}
+
+@function percent2rem (
+  $value,
+  $pixels-in-100-percents: $base-font-size,
+  $pixels-in-rem: $base-font-size
+) {
+  @if (
+    convertor-assert('value', '%', $value) != true or
+    convertor-assert('pixels-in-100-percents', px, $pixels-in-100-percents) != true or
+    convertor-assert('pixels-in-rem', px, $pixels-in-rem) != true
+  ) {
+    @return $value;
+  }
+
+  $retVal: $value;
+  $retVal: percent2px($retVal, $pixels-in-100-percents);
+  $retVal: px2rem($retVal, $pixels-in-rem);
+
+  @return $retVal;
+}
+
+//-----------------
+// Common convertor fn
+//-----------------
+@function unit-convertor (
+  $value,
+  $unit-to,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-rem: $base-font-size,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @if type_of($value) == list {
+    $retVal: ();
+    @each $val in $value {
+      $converted: unit-convertor(
+        $val,
+        $unit-to,
+        $pixels-in-em,
+        $pixels-in-rem,
+        $pixels-in-100-percents
+      );
+      $retVal: append($retVal, $converted, list-separator($value));
+    }
+
+    @return $retVal;
+  }
+
+  @if type-of($value) != "number" {
+    @warn ('"#{$value}" is not a number!');
+    @return $value;
+  }
+  @elseif unitless($value) {
+    @return $value;
+  } @else {
+    $unit-from: unit($value);
+    $unit-from: if($unit-from == '%', percent, $unit-from);
+    $unit-to: if($unit-to == '%', percent, $unit-to);
+
+    @if $unit-from == $unit-to {
+      @return $value;
+    }
+    @elseif $unit-from == px {
+      @if $unit-to == em {
+        @return px2em($value, $pixels-in-em);
+      }
+      @elseif $unit-to == rem {
+        @return px2rem($value, $pixels-in-rem);
+      }
+      @elseif $unit-to == percent {
+        @return px2percent($value, $pixels-in-100-percents);
+      }
+    }
+    @elseif $unit-from == em {
+      @if $unit-to == px {
+        @return em2px($value, $pixels-in-em);
+      }
+      @elseif $unit-to == rem {
+        @return em2rem($value, $pixels-in-em, $pixels-in-rem);
+      }
+      @elseif $unit-to == percent {
+        @return em2percent($value, $pixels-in-em, $pixels-in-100-percents);
+      }
+    }
+    @elseif $unit-from == rem {
+      @if $unit-to == px {
+        @return rem2px($value, $pixels-in-rem);
+      }
+      @elseif $unit-to == em {
+        @return rem2em($value, $pixels-in-rem, $pixels-in-em);
+      }
+      @elseif $unit-to == percent {
+        @return rem2percent($value, $pixels-in-rem, $pixels-in-100-percents);
+      }
+    }
+    @elseif $unit-from == percent {
+      @if $unit-to == px {
+        @return percent2px($value, $pixels-in-100-percents);
+      }
+      @elseif $unit-to == em {
+        @return percent2em($value, $pixels-in-100-percents, $pixels-in-em);
+      }
+      @elseif $unit-to == rem {
+        @return percent2rem($value, $pixels-in-100-percents, $pixels-in-rem);
+      }
+    }
+  }
+
+  @return $value;
+}
+
+//-----------------
+// * to PX
+//-----------------
+@function px (
+  $value,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-rem: $base-font-size,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @return unit-convertor($value, px, $pixels-in-em, $pixels-in-rem, $pixels-in-100-percents);
+}
+
+//-----------------
+// * to EM
+//-----------------
+@function em (
+  $value,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-rem: $base-font-size,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @return unit-convertor($value, em, $pixels-in-em, $pixels-in-rem, $pixels-in-100-percents);
+}
+
+//-----------------
+// * to REM
+//-----------------
+@function rem (
+  $value,
+  $pixels-in-rem: $base-font-size,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-100-percents: $base-font-size
+) {
+  @return unit-convertor($value, rem, $pixels-in-em, $pixels-in-rem, $pixels-in-100-percents);
+}
+
+//-----------------
+// * to %
+//-----------------
+@function percent (
+  $value,
+  $pixels-in-100-percents: $base-font-size,
+  $pixels-in-em: $base-font-size,
+  $pixels-in-rem: $base-font-size
+) {
+  @return unit-convertor($value, '%', $pixels-in-em, $pixels-in-rem, $pixels-in-100-percents);
+}

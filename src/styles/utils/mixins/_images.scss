@@ -1,0 +1,154 @@
+@import 'functions';
+@import 'states';
+@import 'box';
+
+$transition-speed: .1s !default;
+$background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
+
+// Заглушки для postcss-assets, чтобы sass не ругался на несуществующие функции
+@function size ($url, $factor) {
+  @return unquote('size(#{$url}, #{$factor})');
+}
+
+@function width ($url, $factor) {
+  @return unquote('width(#{$url}, #{$factor})');
+}
+
+@function height ($url, $factor) {
+  @return unquote('height(#{$url}, #{$factor})');
+}
+
+@mixin bg-size ($url, $factor: 1) {
+  @if (type_of($url) == list and type_of(nth($url, 1)) == number) or type_of($url) == number {
+    background-size: $url;
+  } @else {
+    background-size: width($url, $factor) height($url, $factor);
+  }
+
+  @if (type-of($background-size-behavior) == string and $background-size-behavior != '') {
+    .lt-ie9 & {
+      -ms-behavior: url($background-size-behavior);
+    }
+  }
+}
+
+@mixin icon-base () {
+  display: inline-block;
+  vertical-align: middle;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  background: no-repeat center center transparent;
+  @include bg-size(100% 100%);
+}
+
+@mixin icon (
+  $url,
+  $factor: 1
+) {
+
+  background-image: url('#{$url}');
+  width: width($url, $factor);
+  height: height($url, $factor);
+
+  @content;
+}
+
+@mixin preview (
+  $image,
+
+  $opacity-normal: .5,
+  $opacity-hover: 1,
+  $opacity-active: .8,
+
+  $transition-normal: opacity $transition-speed ease-out,
+  $transition-hover: opacity $transition-speed ease-out,
+  $transition-active: opacity $transition-speed ease-out
+) {
+  position: relative;
+  display: inline-block;
+  border: none;
+  text-decoration: none;
+  max-width: 100%;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @include opacity-states(
+    $opacity-normal,
+    $opacity-hover,
+    $opacity-active,
+    $transition-normal,
+    $transition-hover,
+    $transition-active,
+    $proxy: '&:after'
+  );
+
+  &:after {
+    @include stretch;
+    z-index: 2;
+    content: '';
+    margin: auto;
+
+    @include icon-base;
+    @include icon($image);
+    @include bg-size($image);
+    width: auto;
+    height: auto;
+
+    @content;
+  }
+}
+
+//--------------
+// .qwe {
+//   @include preload-images('qweqwe.jpg');
+// }
+//
+// после всех стилей, в самом конце
+// @include preload-images;
+//
+//--------------
+$_preload-image-list:     () !default;
+$_preload-images-loaded:  false !default;
+$_preload-image-urls:     () !default;
+@mixin preload-images ($images...) {
+  @if not variable-exists(_preload-image-list) {
+    $_preload-image-list: () !global;
+  }
+  @if not variable-exists(_preload-image-urls) {
+    $_preload-image-urls: () !global;
+  }
+  @if not variable-exists(_preload-images-loaded) {
+    $_preload-images-loaded: false !global;
+  }
+
+  @if length($images) > 0 {
+    $_preload-image-list: join($images, $_preload-image-list) !global;
+    $image-urls: ();
+    @if length($_preload-image-list) > 0 {
+      @for $i from 1 through length($_preload-image-list) {
+        $image: nth($_preload-image-list, $i);
+        $image-urls: join(url($image), $image-urls);
+      }
+    }
+    $result: ();
+    @each $item in $image-urls {
+      @if not index($result, $item) {
+        $result: append($result, $item, comma);
+      }
+    }
+    $_preload-image-urls: $result !global;
+  }
+  @elseif not $_preload-images-loaded {
+    $_preload-images-loaded: true !global;
+    html:after {
+      content: '';
+      display: none;
+      background-image: $_preload-image-urls;
+    }
+  }
+}

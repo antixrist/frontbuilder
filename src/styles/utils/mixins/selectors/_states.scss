@@ -1,0 +1,158 @@
+//@import '~sassdash/scss/_sassdash.scss';
+@import 'utils';
+
+$states: (
+  hover:      '&.is-hovered',
+  focus:      '&.is-focused',
+  focusable:  '&.is-focusable',
+  active:     '&.is-active',
+  valid:      '&.is-valid',
+  invalid:    '&.is-invalid',
+  checked:    '&.is-checked',
+  required:   '&.is-required',
+  disabled:   '&.is-disabled, fieldset.is-disabled &',
+  hidden:     '&.is-hidden',
+  invisible:  '&.is-invisible',
+
+  progress:   '&.in-progress',
+  loaded:     '&.is-loaded',
+  success:    '&.is-success',
+  info:       '&.is-info',
+  warning:    '&.is-warning',
+  danger:     '&.is-danger',
+  expandable: '&.is-expandable',
+  expanded:   '&.is-expanded',
+  collapsable:'&.is-collapsable',
+  collapsed:  '&.is-collapsed',
+) !default;
+
+$required-states: (
+  normal:        '&',
+  hover:         '&:hover',
+  focus:         '&:focus',
+  active:        '&:active',
+  link:          '&:link',
+  visited:       '&:visited',
+  valid:         '&:valid',
+  invalid:       '&:invalid',
+  checked:       '&:checked, &[checked]',
+  indeterminate: '&:indeterminate',
+  required:      '&[required]',
+  disabled:      '&[disabled], fieldset[disabled] &',
+  hidden:        '&[hidden]',
+);
+
+$get-states-selectors-memo: () !default;
+@function get-states-selectors ($needed-states) {
+  $memo-key: '#{inspect($needed-states)}#{&}';
+  @if map-has-key($get-states-selectors-memo, $memo-key) {
+    @return map-get($get-states-selectors-memo, $memo-key);
+  }
+
+  $states-values: ();
+
+  @each $state in $needed-states {
+    $state-value: null;
+    @if (map-has-key($required-states, $state) or map-has-key($states, $state)) {
+      @if (map-has-key($required-states, $state) and map-get($required-states, $state) != null) {
+        $state-value: map-get($required-states, $state);
+      }
+
+      @if (map-has-key($states, $state) and map-get($states, $state) != null) {
+        $state-value: if($state-value != null, '#{$state-value}, #{map-get($states, $state)}', $state-value);
+      }
+    } @else {
+      $state-value: '&:#{$state}';
+    }
+
+    @if $state-value != null {
+      @if type_of($state-value) == string {
+        $state-value: _split($state-value, ',');
+        $state-value: if(type_of($state-value) != list, ($state-value,), $state-value);
+
+        //$tmp: $state-value;
+        //$state-value: ();
+        //@each $item in $tmp {
+        //  $state-value: join($state-value, _split($item, ' '), comma);
+        //}
+      }
+      $state-value: _map($state-value, _trim);
+
+      $states-values: join($states-values, $state-value, comma);
+    }
+  }
+
+  $selectors: ();
+  @each $selector in parse-selectors(&) {
+    $Rules: ();
+    @each $rule in selector-rules($selector) {
+      $Rules: append($Rules, parse-rule($rule), comma);
+    }
+
+    $Rule-last: _last($Rules);
+    $Rules-parents: _drop-right($Rules, 1);
+
+    @each $state-value in $states-values {
+      $rule: _replace($state-value, '&', unquote(map-get($Rule-last, 'rule')));
+
+      $_Rule-state: parse-rule($rule);
+
+      $Rule-last-new: ();
+
+      $pseudo: null;
+      @if map-get($Rule-last, 'before') != null {
+        $pseudo: 'before';
+      } @elseif map-get($Rule-last, 'after') != null {
+        $pseudo: 'after';
+      }
+
+      @if $pseudo != null {
+        $Rule-last-new: (
+          rule: map-get($_Rule-state, 'rule'),
+          states: map-get($Rule-last, 'states'),
+          attrs: map-get($Rule-last, 'attrs'),
+        );
+
+        $states: ();
+        $states: join($states, if(_get($_Rule-state, 'states') != null, _get($_Rule-state, 'states'), ()), comma);
+        $states: join($states, if(_get($_Rule-state, $pseudo 'states') != null, _get($_Rule-state, $pseudo 'states'), ()), comma);
+        $states: join($states, if(_get($Rule-last, $pseudo 'states') != null, _get($Rule-last, $pseudo 'states'), ()), comma);
+        $states: cleanup-list($states);
+        $Rule-last-new: _set($Rule-last-new, $pseudo, (
+          rule: _get($Rule-last, $pseudo 'rule'),
+          states: $states,
+        ));
+      }
+      @else {
+        $Rule-last-new: merge-rules($Rule-last, $_Rule-state);
+      }
+
+      $selector: ();
+      $_Rules-selector: append($Rules-parents, $Rule-last-new);
+      @each $_Rule in $_Rules-selector {
+        $selector: append($selector, stringify-rule($_Rule), space);
+      }
+
+      $selectors: append($selectors, $selector, comma);
+    }
+  }
+
+  $get-states-selectors-memo: map-merge($get-states-selectors-memo, (
+    $memo-key: $selectors
+  )) !global;
+
+  @return $selectors;
+}
+
+@mixin state-is ($needed-states...) {
+  @at-root #{get-states-selectors($needed-states)} {
+    @content;
+  }
+}
+
+// alias
+@mixin is ($needed-states...) {
+  @include state-is ($needed-states...) {
+    @content;
+  }
+}

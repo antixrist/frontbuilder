@@ -1,0 +1,56 @@
+@mixin x-stack (
+  $overlap: 1px
+) {
+  > * {
+    margin-left: $overlap * -1;
+  }
+  > *:first-child {
+    margin-left: 0;
+  }
+}
+
+@mixin y-stack (
+  $overlap: 1px
+) {
+  padding-bottom: $overlap;
+
+  > * {
+    margin-bottom: $overlap * -1;
+  }
+}
+
+@mixin x-stack-item (
+  $overlap: 1px,
+  $items: '*'
+) {
+  & + #{$items} {
+    margin-left: $overlap * -1;
+  }
+}
+
+@mixin y-stack-item (
+  $overlap: 1px,
+  $items: '*'
+) {
+  & + #{$items} {
+    margin-bottom: $overlap * -1;
+  }
+}
+
+@mixin stack-item-on-top($z-index: 2) {
+  position: relative;
+  z-index: $z-index;
+}
+
+@mixin stack-item (
+  $direction,
+  $args...
+) {
+  @if $direction == x {
+    @include x-stack-item($args...);
+  }
+  @if $direction == y {
+    @include y-stack-item($args...);
+  }
+}
+

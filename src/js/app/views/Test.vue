@@ -20,7 +20,7 @@
     opacity: 0;
   }
 
-  @import '../../../styles/shared/utils';
+  @import '../../../styles/utils/mixins';
 
   .custom-modal {
     .modal__overlay {

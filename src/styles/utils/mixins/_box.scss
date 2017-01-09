@@ -1,0 +1,289 @@
+//@import '~sassdash/scss/sassdash';
+
+@function _is-number ($value, $args...) {
+  @return type-of($value) == 'number';
+}
+
+@function invert-number ($n, $args...) {
+  @if _is-number($n) != true {
+    @return $n;
+  }
+
+  @return $n * -1;
+}
+
+@function get-bounds-map ($list) {
+  @if (type_of($list) == map) {
+    @return $list;
+  }
+
+  $list: if(type_of($list) == list, $list, ($list,));
+  $length: length($list);
+
+  $x: null;
+  $y: null;
+  $top: null;
+  $right: null;
+  $bottom: null;
+  $left: null;
+
+  @if $length == 1 {
+    $top: nth($list, 1);
+    $right: $top;
+    $bottom: $top;
+    $left: $top;
+  }
+  @elseif $length == 2 {
+    $top: nth($list, 1);
+    $right: nth($list, 2);
+    $bottom: $top;
+    $left: $right;
+  }
+  @elseif $length == 3 {
+    $top: nth($list, 1);
+    $right: nth($list, 2);
+    $bottom: nth($list, 3);
+    $left: $right;
+  }
+  @elseif $length == 4 {
+    $top: nth($list, 1);
+    $right: nth($list, 2);
+    $bottom: nth($list, 3);
+    $left: nth($list, 4);
+  }
+
+  @if ($top != null and $top == $bottom) {
+    $y: $top;
+  }
+  @if ($right != null and $right == $left) {
+    $x: $right;
+  }
+
+  $bounds: (
+    x: $x,
+    y: $y,
+    top: $top,
+    right: $right,
+    bottom: $bottom,
+    left: $left,
+  );
+
+  $remove-keys: ();
+  @each $side, $size in $bounds {
+    @if $size == null {
+      $remove-keys: append($remove-keys, $side);
+    }
+  }
+
+  $bounds: map-remove($bounds, $remove-keys...);
+
+  @return $bounds;
+}
+
+@function get-bounds-list ($map) {
+  @if (type_of($map) != map) {
+    @return if(type_of($map) == list, $map, ($map,));
+  }
+
+  $x:       _get($map, x);
+  $y:       _get($map, y);
+  $top:     _get($map, top);
+  $right:   _get($map, right);
+  $bottom:  _get($map, bottom);
+  $left:    _get($map, left);
+
+  $list: $top $right $bottom $left;
+
+  @if $x != null {
+    $list: set-nth($list, 2, $x);
+    $list: set-nth($list, 4, $x);
+  }
+
+  @if $y != null {
+    $list: set-nth($list, 1, $y);
+    $list: set-nth($list, 3, $y);
+  }
+
+  @return $list;
+}
+
+@mixin offset (
+  $bounds,
+  $sides: null,
+  $type: default
+) {
+  $bounds: get-bounds-map($bounds);
+
+  $property: margin-;
+  @if $type == relative {
+    $property: null;
+    position: relative;
+  }
+  @elseif $type == absolute {
+    $property: null;
+    position: absolute;
+  }
+  @elseif $type == fixed {
+    $property: null;
+    position: fixed;
+  }
+
+  @if $sides == null {
+    $sides: map-keys(get-bounds-map($bounds));
+  }
+  @if type_of($sides) != list {
+    $sides: ($sides,);
+  }
+
+  @each $side in (top right bottom left x y) {
+    @if index($sides, $side) != null and map-has-key($bounds, $side) == true {
+      @if $side == x {
+        #{$property}left:  _get($bounds, x);
+        #{$property}right: _get($bounds, x);
+      }
+      @elseif $side == y {
+        #{$property}top:    _get($bounds, y);
+        #{$property}bottom: _get($bounds, y);
+      }
+      @else {
+        #{$property}#{$side}: _get($bounds, $side);
+      }
+    }
+  }
+}
+
+@mixin box (
+  $bounds,
+  $sides: null,
+  $type: default
+) {
+  $bounds: get-bounds-map($bounds);
+
+  $property: padding-;
+  @if $type == outer {
+    $property: margin-;
+  }
+  @elseif $type == fixed {
+    $property: null;
+    position: fixed;
+  }
+  @elseif $type == absolute {
+    $property: null;
+    position: absolute;
+  }
+
+  @if $sides == null {
+    $sides: map-keys(get-bounds-map($bounds));
+  }
+  @if type_of($sides) != list {
+    $sides: ($sides,);
+  }
+
+  @each $side in (top right bottom left x y) {
+    @if index($sides, $side) != null and map-has-key($bounds, $side) == true {
+      @if $side == x {
+        #{$property}left:  _get($bounds, x);
+        #{$property}right: _get($bounds, x);
+      }
+      @elseif $side == y {
+        #{$property}top:    _get($bounds, y);
+        #{$property}bottom: _get($bounds, y);
+      }
+      @else {
+        #{$property}#{$side}: _get($bounds, $side);
+      }
+    }
+  }
+}
+
+// alias
+@mixin outer-box (
+  $bounds,
+  $sides: null
+) {
+  @include box($bounds, $sides, outer);
+}
+
+@mixin unboxing (
+  $bounds,
+  $sides: null
+) {
+  $bounds:   _map(get-bounds-list($bounds), invert-number);
+  $bounds:   get-bounds-map($bounds);
+  $property: margin-;
+
+  @if $sides == null {
+    $sides: map-keys(get-bounds-map($bounds));
+  }
+  @if type_of($sides) != list {
+    $sides: ($sides,);
+  }
+
+  @each $side in (top right bottom left x y) {
+    @if index($sides, $side) != null and map-has-key($bounds, $side) == true {
+      @if $side == x {
+        #{$property}left:  _get($bounds, x);
+        #{$property}right: _get($bounds, x);
+      }
+      @elseif $side == y {
+        #{$property}top:    _get($bounds, y);
+        #{$property}bottom: _get($bounds, y);
+      }
+      @else {
+        #{$property}#{$side}: _get($bounds, $side);
+      }
+    }
+  }
+}
+
+@mixin stretch-pagewide {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+@mixin stretch ($sides: x y) {
+  @each $side in (x y) {
+    @if index($sides, $side) != null {
+      position: absolute;
+
+      @if $side == x {
+        left:  0;
+        right: 0;
+        width: 100%;
+      }
+      @elseif $side == y {
+        top:    0;
+        bottom: 0;
+      }
+    }
+  }
+}
+
+@mixin ratio (
+  $ratio: 1/1,
+  $selector: '> *'
+) {
+
+  overflow: hidden;
+  position: relative;
+
+  // The container's height, as a percentage of the
+  // container's width, is set by assigning
+  // padding-top to a pseudo-element.
+  &:before {
+    content: "";
+    display: block;
+    height: 0;
+    padding-top: (1 / $ratio) * 100%;
+  }
+
+  @if type_of($selector) == string {
+    #{$selector} {
+      @include stretch;
+    }
+  }
+}

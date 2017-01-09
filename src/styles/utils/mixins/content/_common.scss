@@ -1,0 +1,89 @@
+@import '../functions';
+
+@mixin clearfix () {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+
+  &:after {
+    clear: both;
+  }
+}
+
+@mixin accelerate {
+  transform: translate3d(0, 0, 0);
+}
+
+@mixin selection (
+  $color: #363636,
+  $background: #b3d4fc,
+  $important: false
+) {
+  $i: important($important);
+
+  &::-moz-selection {
+    color: $color $i;
+    background: $background $i;
+
+    @content;
+  }
+
+  &::selection {
+    color: $color $i;
+    background: $background $i;
+
+    @content;
+  }
+}
+
+@mixin unselectable () {
+  &, & * {
+    @include selection($color: inherit, $background: transparent, $important: true);
+    user-select: none;
+  }
+}
+
+@mixin not-actionable ($important: false) {
+  $i: important($important);
+
+  pointer-events: none $i;
+  //touch-action:   none;
+}
+
+@mixin outline-shadowed (
+  $color: #fff,
+  $inner-color: #000
+) {
+  box-shadow: inset rgba($inner-color, 0.75) 0 1px 0,
+              rgba($color, 0.5) 0 1px 0;
+}
+
+@mixin hr (
+  $color: inherit,
+  $height: 1px
+) {
+  display: block;
+  height: $height;
+  border: 0;
+  border-top: $height solid $color;
+  padding: 0;
+}
+
+@mixin reset-borders ($important: false) {
+  $i: important($important);
+
+  border: none $i;
+  outline: none $i;
+  box-shadow: none $i;
+  text-decoration: none $i;
+}
+
+@mixin apply-styles ($styles) {
+  @if type_of($styles) == map {
+    @each $property, $value in $styles {
+      #{$property}: $value;
+    }
+  }
+}

@@ -1,0 +1,96 @@
+//@import '~sassdash/scss/_sassdash.scss';
+@import 'utils';
+
+$sibling-self-selectors-memo: () !default;
+@function sibling-self-selectors () {
+  $memo-key: inspect(&);
+  @if map-has-key($sibling-self-selectors-memo, $memo-key) {
+    @return map-get($sibling-self-selectors-memo, $memo-key);
+  }
+
+  $retVal: ();
+
+  @each $selector in parse-selectors(&) {
+    $rules: selector-rules($selector);
+
+    $rule: _last($rules);
+    $rule: parse-rule($rule);
+    $rule: map-merge($rule, (
+      states: (),
+      before: if(map-get($rule, 'before') == null, null, map-merge(map-get($rule, 'before'), (
+        states: ()
+      ))),
+      after: if(map-get($rule, 'after') == null, null, map-merge(map-get($rule, 'after'), (
+        states: ()
+      )))
+    ));
+
+    $retVal: append($retVal, '#{$selector} + #{stringify-rule($rule)}', comma);
+  }
+
+  $retVal: cleanup-list($retVal);
+
+  $sibling-self-selectors-memo: map-merge($sibling-self-selectors-memo, (
+    $memo-key: $retVal
+  )) !global;
+
+  @return $retVal;
+}
+
+@mixin sibling-self () {
+  @at-root #{sibling-self-selectors()} {
+    @content;
+  }
+}
+
+// Повышает специфичность
+// `.className` => `.className.className`
+// осторожно! `h1` => `h1h1`
+// todo: переписать с использование parse-selectors/parse-rules
+$power-memo: () !default;
+@mixin power () {
+  $memo-key: inspect(&);
+
+  $selectors: ();
+
+  @if map-has-key($power-memo, $memo-key) {
+    $selectors: map-get($power-memo, $memo-key);
+  }
+  @else {
+    @each $selector in & {
+      $current: _last($selector);
+      $parents: _drop-right($selector, 1);
+
+      $splitted: _split($current, ':');
+
+      $current: nth($splitted, 1);
+      $power: if($current != '*', $current, '');
+
+      $states: _drop($splitted, 1);
+      $states: _join($states, ':');
+      $states: if($states != '' and $states != null, ':#{$states}', null);
+
+      $selectors: append($selectors, #{$parents} #{$power}#{$current}#{$states}, comma);
+    }
+
+    $power-memo: map-merge($power-memo, (
+      $memo-key: $selectors
+    )) !global;
+  }
+
+
+  @at-root #{$selectors} {
+    @content;
+  }
+}
+
+
+@mixin proxy ($target: null) {
+  @if $target == null {
+    @content;
+  } @else {
+    #{$target} {
+      @content;
+    }
+  }
+}

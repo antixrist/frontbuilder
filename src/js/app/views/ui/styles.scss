@@ -1,0 +1,32 @@
+@import '../../../../styles/utils/mixins';
+
+$base-border-color: #e8e8e8 !default;
+
+
+.projects {
+
+}
+
+.projects-actions {
+  .btn {
+    //font-size: 14px;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .i--task-new {
+    @include unboxing(4px 5px 5px 5px);
+  }
+  .i--project-new {
+    @include unboxing(5px 5px);
+  }
+  .i--polygon-new {
+    @include unboxing(4px 5px 5px 5px);
+  }
+}
+
+.projects-filters {
+  //.input {
+  //  max-width:30px;
+  //}
+}

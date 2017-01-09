@@ -1,0 +1,38 @@
+@import '../functions';
+@import '../selectors/bem';
+@import '../content';
+
+$auto-columns-gutter: 0 !default;
+$auto-columns-gutter-style: margin !default;
+
+@mixin auto-columns-aside (
+  $position,
+  $gutter: 0,
+  $gutter-property: 'margin'
+) {
+  $position: unquote($position);
+  float: $position;
+  #{$gutter-property}-#{opposite-direction($position)}: $gutter;
+}
+
+@mixin auto-columns-center () {
+  overflow: hidden;
+  display: block;
+}
+
+@mixin auto-columns (
+  $gutter: $auto-columns-gutter,
+  $gutter-style: $auto-columns-gutter-style
+) {
+  @include clearfix;
+
+  @include e (center) {
+    @include auto-columns-center();
+  }
+  @include e (left) {
+    @include auto-columns-aside(left, $gutter, $gutter-style);
+  }
+  @include e (right) {
+    @include auto-columns-aside(right, $gutter, $gutter-style);
+  }
+}

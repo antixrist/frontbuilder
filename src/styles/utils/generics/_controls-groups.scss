@@ -1,0 +1,69 @@
+@import '../mixins';
+
+.controls-group {
+  display: flex;
+
+  @include m (stacked) {
+    @extend .x-stack;
+
+    @include m (rounded) {
+      @extend .x-stack--rounded;
+    }
+  }
+
+  @include m (stacked-y) {
+    @extend .y-stack;
+    @extend .controls-group--wide;
+
+    @include m (rounded) {
+      @extend .y-stack--rounded;
+    }
+  }
+
+  .input {
+    flex: 1;
+    min-width: 1px;
+  }
+  @include e (wide) {
+    flex: 1;
+    min-width: 1px;
+
+    @include m (auto) {
+      flex: none;
+    }
+  }
+}
+
+.controls-group--wide {
+  max-width: 100%;
+  display: block;
+
+  .btn {
+    @include btn-block;
+  }
+  .input {
+    @include input-block;
+  }
+}
+
+.controls-group__addon {
+  @include control-size(default);
+
+  white-space: nowrap;
+  border: 1px solid transparent
+}
+
+@each $size, $data in $control-sizes {
+  .controls-group--size-#{$size} .btn {
+    @include control-size($size, true);
+  }
+  .controls-group--size-#{$size} .input {
+    @include control-size($size);
+  }
+  .controls-group__addon--size-#{$size} {
+    @include control-size($size);
+  }
+  .controls-group--size-#{$size} .controls-group__addon {
+    @include control-size($size);
+  }
+}

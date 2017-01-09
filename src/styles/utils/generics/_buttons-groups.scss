@@ -1,0 +1,45 @@
+@import '../mixins';
+
+.btn-group {
+  @extend .x-stack;
+  @extend .x-stack--rounded;
+
+  @include m (squared) {
+    @extend .x-stack--squared;
+  }
+
+  @include e(on-top) {
+    @extend .x-stack__on-top;
+  }
+
+  .btn {
+    @include state-is(hover, focus, active) {
+      @extend .x-stack__on-top;
+    }
+  }
+
+  @include m (rounded) {
+    @extend .x-stack--rounded;
+  }
+}
+
+.y-btn-group {
+  @extend .y-stack;
+  @extend .y-stack--rounded;
+
+  @include m (squared) {
+    @extend .y-stack--squared;
+  }
+
+  @include e(on-top) {
+    @extend .y-stack__on-top--x2;
+  }
+
+  .btn {
+    @extend .btn--wide;
+
+    @include state-is(hover, focus, active) {
+      @extend .y-stack__on-top;
+    }
+  }
+}
