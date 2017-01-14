@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import pathExists from 'path-exists';
 import JSON5 from 'json5';
+import CircularDependencyPlugin from 'circular-dependency-plugin';
 import ContextReplacementPlugin from 'webpack/lib/ContextReplacementPlugin';
 /** втыкает в сборку все имеющиеся переменные среды */
 import EnvironmentPlugin from 'webpack/lib/EnvironmentPlugin';
@@ -47,7 +48,8 @@ export default function (webpackConfig) {
   
   plugins.push(
     // new LodashModuleReplacementPlugin(),
-    
+    new CircularDependencyPlugin({ failOnError: false }),
+  
     /** https://www.youtube.com/watch?v=XY2NLKCrjJ4 */
     new ContextReplacementPlugin(/node_modules\/moment\/locale/, /(ru|en-gb)/),
     

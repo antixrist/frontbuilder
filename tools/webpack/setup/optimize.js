@@ -23,7 +23,6 @@ import WebpackMd5Hash from 'webpack-md5-hash';
 /** генерация json-манифеста */
 import ManifestPlugin from 'webpack-manifest-plugin';
 import AssetsPlugin from 'assets-webpack-plugin';
-import BannerPlugin from 'webpack/lib/BannerPlugin';
 // import ManifestRevisionPlugin from 'manifest-revision-webpack-plugin';
 /** этот плагин ставится из `https://github.com/brandondoran/chunk-manifest-webpack-plugin#f60e59a95fccdedbb617c6437cc9dd0a3773dd46` */
 import ChunkManifestPlugin from 'chunk-manifest-webpack-plugin';

@@ -3,6 +3,7 @@ import styles from './styles';
 import texts from './texts';
 import assets from './assets';
 import optimize from './optimize';
+import common from './common';
 import vue from './vue';
 
 export {
@@ -11,5 +12,6 @@ export {
   texts,
   assets,
   optimize,
+  common,
   vue
 };

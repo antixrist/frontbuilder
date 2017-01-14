@@ -87,6 +87,7 @@ setup.styles(config);
 setup.assets(config);
 setup.texts(config);
 setup.optimize(config);
+setup.common(config);
 setup.vue(config);
 
 export default config;
