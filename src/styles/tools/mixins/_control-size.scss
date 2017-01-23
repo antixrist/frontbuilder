@@ -1,10 +1,4 @@
-//@import '~sassdash/scss/sassdash';
-@import 'content/common';
-@import 'content/lists';
-@import 'content/links';
-@import 'content/inputs';
-@import 'content/buttons';
-
+$base-font-size: 16px !default;
 $control-sizes: (
   xxs: (font-size: 10px, height: 26px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
   xs: (font-size: 12px, height: 31px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
@@ -24,7 +18,7 @@ $control-sizes: (
     @include apply-styles($styles);
 
     @if $include-offset and $offset != null {
-      @include state-is (active) {
+      &:active {
         @if map-has-key($styles, padding) {
           $padding: get-bounds-map(map-get($styles, padding));
           $padding-top: map-get($padding, top);

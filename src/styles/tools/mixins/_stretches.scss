@@ -1,0 +1,31 @@
+@mixin stretch-pagewide {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+@mixin stretch ($sides: x y) {
+  $position-added: false;
+
+  @each $side in (x y) {
+    @if index($sides, $side) != null {
+
+       @if not $position-added {
+         position: absolute;
+         $position-added: true;
+       }
+
+      @if $side == x {
+        left:  0;
+        right: 0;
+      }
+      @elseif $side == y {
+        top:    0;
+        bottom: 0;
+      }
+    }
+  }
+}

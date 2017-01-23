@@ -1,7 +1,3 @@
-//*********************************************
-//    Framework/Mixins/Layout/Carcass
-//*********************************************
-
 /*/
   <div class="layout"> <!-- ".layout" - here is mixin's context -->
     <div #{$content-container-selector} role="main">
@@ -138,7 +134,7 @@ $layout-width-min: 960px !default;
 $layout-width-max: 1200px !default;
 $layout-width-side-space: 50px !default;
 $layout-width-side-space-type: padding !default; // or "margin"
-@mixin layout-width (
+@mixin page-width (
   $min-width: $layout-width-min,
   $max-width: $layout-width-max,
   $side-space: $layout-width-side-space,

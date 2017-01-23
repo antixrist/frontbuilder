@@ -1,0 +1,12 @@
+// Заглушки для postcss-assets, чтобы sass не ругался на несуществующие функции
+@function size ($url, $factor) {
+  @return unquote('size(#{$url}, #{$factor})');
+}
+
+@function width ($url, $factor) {
+  @return unquote('width(#{$url}, #{$factor})');
+}
+
+@function height ($url, $factor) {
+  @return unquote('height(#{$url}, #{$factor})');
+}

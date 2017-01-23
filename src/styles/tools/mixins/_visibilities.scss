@@ -1,6 +1,3 @@
-@import 'functions';
-@import 'states';
-
 // Image replacement
 @mixin ir {
   background-color: transparent;
@@ -48,7 +45,9 @@
   width: 1px;
 
   .is-focusable {
-    @include state-is (active, focus) {
+    &,
+    &:active,
+    &:focus {
       clip: auto;
       height: auto;
       margin: 0;

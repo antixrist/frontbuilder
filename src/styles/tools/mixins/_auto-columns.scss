@@ -1,0 +1,14 @@
+@mixin auto-columns-aside (
+  $position,
+  $gutter: 0,
+  $gutter-property: margin
+) {
+  $position: unquote($position);
+  float: $position;
+  #{$gutter-property}-#{flip-direction($position)}: $gutter;
+}
+
+@mixin auto-columns-center () {
+  overflow: hidden;
+  display: block;
+}

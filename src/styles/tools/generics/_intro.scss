@@ -6,12 +6,15 @@
 
 /**
  * 1. Edge 12+, Internet Explorer 11-
+ * 2. Fonts on OSX will look more consistent with other systems that do not render text using sub-pixel anti-aliasing.
  */
 html, body {
   height: 100%;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar; /* 1 */
+  -moz-osx-font-smoothing: grayscale;   /* 2 */
+  -webkit-font-smoothing:  antialiased; /* 2 */
 }
 
 body {
@@ -71,6 +74,7 @@ menu {
 img {
   max-width: 100%;
   height: auto;
+  display: block;
 }
 
 label {

@@ -1,0 +1,19 @@
+@import '../functions/maps';
+
+$z-indexes: (
+ toast:     10000,
+ modal:     9000,
+ overlay:   8000,
+ dropdown:  7000,
+ dialog:    6000,
+ popup:     5000,
+ base:      1,
+ deepdive: -99999,
+) !default;
+
+@mixin z-index ($z-index-name, $map: $z-indexes) {
+  @if not map-has-key($map, $z-index-name) {
+    @error '[z-indexes]: no such z-index key: #{$z-index-name}';
+  }
+  @return _get($map, $z-index-name);
+}

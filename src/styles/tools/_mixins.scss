@@ -2,15 +2,20 @@
 @import '~sassy-strings/stylesheets/_SassyStrings.scss';
 @import '~modernizr-mixin/stylesheets/modernizr';
 
-@import 'mixins/functions';
+@import 'mixins/utils';
+@import 'mixins/icons';
+@import 'mixins/images';
 @import 'mixins/fonts';
 @import 'mixins/aligns';
 @import 'mixins/box';
-@import 'mixins/selectors';
-@import 'mixins/grids';
 @import 'mixins/units';
-@import 'mixins/content';
 @import 'mixins/states';
-@import 'mixins/images';
 @import 'mixins/visibilities';
 @import 'mixins/stacks';
+@import 'mixins/overlays';
+@import 'mixins/page-layout';
+@import 'mixins/auto-columns';
+@import 'mixins/inline-block-grid';
+
+@import 'mixins/content';
+//@import 'mixins/selectors';

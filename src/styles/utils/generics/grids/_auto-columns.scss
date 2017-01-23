@@ -1,8 +1,0 @@
-@import '../../mixins/grids/auto-columns';
-
-$auto-columns-gutter: 1em !default;
-$auto-columns-gutter-style: margin;
-
-.auto-columns {
-  @include auto-columns($gutter: $auto-columns-gutter);
-}

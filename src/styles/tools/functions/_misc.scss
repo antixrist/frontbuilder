@@ -1,0 +1,3 @@
+@function important ($important: false) {
+  @return if($important == true, !important, null);
+}

@@ -1,0 +1,24 @@
+/** todo: как правильно задавать и считать ratio? */
+
+@mixin ratio ($ratio: 1/1) {
+
+  overflow: hidden;
+  position: relative;
+
+  // The container's height, as a percentage of the
+  // container's width, is set by assigning
+  // padding-top to a pseudo-element.
+  &:before {
+    content: "";
+    display: block;
+    height: 0;
+    padding-top: (1 / $ratio) * 100%;
+  }
+}
+
+@mixin aspect-ratio ($width, $height) {
+  height: 0;
+  width: 100%;
+
+  padding-bottom: $height / $width * 100%;
+}

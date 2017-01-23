@@ -1,6 +1,4 @@
-@mixin x-stack (
-  $overlap: 1px
-) {
+@mixin x-stack ($overlap: 1px) {
   > * {
     margin-left: $overlap * -1;
   }
@@ -9,9 +7,7 @@
   }
 }
 
-@mixin y-stack (
-  $overlap: 1px
-) {
+@mixin y-stack ($overlap: 1px) {
   padding-bottom: $overlap;
 
   > * {
@@ -37,7 +33,7 @@
   }
 }
 
-@mixin stack-item-on-top($z-index: 2) {
+@mixin stack-item-on-top ($z-index: 2) {
   position: relative;
   z-index: $z-index;
 }
@@ -53,4 +49,3 @@
     @include y-stack-item($args...);
   }
 }
-

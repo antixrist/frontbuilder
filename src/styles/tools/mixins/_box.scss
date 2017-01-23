@@ -1,5 +1,3 @@
-//@import '~sassdash/scss/sassdash';
-
 @function _is-number ($value, $args...) {
   @return type-of($value) == 'number';
 }
@@ -196,14 +194,6 @@
   }
 }
 
-// alias
-@mixin outer-box (
-  $bounds,
-  $sides: null
-) {
-  @include box($bounds, $sides, outer);
-}
-
 @mixin unboxing (
   $bounds,
   $sides: null
@@ -232,58 +222,6 @@
       @else {
         #{$property}#{$side}: _get($bounds, $side);
       }
-    }
-  }
-}
-
-@mixin stretch-pagewide {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-}
-
-@mixin stretch ($sides: x y) {
-  @each $side in (x y) {
-    @if index($sides, $side) != null {
-      position: absolute;
-
-      @if $side == x {
-        left:  0;
-        right: 0;
-        width: 100%;
-      }
-      @elseif $side == y {
-        top:    0;
-        bottom: 0;
-      }
-    }
-  }
-}
-
-@mixin ratio (
-  $ratio: 1/1,
-  $selector: '> *'
-) {
-
-  overflow: hidden;
-  position: relative;
-
-  // The container's height, as a percentage of the
-  // container's width, is set by assigning
-  // padding-top to a pseudo-element.
-  &:before {
-    content: "";
-    display: block;
-    height: 0;
-    padding-top: (1 / $ratio) * 100%;
-  }
-
-  @if type_of($selector) == string {
-    #{$selector} {
-      @include stretch;
     }
   }
 }

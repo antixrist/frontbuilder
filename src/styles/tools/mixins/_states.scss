@@ -1,0 +1,65 @@
+@mixin outline-shadowed (
+  $color: #fff,
+  $inner-color: #000
+) {
+  box-shadow: inset rgba($inner-color, 0.75) 0 1px 0,
+              rgba($color, 0.5) 0 1px 0;
+}
+
+@mixin is-focused ($important: false) {
+  $i: important($important);
+  // Default
+  outline: thin dotted $i;
+  // WebKit
+  //outline: 5px auto -webkit-focus-ring-color $i;
+  outline-offset: -2px $i;
+}
+
+@mixin is-non-focused ($important: false) {
+  $i: important($important);
+  outline: none $i;
+  outline-offset: 0 $i;
+}
+
+@mixin is-focusable ($important: false) {
+  &:focus {
+    @include is-focused($important);
+  }
+}
+
+@mixin is-non-focusable ($important: false) {
+  &:focus {
+    @include is-non-focused($important);
+  }
+}
+
+@mixin opacity-states (
+  $normal: .8,
+  $hover: 1,
+  $active: .5,
+
+  $css-normal: ( transition: opacity .1s ease-out ),
+  $css-hover:  ( transition: opacity .1s ease-out ),
+  $css-active: ( transition: opacity .1s ease-out ),
+
+  $proxy: null
+) {
+  @include proxy ($proxy) {
+    opacity: $normal;
+    @include apply-styles($css-normal);
+  }
+
+  &:hover,
+  &:focus {
+    @include proxy ($proxy) {
+      opacity: $hover;
+      @include apply-styles($css-hover);
+    }
+  }
+  &:active {
+    @include proxy ($proxy) {
+      opacity: $active;
+      @include apply-styles($css-active);
+    }
+  }
+}

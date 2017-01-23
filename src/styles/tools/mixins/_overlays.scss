@@ -1,0 +1,57 @@
+@mixin image-preview (
+  $image,
+  $opacity-normal: .5,
+  $opacity-hover: 1,
+  $opacity-active: .8
+) {
+  position: relative;
+  display: inline-block;
+  border: none;
+  text-decoration: none;
+  max-width: 100%;
+
+  @include opacity-states(
+    $opacity-normal,
+    $opacity-hover,
+    $opacity-active,
+    $proxy: '&:after'
+  );
+
+  &:after {
+    @include stretch;
+    @include icon-base;
+    @include icon($image);
+    @include bg-size($image);
+
+    content: '';
+    width: auto;
+    height: auto;
+    margin: auto;
+    z-index: 2;
+
+    @content;
+  }
+}
+
+@mixin block-loader ($image) {
+  position: relative;
+  display: inline-block;
+  border: none;
+  text-decoration: none;
+  max-width: 100%;
+
+  &:after {
+    @include stretch;
+    @include icon-base;
+    @include icon($image);
+    @include bg-size($image);
+
+    content: '';
+    width: auto;
+    height: auto;
+    margin: auto;
+    z-index: 2;
+
+    @content;
+  }
+}

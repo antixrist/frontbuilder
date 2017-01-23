@@ -1,6 +1,3 @@
-//@import '~sassdash/scss/_sassdash.scss';
-@import 'utils';
-
 $sibling-self-selectors-memo: () !default;
 @function sibling-self-selectors () {
   $memo-key: inspect(&);
@@ -81,16 +78,5 @@ $power-memo: () !default;
 
   @at-root #{$selectors} {
     @content;
-  }
-}
-
-
-@mixin proxy ($target: null) {
-  @if $target == null {
-    @content;
-  } @else {
-    #{$target} {
-      @content;
-    }
   }
 }

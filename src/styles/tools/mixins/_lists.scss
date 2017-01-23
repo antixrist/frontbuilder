@@ -1,4 +1,4 @@
-//@import '../functions';
+@import '../functions/misc';
 
 @mixin list-reset ($important: false) {
   $i: important($important);

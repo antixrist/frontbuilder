@@ -1,31 +1,47 @@
+@mixin is-centered-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-@mixin va-center () {
+@mixin center-inner {
+  text-align: center;
+
+  > * {
+    display: inline-block;
+    text-align: left;
+  }
+}
+
+
+
+@mixin vertical-center () {
   // флексбоксами
 }
 
-@mixin va-center-table () {
+@mixin vertical-center-table () {
   display: table;
   width: 100%;
 }
-@mixin va-center-cell () {
+@mixin vertical-center-cell () {
   display: table-cell;
   margin-top: inherit;
   vertical-align: middle;
   width: 100%;
 }
 
-@mixin va-center-lh ($height) {
+@mixin vertical-center-lh ($height) {
   height: $height;
   line-height: $height;
 }
 
-@mixin va-center-translate () {
+@mixin vertical-center-translate () {
   transform: translate(50%, 50%);
   margin-top: -50%;
   margin-left: -50%;
 }
 
-@mixin va-center-ib ($selectors...) {
+@mixin vertical-center-ib ($selectors...) {
   &:before {
     content: "";
     height: 100%;

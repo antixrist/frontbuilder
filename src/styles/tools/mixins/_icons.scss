@@ -1,0 +1,25 @@
+/** @todo: избавиться от циклических зависимостей */
+
+@mixin icon-base () {
+  display: inline-block;
+  vertical-align: middle;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  background: no-repeat center center transparent;
+  line-height: 1;
+  font-style: normal;
+  font-weight: normal;
+  text-align: center;
+
+  @include bg-size(100% 100%);
+}
+
+@mixin icon ($url, $factor: 1) {
+
+  background-image: url('#{$url}');
+  width: width($url, $factor);
+  height: height($url, $factor);
+
+  @content;
+}

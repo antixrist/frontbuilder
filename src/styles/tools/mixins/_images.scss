@@ -1,23 +1,13 @@
-@import 'functions';
-@import 'states';
-@import 'box';
+@mixin is-responsive-image {
+  max-width: 100%;
+  height: auto;
+}
 
-$transition-speed: .1s !default;
+@mixin is-centered-image {
+  @include is-centered-block;
+}
+
 $background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
-
-// Заглушки для postcss-assets, чтобы sass не ругался на несуществующие функции
-@function size ($url, $factor) {
-  @return unquote('size(#{$url}, #{$factor})');
-}
-
-@function width ($url, $factor) {
-  @return unquote('width(#{$url}, #{$factor})');
-}
-
-@function height ($url, $factor) {
-  @return unquote('height(#{$url}, #{$factor})');
-}
-
 @mixin bg-size ($url, $factor: 1) {
   @if (type_of($url) == list and type_of(nth($url, 1)) == number) or type_of($url) == number {
     background-size: $url;
@@ -29,77 +19,6 @@ $background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
     .lt-ie9 & {
       -ms-behavior: url($background-size-behavior);
     }
-  }
-}
-
-@mixin icon-base () {
-  display: inline-block;
-  vertical-align: middle;
-  border: none;
-  outline: none;
-  text-decoration: none;
-  background: no-repeat center center transparent;
-  @include bg-size(100% 100%);
-}
-
-@mixin icon (
-  $url,
-  $factor: 1
-) {
-
-  background-image: url('#{$url}');
-  width: width($url, $factor);
-  height: height($url, $factor);
-
-  @content;
-}
-
-@mixin preview (
-  $image,
-
-  $opacity-normal: .5,
-  $opacity-hover: 1,
-  $opacity-active: .8,
-
-  $transition-normal: opacity $transition-speed ease-out,
-  $transition-hover: opacity $transition-speed ease-out,
-  $transition-active: opacity $transition-speed ease-out
-) {
-  position: relative;
-  display: inline-block;
-  border: none;
-  text-decoration: none;
-  max-width: 100%;
-
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  @include opacity-states(
-    $opacity-normal,
-    $opacity-hover,
-    $opacity-active,
-    $transition-normal,
-    $transition-hover,
-    $transition-active,
-    $proxy: '&:after'
-  );
-
-  &:after {
-    @include stretch;
-    z-index: 2;
-    content: '';
-    margin: auto;
-
-    @include icon-base;
-    @include icon($image);
-    @include bg-size($image);
-    width: auto;
-    height: auto;
-
-    @content;
   }
 }
 

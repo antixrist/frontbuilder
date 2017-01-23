@@ -1,0 +1,35 @@
+@mixin selection (
+  $color: #363636,
+  $background: #b3d4fc,
+  $important: false
+) {
+  $i: important($important);
+
+  &::-moz-selection {
+    color: $color $i;
+    background: $background $i;
+
+    @content;
+  }
+
+  &::selection {
+    color: $color $i;
+    background: $background $i;
+
+    @content;
+  }
+}
+
+@mixin unselectable () {
+  &, & * {
+    @include selection($color: inherit, $background: transparent, $important: true);
+    user-select: none;
+  }
+}
+
+@mixin not-actionable ($important: false) {
+  $i: important($important);
+
+  pointer-events: none $i;
+  //touch-action: none;
+}

@@ -56,13 +56,13 @@
   }
 
   $bounds: (
-             x: $x,
-             y: $y,
-             top: $top,
-             right: $right,
-             bottom: $bottom,
-             left: $left,
-           );
+    x: $x,
+    y: $y,
+    top: $top,
+    right: $right,
+    bottom: $bottom,
+    left: $left,
+  );
 
   $remove-keys: ();
   @each $side, $size in $bounds {
