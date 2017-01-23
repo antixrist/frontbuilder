@@ -1,6 +1,3 @@
-// require('source-map-support/browser-source-map-support');
-// sourceMapSupport.install();
-
 import 'babel-polyfill';
 import _ from 'lodash';
 import Promise from 'bluebird';

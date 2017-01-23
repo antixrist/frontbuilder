@@ -17,13 +17,13 @@ export default function (webpackConfig) {
   );
   
   if (isDevelopment) {
-    plugins.push(
-      new BannerPlugin({
-        banner: `require('source-map-support').install();`,
-        raw: true,
-        entryOnly: false
-      })
-    );
+    // plugins.push(
+    //   new BannerPlugin({
+    //     banner: `require('source-map-support').install();`,
+    //     raw: true,
+    //     entryOnly: true
+    //   })
+    // );
   } else {
     
   }
