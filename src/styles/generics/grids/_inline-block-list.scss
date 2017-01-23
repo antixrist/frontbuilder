@@ -1,0 +1,11 @@
+.ib {
+  @include ib();
+
+  &.-full-width {
+    @include ib($full-width: true);
+  }
+
+  > .item {
+    @include ib-item();
+  }
+}

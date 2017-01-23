@@ -1,0 +1,44 @@
+@mixin offset (
+  $bounds,
+  $sides: null,
+  $type: default
+) {
+  $bounds: get-bounds-map($bounds);
+
+  $property: margin-;
+  @if $type == relative {
+    $property: null;
+    position: relative;
+  }
+  @elseif $type == absolute {
+    $property: null;
+    position: absolute;
+  }
+  @elseif $type == fixed {
+    $property: null;
+    position: fixed;
+  }
+
+  @if $sides == null {
+    $sides: map-keys(get-bounds-map($bounds));
+  }
+  @if type_of($sides) != list {
+    $sides: ($sides,);
+  }
+
+  @each $side in (top right bottom left x y) {
+    @if index($sides, $side) != null and map-has-key($bounds, $side) == true {
+      @if $side == x {
+        #{$property}left:  _get($bounds, x);
+        #{$property}right: _get($bounds, x);
+      }
+      @elseif $side == y {
+        #{$property}top:    _get($bounds, y);
+        #{$property}bottom: _get($bounds, y);
+      }
+      @else {
+        #{$property}#{$side}: _get($bounds, $side);
+      }
+    }
+  }
+}

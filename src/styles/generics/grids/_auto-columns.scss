@@ -4,7 +4,7 @@ $auto-columns-gutter-style: margin !default;
 .auto-columns {
   @include clearfix;
 
-  > .left  { @include auto-columns-aside(left,  $auto-columns-gutter); }
-  > .right { @include auto-columns-aside(right, $auto-columns-gutter); }
+  > .left   { @include auto-columns-aside(left,  $auto-columns-gutter); }
+  > .right  { @include auto-columns-aside(right, $auto-columns-gutter); }
   > .center { @include auto-columns-center(); }
 }

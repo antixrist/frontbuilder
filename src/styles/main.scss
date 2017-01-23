@@ -1,1 +1,19 @@
+@import 'settings/index';
+@import 'tools/functions';
+@import 'tools/mixins';
+
+$base-font-size: 16px !default;
+$base-radius: 3px !default;
+
+$btn-bg-color-normal: #fff !default;
+$btn-border-color-normal: #ccc !default;
+
+@import 'generics/normalize';
+@import 'generics/helpers';
+@import 'generics/grids';
+@import 'generics/inputs';
+@import 'generics/buttons';
+@import 'generics/stacks';
+@import 'generics/controls-groups';
+
 @import 'main/index';

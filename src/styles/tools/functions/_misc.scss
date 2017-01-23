@@ -1,3 +1,15 @@
 @function important ($important: false) {
   @return if($important == true, !important, null);
 }
+
+@function _is-number ($value, $args...) {
+  @return type-of($value) == 'number';
+}
+
+@function invert-number ($n, $args...) {
+  @if _is-number($n) != true {
+    @return $n;
+  }
+
+  @return $n * -1;
+}

@@ -1,25 +1,19 @@
-@import '../mixins';
-
 $base-radius: 4px !default;
 
 .x-stack {
   @include x-stack;
 
-  > * {
-    border-radius: 0;
+  > :not(:first-child) {
+    border-top-left-radius: $base-radius;
+    border-bottom-left-radius: $base-radius;
+  }
+  > :not(:last-child) {
+    border-top-right-radius: $base-radius;
+    border-bottom-right-radius: $base-radius;
   }
 
-  @include m(rounded) {
-    > :first-child {
-      border-top-left-radius: $base-radius;
-      border-bottom-left-radius: $base-radius;
-    }
-    > :last-child {
-      border-top-right-radius: $base-radius;
-      border-bottom-right-radius: $base-radius;
-    }
-  }
 
+  
   > .input,
   .x-stack__control {
     @include stack-item-on-top(2);

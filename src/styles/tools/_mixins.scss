@@ -15,7 +15,11 @@
 @import 'mixins/overlays';
 @import 'mixins/page-layout';
 @import 'mixins/auto-columns';
-@import 'mixins/inline-block-grid';
+@import 'mixins/inline-block-list';
+@import 'mixins/page-layout';
 
 @import 'mixins/content';
 //@import 'mixins/selectors';
+
+
+// https://speakerdeck.com/dafed/managing-css-projects-with-itcss#49

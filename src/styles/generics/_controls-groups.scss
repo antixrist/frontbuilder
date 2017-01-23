@@ -1,0 +1,67 @@
+.controls-group {
+  display: flex;
+
+  &.-stacked {
+    @extend .x-stack;
+
+  }
+  &.-rounded {
+    @extend .x-stack.-rounded;
+  }
+
+  &.-stacked-y {
+    @extend .y-stack;
+    @extend .controls-group--wide;
+
+  }
+  &.-rounded {
+    @extend .y-stack.-rounded;
+  }
+
+  > .input {
+    flex: 1;
+    min-width: 1px;
+
+    &.-wide {
+      flex: 1;
+      min-width: 1px;
+    }
+    &.-auto {
+      flex: none;
+    }
+  }
+
+  > .addon {
+    @include control-size(default);
+
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  &.-wide {
+    max-width: 100%;
+    display: block;
+
+    > .btn {
+      @include btn-block;
+    }
+    > .input {
+      @include input-block;
+    }
+  }
+
+  @each $size, $data in $control-sizes {
+    &.-size-#{$size} > .btn {
+      @include control-size($size, true);
+    }
+    &.-size-#{$size} > .input {
+      @include control-size($size);
+    }
+    &.-size-#{$size} > .addon {
+      @include control-size($size);
+    }
+    > .addon.-size-#{$size} {
+      @include control-size($size);
+    }
+  }
+}

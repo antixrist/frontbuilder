@@ -1,11 +1,8 @@
 /** @todo: куда-то это надо убрать */
-@mixin hr (
-  $color: inherit,
-  $height: 1px
-) {
+@mixin hr ($height: 1px) {
   display: block;
   height: $height;
   border: 0;
-  border-top: $height solid $color;
+  border-top: $height solid currentColor;
   padding: 0;
 }

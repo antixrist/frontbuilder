@@ -8,18 +8,31 @@
 }
 
 $background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
-@mixin bg-size ($url, $factor: 1) {
-  @if (type_of($url) == list and type_of(nth($url, 1)) == number) or type_of($url) == number {
-    background-size: $url;
-  } @else {
-    background-size: width($url, $factor) height($url, $factor);
+@mixin bg-size ($size, $factor: 1) {
+  @if type_of($size) == string {
+    background-size: $size;
+  }
+  @else {
+    $size: get-bounds-map($size);
+
+    $x: map-get($size, y); // так надо
+    $y: map-get($size, x); // так надо
+
+    $x: if(_is-number($x), $x / $factor, $x);
+    $y: if(_is-number($y), $y / $factor, $y);
+
+    background-size: $x $y;
   }
 
-  @if (type-of($background-size-behavior) == string and $background-size-behavior != '') {
+  @if $background-size-behavior {
     .lt-ie9 & {
       -ms-behavior: url($background-size-behavior);
     }
   }
+}
+
+@mixin bg-size-image ($url, $factor: 1) {
+  @include bg-size(width($url, $factor) height($url, $factor));
 }
 
 //--------------
@@ -31,9 +44,9 @@ $background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
 // @include preload-images;
 //
 //--------------
-$_preload-image-list:     () !default;
-$_preload-images-loaded:  false !default;
-$_preload-image-urls:     () !default;
+$_preload-image-list: () !default;
+$_preload-image-urls: () !default;
+$_preload-images-loaded: false !default;
 @mixin preload-images ($images...) {
   @if not variable-exists(_preload-image-list) {
     $_preload-image-list: () !global;
