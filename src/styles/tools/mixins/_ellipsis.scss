@@ -1,4 +1,4 @@
-@mixin truncate ($truncation-boundary) {
+@mixin ellipsis ($truncation-boundary) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

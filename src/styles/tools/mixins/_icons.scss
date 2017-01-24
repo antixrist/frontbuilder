@@ -23,3 +23,12 @@
 
   @content;
 }
+
+@mixin svg-icon ($url) {
+  background-image: url('#{$url}');
+  position: relative;
+  display: inline-block;
+  height: 1em;
+
+  @content;
+}

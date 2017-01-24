@@ -4327,14 +4327,14 @@ loader-runner@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.2.0.tgz#824c1b699c4e7a2b6501b85902d5b862bf45b3fa"
 
-loader-utils@0.2.12, loader-utils@^0.2.11, loader-utils@~0.2.2:
+loader-utils@0.2.12, loader-utils@^0.2.11:
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-0.2.12.tgz#faa2a501563a3c2c9dda57aa8c39d8be628de7a2"
   dependencies:
     big.js "^3.0.2"
     json5 "^0.4.0"
 
-loader-utils@0.2.x, loader-utils@^0.2.10, loader-utils@^0.2.14, loader-utils@^0.2.15, loader-utils@^0.2.16, loader-utils@^0.2.3, loader-utils@^0.2.7, loader-utils@~0.2.5:
+loader-utils@0.2.x, loader-utils@^0.2.10, loader-utils@^0.2.14, loader-utils@^0.2.15, loader-utils@^0.2.16, loader-utils@^0.2.3, loader-utils@^0.2.7, loader-utils@~0.2.2, loader-utils@~0.2.5:
   version "0.2.16"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-0.2.16.tgz#f08632066ed8282835dff88dfb52704765adee6d"
   dependencies:
@@ -5304,6 +5304,10 @@ once@~1.3.0, once@~1.3.3:
 onetime@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
+
+open-color@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/open-color/-/open-color-1.4.2.tgz#e229db9db5647d1ae47cb8381665dbaabab4a625"
 
 open@0.0.2:
   version "0.0.2"
@@ -6682,6 +6686,10 @@ sanitize.css@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/sanitize.css/-/sanitize.css-4.1.0.tgz#0bafc3c513699f2fe8c7980c6d37edf21d3f5448"
 
+sass-burger@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/sass-burger/-/sass-burger-1.3.1.tgz#0e724a68e22b628d62f3fb7f2aa8c1fb8dad9aef"
+
 sass-graph@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/sass-graph/-/sass-graph-2.1.2.tgz#965104be23e8103cb7e5f710df65935b317da57b"
@@ -7001,6 +7009,10 @@ split@0.2:
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
+
+sprite-spirit@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/sprite-spirit/-/sprite-spirit-1.0.0.tgz#9af2e5cc9690152f30d5f9c954a64f348ec8c0e9"
 
 squeak@^1.0.0:
   version "1.3.0"

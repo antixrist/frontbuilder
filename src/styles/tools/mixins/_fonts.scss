@@ -71,20 +71,26 @@ $font-types-defaults: (
   bold-italic: (weight: 700, style: italic)
 );
 
+
 $font-stacks: map-merge($font-stacks-defaults, $font-stacks);
 $font-types: map-merge($font-types, $font-types);
 
-@function font ($names: (), $stack: systems) {
-  @if type_of($names != list) {
-    $names: ($names,);
-  }
 
-  $_fonts: ();
-  @each $font in $names { $_fonts: append($_fonts, $font, comma); }
-  $names: $_fonts;
-
-  $stack: map-get($font-stacks, $stack);
+@function font-stack ($name) {
+  $stack: map-get($font-stacks, $name);
   $stack: if(type_of($stack) == list, $stack, ());
+
+  @return $stack;
+}
+
+@function font ($names: (), $stack: systems) {
+  $names: if(type_of($names != list), ($names,), $names);
+
+  $needle-fonts: ();
+  @each $font in $names { $needle-fonts: append($needle-fonts, $font, comma); }
+  $names: $needle-fonts;
+
+  $stack: font-stack($stack);
 
   @return _uniq(_flatten(join($names, $stack, comma)));
 }

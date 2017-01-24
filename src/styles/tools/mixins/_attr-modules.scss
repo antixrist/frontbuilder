@@ -1,0 +1,77 @@
+$am-prefix: am !default;
+
+// AMCSS: http://amcss.github.io/
+
+/// @example
+///   //SCSS
+///   #{am('module')} {
+///     color: red;
+///   }
+///
+///   #{am('module', 'blue')} {
+///     color: blue;
+///   }
+///
+///   #{am('module', 'large')} {
+///     font-size: 2em;
+///   }
+///
+///
+///   //CSS
+///   [am-module] {
+///     color: red;
+///   }
+///
+///   [am-module~="blue"] {
+///     color: blue;
+///   }
+///
+///   [am-module~="large"] {
+///     font-size: 2em;
+///   }
+///
+@function am ($module, $trait: null) {
+  @if $trait == null {
+    @return '['+ $am-prefix +'-' + $module + ']';
+  } @else {
+    @return '['+ $am-prefix +'-' + $module + '~="' + $trait + '"]';
+  }
+}
+
+/// @example
+///   //SCSS
+///
+///   @include am(module) {
+///       color: red;
+///   }
+///
+///   @include am(module, blue) {
+///     color: blue;
+///   }
+///
+///   @include am(module, large) {
+///     font-size: 2em;
+///   }
+///
+///   //CSS
+///
+///   [am-module] {
+///     color: red;
+///   }
+///
+///   [am-module~="blue"] {
+///     color: blue;
+///   }
+///
+///   [am-module~="large"] {
+///     font-size: 2em;
+///   }
+///
+/// @link http://sassmeister.com/gist/2709da070d6aac25a9f5
+/// @author AMCSS
+
+@mixin am ($module, $trait: null) {
+  #{am($module, $trait)} {
+    @content;
+  }
+}

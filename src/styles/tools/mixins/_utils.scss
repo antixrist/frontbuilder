@@ -30,7 +30,11 @@
   }
 }
 
-@mixin accelerate {
+@mixin accelerate ($backface: true, $perspective: 1000) {
+  @if $backface {
+    backface-visibility: hidden;
+  }
+  perspective: $perspective;
   transform: translate3d(0, 0, 0);
 }
 

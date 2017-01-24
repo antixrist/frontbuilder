@@ -1,0 +1,34 @@
+@mixin equal-parts (
+  $type: table,
+  $items: '> *'
+) {
+  @if $type == table {
+    display: table;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    #{$items} {
+      display: table-cell;
+    }
+  }
+  /** @todo */
+  //@else if $type == flex {
+  //  @extend %flexbox;
+  //
+  //  $childrenEle: li div p a span strong;
+  //
+  //  @if index($childrenEle, $children) {
+  //    #{$children} {
+  //      @extend %equalflex;
+  //    }
+  //  }
+  //  @else {
+  //    .#{$children} {
+  //      @extend %equalflex;
+  //    }
+  //  }
+  //}
+  //@else {
+  //  @warn "You have to put #{$type} value is set to the table or flex! "
+  //}
+}
