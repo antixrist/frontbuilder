@@ -38,88 +38,91 @@
   }
 }
 
-///   //SCSS
-///   .caret{
-///     @include caret(50px, 1px, down, red, #ccc);
-///   }
-///
-///   //CSS
-///   .caret {
-///     position: relative;
-///   }
-///   .caret:before, .caret:after {
-///     content: "";
-///     position: absolute;
-///   }
-///   .caret:before {
-///     top: 0;
-///     left: 0;
-///     border-top: 50px solid red;
-///     border-left: 50px solid transparent;
-///     border-right: 50px solid transparent;
-///   }
-///   .caret:after {
-///     left: 1px;
-///     top: 0;
-///     border-top: 49px solid #ccc;
-///     border-left: 49px solid transparent;
-///     border-right: 49px solid transparent;
-///   }
 /// @link http://lugolabs.com/caret
+@mixin caret ($size, $border-width, $direction, $color, $border-color, $shadow: null) {
+  $size: get-bounds-map($size);
+  $width: map-get($size, y); // так надо
+  $height: map-get($size, x); // так надо
 
-@mixin caret ($caret-width, $border-width, $direction, $color, $border-color) {
+  //  $width: $width/2;
+
+  $back-colored-border-style: $height solid $border-color;
+  $back-transparent-border-style: $width/2 solid transparent;
+  $front-colored-border-style: ($height - $border-width) solid $color;
+  $front-transparent-border-style: ($width/2 - $border-width) solid transparent;
+
   position: relative;
 
   &:before,
   &:after {
-    @include pseudo($position: absolute);
+    content: '';
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+  &:before {
+    top: 0;
+    left: 0;
+
+    @if $shadow {
+      filter: drop-shadow($shadow);
+    }
   }
   @if $direction == up or $direction == top {
     &:before {
-      top: 0;
-      left: 0;
-      @include triangle($caret-width $caret-width, $direction, $border-color);
+      border-bottom: $back-colored-border-style;
+      border-left: $back-transparent-border-style;
+      border-right: $back-transparent-border-style;
     }
     &:after {
       left: $border-width;
       top: $border-width;
-      @include triangle(($caret-width - $border-width) ($caret-width - $border-width), $direction, $color);
+      border-bottom: $front-colored-border-style;
+      border-left: $front-transparent-border-style;
+      border-right: $front-transparent-border-style;
     }
   }
   @elseif $direction == right {
     &:before {
-      top: 0;
-      left: 0;
-      @include triangle($caret-width $caret-width, $direction, $border-color);
+      border-left: $back-colored-border-style;
+      border-top: $back-transparent-border-style;
+      border-bottom: $back-transparent-border-style;
     }
     &:after {
       top: $border-width;
       left: 0;
-      @include triangle(($caret-width - $border-width) ($caret-width - $border-width), $direction, $color);
+      border-left: $front-colored-border-style;
+      border-top: $front-transparent-border-style;
+      border-bottom: $front-transparent-border-style;
     }
   }
   @elseif $direction == down or $direction == bottom {
     &:before {
-      top: 0;
-      left: 0;
-      @include triangle($caret-width $caret-width, $direction, $border-color);
+      border-top: $back-colored-border-style;
+      border-left: $back-transparent-border-style;
+      border-right: $back-transparent-border-style;
     }
     &:after {
       top: 0;
       left: $border-width;
-      @include triangle(($caret-width - $border-width) ($caret-width - $border-width), $direction, $color);
+      border-top: $front-colored-border-style;
+      border-left: $front-transparent-border-style;
+      border-right: $front-transparent-border-style;
     }
   }
   @elseif $direction == left {
     &:before {
-      top: 0;
-      left: 0;
-      @include triangle($caret-width $caret-width, $direction, $border-color);
+      border-right: $back-colored-border-style;
+      border-top: $back-transparent-border-style;
+      border-bottom: $back-transparent-border-style;
     }
     &:after {
       top: $border-width;
       left: $border-width;
-      @include triangle(($caret-width - $border-width) ($caret-width - $border-width), $direction, $color);
+      border-right: $front-colored-border-style;
+      border-top: $front-transparent-border-style;
+      border-bottom: $front-transparent-border-style;
     }
   }
 }
