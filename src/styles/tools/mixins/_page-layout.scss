@@ -1,18 +1,17 @@
-/*/
-  <div class="layout"> <!-- ".layout" - here is mixin's context -->
-    <div #{$content-container-selector} role="main">
-      <main #{$content-selector} role="main">
-        <!-- content here -->
-      </main>
-    </div>
-    <aside #{$sidebar-left-selector}>
-      <!-- sidebar left here -->
-    </aside>
-    <aside #{$sidebar-right-selector}>
-      <!-- sidebar right here -->
-    </aside>
-  </div>
-/*/
+//  <div class="layout"> <!-- ".layout" - here is mixin's context -->
+//    <div #{$content-container-selector} role="main">
+//      <main #{$content-selector} role="main">
+//        <!-- content here -->
+//      </main>
+//    </div>
+//    <aside #{$sidebar-left-selector}>
+//      <!-- sidebar left here -->
+//    </aside>
+//    <aside #{$sidebar-right-selector}>
+//    <!-- sidebar right here -->
+//    </aside>
+//  </div>
+
 $layout-content-container-selector: '.layout-content-container' !default;
 $layout-content-selector: '.layout-content' !default;
 $layout-sidebar-left-selector: '.layout-sidebar-left' !default;
@@ -82,18 +81,17 @@ $layout-sidebar-right-gutter: 0 !default;
 }
 
 
-/*/
-  <body>
-    <div #{$selector-container}>
-      <div #{$selector-content}>
-        <!-- content here -->
-      </div>
-    </div>
-    <footer #{$selector-footer}>
-      <!-- footer here -->
-    </footer>
-  </body>
-/*/
+//  <body>
+//    <div #{$selector-container}>
+//      <div #{$selector-content}>
+//        <!-- content here -->
+//      </div>
+//    </div>
+//    <footer #{$selector-footer}>
+//      <!-- footer here -->
+//    </footer>
+//  </body>
+
 $layout-sticky-footer-height: 100px !default;
 $layout-sticky-footer-selector-container: '.layout' !default;
 $layout-sticky-footer-selector-content: '.layout-middle' !default;
@@ -105,8 +103,11 @@ $layout-sticky-footer-selector-footer: '.layout-footer' !default;
   $selector-footer: $layout-sticky-footer-selector-footer
 ) {
   @if (type-of($height) == number and $height > 0) {
-    html, body {
+    html {
       height: 100%;
+    }
+    body {
+      min-height: 100%;
     }
 
     #{unquote($selector-container)} {
@@ -130,22 +131,76 @@ $layout-sticky-footer-selector-footer: '.layout-footer' !default;
   }
 }
 
-$layout-width-min: 960px !default;
-$layout-width-max: 1200px !default;
-$layout-width-side-space: 50px !default;
-$layout-width-side-space-type: padding !default; // or "margin"
+/**
+ * 1. Избегайте бага с `min-height` в IE 10-11
+ * 2. Установите `flex-shrink` в `0`,
+чтобы не дать этим элементам в Chrome, Opera и Safari
+стать меньше чем их минимальный размер контента по умолчанию.
+ */
+/*/
+//  <body class="Site">
+//    <header class="Site-header">…</header>
+//    <main class="Site-content">…</main>
+//    <footer class="Site-footer">…</footer>
+//  </body>
+//
+//  html {
+//    height: 100%;
+//  }
+//  .Site {
+//    display: flex;
+//    flex-direction: column;
+//    height: 100vh; /* 1 */
+//  }
+//  .Site-header,
+//  .Site-footer {
+//    flex-shrink: 0; /* 2 */
+//  }
+//  .Site-content {
+//    flex: 1 0 auto; /* 2 */
+//  }
+/*/
+
+
+//  <body>
+//    <div class="content">
+//      <h1>Sticky Footer with Table-Row</h1>
+//      <p><button id="add">Add Content</button></p>
+//    </div>
+//    <footer class="footer">…</footer>
+//  </body>
+//
+//  html {
+//    height: 100%;
+//  }
+//  body {
+//    min-height: 100%;
+//    display: table;
+//    width: 100%;
+//  }
+//  .content {
+//    display: table-row;
+//    height: 100%;
+//    padding: 20px;
+//  }
+//  .footer {
+//    padding: 20px;
+//  }
+
+
 @mixin page-width (
-  $min-width: $layout-width-min,
-  $max-width: $layout-width-max,
-  $side-space: $layout-width-side-space,
-  $side-space-type: $layout-width-side-space-type
+  $min-width: 960px,
+  $max-width: 1400px,
+  $side-space: 20px,
+  $side-space-type: padding // or "margin"
 ) {
-  @if (
-    (type-of($min-width) == number and $min-width > 0) or
-    (type-of($max-width) == number and $max-width > 0)
-  ) {
-    margin-left: auto;
-    margin-right: auto;
+  $min-width:  if(type-of($min-width)  == number and $min-width > 0,  $min-width,  0);
+  $max-width:  if(type-of($max-width)  == number and $max-width > 0,  $max-width,  0);
+  $side-space: if(type-of($side-space) == number and $side-space > 0, $side-space, 0);
+  $side-space-type: if($side-space-type == padding or $side-space-type == margin, $side-space-type, padding);
+
+  @if $min-width > 0 or $max-width > 0 {
+    @include centered-block;
 
     @if ($min-width > 0) {
       min-width: $min-width + $side-space*2;
@@ -154,17 +209,7 @@ $layout-width-side-space-type: padding !default; // or "margin"
       max-width: $max-width + $side-space*2;
     }
 
-    @if (type-of($side-space) == number and $side-space > 0) {
-      $side-space-type: unquote($side-space-type);
-      @if ($side-space-type != padding) {
-        $side-space-type: margin;
-      }
-
-      #{$side-space-type}-left: $side-space;
-      #{$side-space-type}-right: $side-space;
-    }
+    #{$side-space-type}-left: $side-space;
+    #{$side-space-type}-right: $side-space;
   }
 }
-
-
-

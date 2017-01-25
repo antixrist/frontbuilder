@@ -3,7 +3,6 @@
  * 2. Fonts on OSX will look more consistent with other systems that do not render text using sub-pixel anti-aliasing.
  */
 html, body {
-  height: 100%;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar; /* 1 */
@@ -11,6 +10,9 @@ html, body {
   -webkit-font-smoothing:  antialiased; /* 2 */
 }
 
+html {
+  height: 100%;
+}
 body {
   min-height: 100%;
 }
