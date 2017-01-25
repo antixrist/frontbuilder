@@ -5,11 +5,11 @@
 }
 
 ._unselectable {
-  @include unselectable;
+  @include is-unselectable;
 }
 
 ._not-actionable {
-  @include not-actionable;
+  @include is-unactionable;
 }
 
 ._pull-left {

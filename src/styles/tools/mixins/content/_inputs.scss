@@ -39,7 +39,7 @@ $base-font-size: 16px !default;
 }
 
 @mixin input-reset () {
-  @include is-non-focusable;
+  @include is-unfocusable;
 
   display:          inline;
   margin:           0;
@@ -71,14 +71,14 @@ $base-font-size: 16px !default;
   min-width: 1%;
 
   @include state-is (focus) {
-    @include is-non-focused;
+    @include focus-outline-reset;
   }
 
   // todo: :-(
   &[disabled], fieldset[disabled] &,
   #{&}.is-disabled, fieldset.is-disabled & {
-    @include unselectable;
-    @include not-actionable;
+    @include is-unselectable;
+    @include is-unactionable;
 
     cursor: default;
     opacity: .65;

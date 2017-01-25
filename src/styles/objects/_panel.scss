@@ -1,36 +1,36 @@
-// =======================================
-// Panel
-// =======================================
-// Stack content in column and make body expand to full height of parent (or page),
-// while footer of panel to stick to bottom of parent.
-// Throws all direct descedants into flexbox mode.
-// Best used on `<body>`.
+//// =======================================
+//// Panel
+//// =======================================
+//// Stack content in column and make body expand to full height of parent (or page),
+//// while footer of panel to stick to bottom of parent.
+//// Throws all direct descedants into flexbox mode.
+//// Best used on `<body>`.
+////
+//// 1. Avoid the IE 10-11 `min-height` bug.
+//// 2. Use `%` instead of `vh` since `vh` is buggy in older mobile Safari.
+//// 3. Avoid issue with print in Firefox which cutting everything
+////    that goes beyond first page in case of flexbox
+//// 4. Set `flex-shrink` to `0` to prevent some browsers from
+////    letting these items shrink to smaller than their content's default
+////    minimum size. See http://bit.ly/1Mn35US for details.
 //
-// 1. Avoid the IE 10-11 `min-height` bug.
-// 2. Use `%` instead of `vh` since `vh` is buggy in older mobile Safari.
-// 3. Avoid issue with print in Firefox which cutting everything
-//    that goes beyond first page in case of flexbox
-// 4. Set `flex-shrink` to `0` to prevent some browsers from
-//    letting these items shrink to smaller than their content's default
-//    minimum size. See http://bit.ly/1Mn35US for details.
-
-.panel {
-  display: flex;
-  flex-direction: column;
-
-  @media print { display: block; } /* 3 */
-
-  // Use it only on root element, all direct descendants with `o-panel o-panel__flex`
-  // will expand without need to specify height
-  &.-max { height: 100%; }        /* 1, 2 */
-
-  .panel__header {
-    display:         flex;
-    align-items:     center;
-    justify-content: space-between;
-    flex:            none;
-  }
-
-  .panel__body   { flex: 1 0 auto; } /* 4 */
-  .panel__footer { flex: none; }     /* 4 */
-}
+//.panel {
+//  display: flex;
+//  flex-direction: column;
+//
+//  @media print { display: block; } /* 3 */
+//
+//  // Use it only on root element, all direct descendants with `o-panel o-panel__flex`
+//  // will expand without need to specify height
+//  &.-max { height: 100%; }        /* 1, 2 */
+//
+//  .panel__header {
+//    display:         flex;
+//    align-items:     center;
+//    justify-content: space-between;
+//    flex:            none;
+//  }
+//
+//  .panel__body   { flex: 1 0 auto; } /* 4 */
+//  .panel__footer { flex: none; }     /* 4 */
+//}

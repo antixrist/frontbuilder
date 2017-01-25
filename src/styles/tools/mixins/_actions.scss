@@ -20,16 +20,55 @@
   }
 }
 
-@mixin unselectable () {
+@mixin outline-shadowed (
+  $color: #fff,
+  $inner-color: #000
+) {
+  box-shadow: inset rgba($inner-color, 0.75) 0 1px 0,
+              rgba($color, 0.5) 0 1px 0;
+}
+
+@mixin focus-outline ($important: false) {
+  $i: important($important);
+  // Default
+  outline: thin dotted $i;
+  // WebKit
+  //outline: 5px auto -webkit-focus-ring-color $i;
+  outline-offset: -2px $i;
+}
+
+@mixin focus-outline-reset ($important: false) {
+  $i: important($important);
+  outline: none $i;
+  outline-offset: 0 $i;
+}
+
+@mixin is-unselectable () {
   &, & * {
     @include selection($color: inherit, $background: transparent, $important: true);
     user-select: none;
   }
 }
 
-@mixin not-actionable ($important: false) {
+@mixin is-unactionable ($important: false) {
   $i: important($important);
 
   pointer-events: none $i;
   //touch-action: none;
+}
+
+@mixin is-focusable ($important: false, $proxy: null) {
+  &:focus {
+    @include proxy($proxy) {
+      @include focus-outline($important);
+    }
+  }
+}
+
+@mixin is-unfocusable ($important: false, $proxy: null) {
+  &:focus {
+    @include proxy($proxy) {
+      @include focus-outline-reset($important);
+    }
+  }
 }

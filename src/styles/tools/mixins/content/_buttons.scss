@@ -5,7 +5,7 @@
 $base-font-size: 16px !default;
 
 @mixin btn-reset () {
-  @include is-non-focusable;
+  @include is-unfocusable;
 
   display:          inline;
   margin:           0;
@@ -27,7 +27,7 @@ $base-font-size: 16px !default;
 
 @mixin btn () {
   @include btn-reset;
-  @include unselectable;
+  @include is-unselectable;
 
   font-size:        1rem;
   line-height:      1.2;
@@ -47,22 +47,22 @@ $base-font-size: 16px !default;
 
   @include state-is (hover) {
     @include state-is (focus) {
-      @include is-non-focused;
+      @include focus-outline-reset;
     }
   }
 
   @include state-is (focus) {
-    @include is-focused;
+    @include focus-outline;
   }
 
   @include state-is (active) {
-    @include is-non-focused;
+    @include focus-outline-reset;
   }
 
   // todo: :-(
   &[disabled], fieldset[disabled] &,
   #{&}.is-disabled, fieldset.is-disabled & {
-    @include not-actionable;
+    @include is-unactionable;
 
     cursor: default;
     opacity: .65;

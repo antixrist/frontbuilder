@@ -1,6 +1,0 @@
-$tmp: 0;
-$tmp: if(type-of($tmp) == number and $tmp, $tmp, 0);
-
-@if $tmp {
-  @debug('==== DONE!');
-}

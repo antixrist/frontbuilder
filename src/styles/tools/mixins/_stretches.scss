@@ -12,7 +12,6 @@
 
   @each $side in (x y) {
     @if index($sides, $side) != null {
-
        @if not $position-added {
          position: absolute;
          $position-added: true;

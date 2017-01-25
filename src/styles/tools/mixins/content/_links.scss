@@ -61,7 +61,7 @@
 
     @include state-is (focus) {
       @include proxy ($proxy) {
-        @include is-non-focused;
+        @include focus-outline-reset;
       }
     }
   }
@@ -75,7 +75,7 @@
 
       @include apply-styles($focus);
 
-      @include is-focused;
+      @include focus-outline;
     }
   }
 
@@ -88,7 +88,7 @@
 
       @include apply-styles($active);
 
-      @include is-non-focused;
+      @include focus-outline-reset;
     }
   }
 

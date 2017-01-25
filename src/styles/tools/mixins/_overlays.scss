@@ -1,8 +1,12 @@
 @mixin image-preview (
   $image,
+  $factor: 1,
   $opacity-normal: .5,
   $opacity-hover: 1,
-  $opacity-active: .8
+  $opacity-active: .8,
+  $css-normal: ( transition: opacity .1s ease-out ),
+  $css-hover:  ( transition: opacity .1s ease-out ),
+  $css-active: ( transition: opacity .1s ease-out )
 ) {
   position: relative;
   display: inline-block;
@@ -14,16 +18,19 @@
     $opacity-normal,
     $opacity-hover,
     $opacity-active,
+    $css-normal,
+    $css-hover,
+    $css-active,
     $proxy: '&:after'
   );
 
   &:after {
+    @include pseudo;
     @include stretch;
     @include icon-base;
-    @include icon($image);
-    @include bg-size($image);
+    @include icon($image, $factor);
+    @include bg-size($image, $factor);
 
-    content: '';
     width: auto;
     height: auto;
     margin: auto;
@@ -33,7 +40,7 @@
   }
 }
 
-@mixin block-loader ($image) {
+@mixin block-loader ($image, $factor: 1) {
   position: relative;
   display: inline-block;
   border: none;
@@ -41,12 +48,12 @@
   max-width: 100%;
 
   &:after {
+    @include pseudo;
     @include stretch;
     @include icon-base;
-    @include icon($image);
-    @include bg-size($image);
+    @include icon($image, $factor);
+    @include bg-size($image, $factor);
 
-    content: '';
     width: auto;
     height: auto;
     margin: auto;
@@ -54,4 +61,15 @@
 
     @content;
   }
+}
+
+@mixin page-overlay ($z-index: 999) {
+  @include stretch;
+
+  display: block;
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  width: 100vh;
+  height: 100vh;
 }
