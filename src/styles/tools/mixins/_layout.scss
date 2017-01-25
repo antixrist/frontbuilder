@@ -1,0 +1,199 @@
+$layout-min-width: 960px !default;
+$layout-max-width: 1400px !default;
+$layout-side-space-width: 20px !default;
+$layout-side-space-type: padding !default; // or "margin"
+
+@mixin layout-width (
+  $min-width: $layout-min-width,
+  $max-width: $layout-max-width,
+  $side-space-width: $layout-side-space-width,
+  $side-space-type: $layout-side-space-type
+) {
+  /** сбрасываем значения переменных, если у них неправильный формат */
+  $min-width: if(type-of($min-width) == number and $min-width > 0, $min-width, null);
+  $max-width: if(type-of($max-width) == number and $max-width > 0, $max-width, null);
+  $side-space-width: if(type-of($side-space-width) == number and $side-space-width > 0, $side-space-width, 0);
+  $side-space-type: if($side-space-type == padding or $side-space-type == margin, $side-space-type, padding);
+
+  @if $min-width or $max-width {
+    @include centered-block;
+
+    @if $min-width {
+      min-width: $min-width + $side-space-width*2;
+    }
+    @if $max-width {
+      max-width: $max-width + $side-space-width*2;
+    }
+
+    #{$side-space-type}-left: $side-space-width;
+    #{$side-space-type}-right: $side-space-width;
+  }
+}
+
+//  <body>
+//    <header class="layout-header">…</header>
+//    <div class="layout-main">…</div>
+//    <footer class="layout-footer">…</footer>
+//  </body>
+$layout-main: '.layout-main' !default;
+$layout-footer: '.layout-footer' !default;
+$layout-header: '.layout-header' !default;
+$sticky-footer-method: table !default; // or "flex"
+
+@mixin layout-sticky-footer (
+  $main: $layout-main,
+  $footer: $layout-footer,
+  $header: $layout-header,
+  $method: $sticky-footer-method
+) {
+  /** сбрасываем значения переменных, если у них неправильный формат */
+  $main: if(type-of($main) == string and $main != '', $main, null);
+  $footer: if(type-of($footer) == string and $footer != '', $footer, null);
+  $header: if(type-of($header) == string and $header != '', $header, null);
+  $method: if($method == flex or $method == table, $method, table);
+
+  @if $method == flex {
+    /**
+     * http://css-live.ru/articles/uporyadochivanie-bagov-krossbrauzernosti-flexbox.html?replytocom=217028#respond
+     *
+     * 1. Избегайте бага с `min-height` в IE 10-11
+     * 2. Установите `flex-shrink` в `0`,
+     *    чтобы не дать этим элементам в Chrome, Opera и Safari
+     *    стать меньше чем их минимальный размер контента по умолчанию.
+     */
+    html {
+      height: 100%;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh; /* 1 */
+    }
+
+    @if $main {
+      #{$main} {
+        flex: 1 0 auto; /* 2 */
+      }
+    }
+    @if $header {
+      #{$header} {
+        flex-shrink: 0; /* 2 */
+      }
+    }
+    @if $footer {
+      #{$footer} {
+        flex-shrink: 0; /* 2 */
+      }
+    }
+  }
+
+  @if $method == table {
+    html {
+      height: 100%;
+    }
+    body {
+      min-height: 100%;
+      display: table;
+      width: 100%;
+    }
+
+    @if $main {
+      #{$main} {
+        display: table-row;
+        height: 100%;
+        padding: 20px;
+      }
+    }
+  }
+}
+
+//  <div class="layout-main"> <!-- here is conteXt -->
+//    <div #{$content-outer} role="main">
+//      <main #{$content} role="main">…</main>
+//    </div>
+//    <aside #{$left}>…</aside>
+//    <aside #{$right}>…</aside>
+//  </div>
+
+$layout-content-outer: '.layout-content' !default;
+$layout-content: '.layout-content' !default;
+$layout-left: '.layout-left' !default;
+$layout-right: '.layout-right' !default;
+$layout-left-width: 0 !default;
+$layout-right-width: 0 !default;
+$layout-left-gutter: 0 !default;
+$layout-right-gutter: 0 !default;
+
+@mixin sidebars (
+  $content-outer: $layout-content-outer,
+  $content: $layout-content,
+
+  $left: $layout-left,
+  $right: $layout-right,
+
+  $left-width: $layout-left-width,
+  $right-width: $layout-right-width,
+
+  $left-gutter: $layout-left-gutter,
+  $right-gutter: $layout-right-gutter
+) {
+  @include clearfix;
+
+  /** сбрасываем значения переменных, если у них неправильный формат */
+  $content-outer: if(type-of($content-outer) == string and $content-outer != '', $content-outer, null);
+  $content: if(type-of($content) == string and $content != '', $content, null);
+
+  $left: if(type-of($left) == string and $left != '', $left, null);
+  $right: if(type-of($right) == string and $right != '', $right, null);
+
+  $left-width: if(type-of($left-width) == number and $left-width, $left-width, 0);
+  $right-width: if(type-of($left-width) == number and $right-width, $right-width, 0);
+
+  $left-gutter: if(type-of($left-gutter) == number and $left-gutter, $left-gutter, 0);
+  $right-gutter: if(type-of($left-gutter) == number and $right-gutter, $right-gutter, 0);
+
+  /** если нужен либо левый, либо правый (ну или оба сразу) сайдбары */
+  @if ($left and $left-width) or ($right and $right-width) {
+    $content-padding-left: 0;
+    $content-padding-right: 0;
+
+    /** если нужен левый */
+    @if $left and $left-width {
+      $content-padding-left: $left-width + $left-gutter;
+      #{$left} {
+        float: left;
+        margin-left: -100%;
+        position: relative;
+        width: $left-width;
+      }
+    }
+
+    /** если нужен правый */
+    @if $right and $right-width {
+      $content-padding-right: $right-width + $right-gutter;
+      #{$right} {
+        float: left;
+        margin-left: -$right-width;
+        position: relative;
+        width: $right-width;
+      }
+    }
+
+    /** контейнер контента */
+    @if $content-outer {
+      #{$content-outer} {
+        float: left;
+        overflow: hidden;
+        width: 100%;
+      }
+    }
+
+    /** блок с контентом */
+    @if $content {
+      #{$content} {
+        padding-right: $content-padding-right;
+        padding-left: $content-padding-left;
+      }
+    }
+  }
+}

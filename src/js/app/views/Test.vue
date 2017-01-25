@@ -20,6 +20,7 @@
     opacity: 0;
   }
 
+/*
   @import '../../../styles/utils/mixins';
 
   .custom-modal {
@@ -35,6 +36,7 @@
       @include unboxing(1em);
     }
   }
+*/
 </style>
 
 <template>

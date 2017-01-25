@@ -1,5 +1,5 @@
 <style lang="scss" rel="stylesheet/scss">
-  @import '../../styles/utils/mixins';
+/*  @import '../../styles/utils/mixins';
   @import 'styles/index';
 
   $header-height: 45px;
@@ -98,7 +98,7 @@
         }
       }
     }
-  }
+  }*/
 
 </style>
 
