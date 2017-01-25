@@ -132,12 +132,13 @@ $layout-sticky-footer-selector-footer: '.layout-footer' !default;
 }
 
 /**
+ * http://css-live.ru/articles/uporyadochivanie-bagov-krossbrauzernosti-flexbox.html?replytocom=217028#respond
+ *
  * 1. Избегайте бага с `min-height` в IE 10-11
  * 2. Установите `flex-shrink` в `0`,
-чтобы не дать этим элементам в Chrome, Opera и Safari
-стать меньше чем их минимальный размер контента по умолчанию.
+ *    чтобы не дать этим элементам в Chrome, Opera и Safari
+ *    стать меньше чем их минимальный размер контента по умолчанию.
  */
-/*/
 //  <body class="Site">
 //    <header class="Site-header">…</header>
 //    <main class="Site-content">…</main>
@@ -159,7 +160,6 @@ $layout-sticky-footer-selector-footer: '.layout-footer' !default;
 //  .Site-content {
 //    flex: 1 0 auto; /* 2 */
 //  }
-/*/
 
 
 //  <body>
