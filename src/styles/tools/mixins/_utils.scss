@@ -1,48 +1,13 @@
-@import '../functions/misc';
-
-@mixin apply-styles ($styles) {
-  @if type_of($styles) == map {
-    @each $property, $value in $styles {
-      #{$property}: $value;
-    }
-  }
-}
-
-@mixin proxy ($target: null) {
-  @if $target == null {
-    @content;
-  } @else {
-    #{$target} {
-      @content;
-    }
-  }
-}
-
-@mixin clearfix () {
-  &:before,
-  &:after {
-    content: " ";
-    display: table;
-  }
-
-  &:after {
-    clear: both;
-  }
-}
-
-@mixin accelerate ($backface: true, $perspective: 1000) {
-  @if $backface {
-    backface-visibility: hidden;
-  }
-  perspective: $perspective;
-  transform: translate3d(0, 0, 0);
-}
-
-@mixin reset-borders ($important: false) {
-  $i: important($important);
-
-  border: none $i;
-  outline: none $i;
-  box-shadow: none $i;
-  text-decoration: none $i;
-}
+@import 'utils/misc';
+@import 'utils/actions';
+@import 'utils/aligns';
+@import 'utils/animations';
+@import 'utils/aspect-ratio';
+@import 'utils/box';
+@import 'utils/ellipsis';
+@import 'utils/fonts';
+@import 'utils/offset';
+@import 'utils/stretch';
+@import 'utils/units';
+@import 'utils/visibilities';
+@import 'utils/z-indexes';

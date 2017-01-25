@@ -1,4 +1,4 @@
-/** todo: как правильно задавать и считать ratio? */
+/** todo: отрефакторить, выкинуть лишнее. как правильно задавать и считать ratio? */
 
 /// Geometric size
 /// @param {number} $width - 容器的`width`
@@ -84,5 +84,4 @@
   padding-top: $slope * 100%;
   height: $start-height;
   background-position: center;
-  @include bg-size(cover);
 }

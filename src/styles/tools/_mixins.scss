@@ -1,25 +1,10 @@
-@import '~sassdash/scss/_sassdash.scss';
-@import '~sassy-strings/stylesheets/_SassyStrings.scss';
-@import '~modernizr-mixin/stylesheets/modernizr';
+//@import '~sassdash/scss/_sassdash.scss';
+//@import '~sassy-strings/stylesheets/_SassyStrings.scss';
+//@import '~modernizr-mixin/stylesheets/modernizr';
 
 @import 'mixins/utils';
-@import 'mixins/ellipsis';
-@import 'mixins/icons';
-@import 'mixins/images';
-@import 'mixins/fonts';
-@import 'mixins/aligns';
-@import 'mixins/box';
-@import 'mixins/units';
-@import 'mixins/states';
-@import 'mixins/visibilities';
-@import 'mixins/stacks';
-@import 'mixins/overlays';
-@import 'mixins/auto-columns';
-@import 'mixins/inline-block-list';
-@import 'mixins/layout';
-
-@import 'mixins/content';
-//@import 'mixins/selectors';
+@import 'mixins/objects';
+@import 'mixins/components';
 
 // https://github.com/ArmorDarks/ekzo
 // https://speakerdeck.com/dafed/managing-css-projects-with-itcss#49

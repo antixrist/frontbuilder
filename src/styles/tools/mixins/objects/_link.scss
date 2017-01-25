@@ -17,11 +17,11 @@
   $transition-active: (color .1s ease-out, border-color .1s ease-out, text-shadow .1s ease-out),
   $transition-visited: $transition-normal,
 
-  $normal: (),
-  $visited: (),
-  $hover: (),
-  $focus: (),
-  $active: (),
+  $css-normal: (),
+  $css-visited: (),
+  $css-hover: (),
+  $css-focus: (),
+  $css-active: (),
 
   $proxy: null
 ) {
@@ -35,58 +35,58 @@
     transition: $transition-normal;
     text-shadow: 0 1px 0 transparent;
 
-    @include apply-styles($normal);
+    @include apply-styles($css-normal);
   }
 
-  @include state-is (visited) {
+  &:visited {
     @include proxy ($proxy) {
       color: $color-visited;
       border-color: $border-color-visited;
       transition: $transition-visited;
       text-shadow: 0 1px 0 transparent;
 
-      @include apply-styles($visited);
+      @include apply-styles($css-visited);
     }
   }
 
-  @include state-is (hover) {
+  &:hover {
     @include proxy ($proxy) {
       color: $color-hover;
       border-color: $border-color-hover;
       transition: $transition-hover;
       text-shadow: 0 1px 0 transparent;
 
-      @include apply-styles($hover);
-    }
-
-    @include state-is (focus) {
-      @include proxy ($proxy) {
-        @include focus-outline-reset;
-      }
+      @include apply-styles($css-hover);
     }
   }
 
-  @include state-is (focus) {
+  &:focus {
     @include proxy ($proxy) {
       color: $color-focus;
       border-color: $border-color-focus;
       transition: $transition-focus;
       text-shadow: 0 1px 0 transparent;
 
-      @include apply-styles($focus);
+      @include apply-styles($css-focus);
 
       @include focus-outline;
     }
   }
 
-  @include state-is (active) {
+  &:focus:hover {
+    @include proxy ($proxy) {
+      @include focus-outline-reset;
+    }
+  }
+
+  &:active {
     @include proxy ($proxy) {
       color: $color-active;
       border-color: $border-color-active;
       transition: $transition-active;
       text-shadow: 0 1px 0 transparent;
 
-      @include apply-styles($active);
+      @include apply-styles($css-active);
 
       @include focus-outline-reset;
     }
@@ -98,7 +98,7 @@
       text-decoration: underline;
     }
   }
-};
+}
 
 @mixin link-pseudo () {
   border-bottom-style: dashed;
@@ -107,7 +107,12 @@
 @mixin link-reset ($important: false) {
   $i: important($important);
 
-  @include state-is (normal, hover, focus, active, visited) {
+  &,
+  &:hover,
+  &:focus,
+  &:focus:hover,
+  &:active,
+  &:visited {
     cursor: default $i;
     color: inherit $i;
     border: none $i;

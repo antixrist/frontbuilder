@@ -1,9 +1,9 @@
-@mixin is-responsive-image {
+@mixin is-image-responsive {
   max-width: 100%;
   height: auto;
 }
 
-@mixin is-centered-image {
+@mixin is-image-centered {
   @include is-centered-block;
 }
 

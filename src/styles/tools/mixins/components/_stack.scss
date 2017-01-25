@@ -1,3 +1,5 @@
+/** todo: пересмотреть и переписать */
+
 @mixin x-stack ($overlap: 1px) {
   > * {
     margin-left: $overlap * -1;

@@ -66,8 +66,8 @@
 @mixin page-overlay ($z-index: 999) {
   @include stretch;
 
-  display: block;
   position: fixed;
+  display: block;
   min-width: 100%;
   min-height: 100%;
   width: 100vh;

@@ -1,8 +1,14 @@
+/**
+ * @todo: flex
+ * плюс сюда же, по логике, относится inline-block-list
+ */
+
 @mixin equal-parts (
-  $type: table,
-  $items: '> *'
+  $items: '> *',
+  $type: table
 ) {
   @if $type == table {
+    width: 100%;
     display: table;
     table-layout: fixed;
     border-collapse: collapse;
@@ -11,11 +17,8 @@
       display: table-cell;
     }
   }
-  /** @todo */
   //@else if $type == flex {
   //  @extend %flexbox;
-  //
-  //  $childrenEle: li div p a span strong;
   //
   //  @if index($childrenEle, $children) {
   //    #{$children} {

@@ -1,4 +1,4 @@
-@mixin auto-columns-aside (
+@mixin auto-sidebars-aside (
   $position,
   $gutter: 0,
   $gutter-property: margin
@@ -8,7 +8,7 @@
   #{$gutter-property}-#{flip-direction($position)}: $gutter;
 }
 
-@mixin auto-columns-center () {
+@mixin auto-sidebars-center () {
   overflow: hidden;
   display: block;
 }

@@ -1,4 +1,4 @@
-@mixin triangle ($size, $direction, $color: currentColor, $shadow: null) {
+@mixin triangle ($size, $direction, $color: currentColor) {
   $size: get-bounds-map($size);
   $width: map-get($size, y); // так надо
   $height: map-get($size, x); // так надо
@@ -7,10 +7,10 @@
   $color-border-style: $height solid $color;
   $transparent-border-style: $width solid transparent;
 
+  content: '';
   width: 0;
   height: 0;
   display: block;
-  content: '';
 
   @if $direction == up or $direction == top {
     border-bottom: $color-border-style;
@@ -33,18 +33,14 @@
     border-bottom: $transparent-border-style;
   }
 
-  @if $shadow {
-    filter: drop-shadow($shadow);
-  }
+  @content;
 }
 
 /// @link http://lugolabs.com/caret
-@mixin caret ($size, $border-width, $direction, $color, $border-color, $shadow: null) {
+@mixin caret ($size, $border-width, $direction, $color, $border-color) {
   $size: get-bounds-map($size);
   $width: map-get($size, y); // так надо
   $height: map-get($size, x); // так надо
-
-  //  $width: $width/2;
 
   $back-colored-border-style: $height solid $border-color;
   $back-transparent-border-style: $width/2 solid transparent;
@@ -65,9 +61,7 @@
     top: 0;
     left: 0;
 
-    @if $shadow {
-      filter: drop-shadow($shadow);
-    }
+    @content;
   }
   @if $direction == up or $direction == top {
     &:before {

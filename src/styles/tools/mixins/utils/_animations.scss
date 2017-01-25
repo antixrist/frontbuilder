@@ -1,24 +1,22 @@
 /// //SCSS
 /// .anime {
-///    @include animation(
-///        (
-///            animationName: zoom,
-///            keyframes: (
-///                0: (
-///                    transform: scale(1),
-///                    background-color: blue
-///                ),
-///                100: (
-///                    transform: scale(3),
-///                    background-color: red
-///                )
-///            ),
-///            duration: 2,
-///            waitTime: 1,
-///            timingFunction: ease,
-///            iterationCount: infinite
-///      )
-///    );
+///   @include animation((
+///     animationName: zoom,
+///     keyframes: (
+///       0: (
+///         transform: scale(1),
+///         background-color: blue
+///       ),
+///       100: (
+///         transform: scale(3),
+///         background-color: red
+///       )
+///     ),
+///     duration: 2,
+///     waitTime: 1,
+///     timingFunction: ease,
+///     iterationCount: infinite
+///   ));
 /// }
 ///
 /// //CSS
@@ -57,6 +55,7 @@
   $waitTime: map-get($options, waitTime);
   $timingFunction: map-get($options, timingFunction);
   $iterationCount: map-get($options, iterationCount);
+
   $counter: 1; // index of 'each'
   @keyframes #{$name} {
     @each $frame, $prop in $kf {
@@ -66,14 +65,14 @@
         }
       }
       // if last in loop and waitTime is not 0, add the last frame as 100% (this is what creates the pause)
-      @if $counter==$kfLength and $waitTime > 0 {
+      @if $counter == $kfLength and $waitTime > 0 {
         100% {
           @each $k, $v in $prop {
             #{$k}: #{$v}
           }
         }
       }
-      $counter: $counter+1;
+      $counter: $counter + 1;
     }
   }
   animation: #{$name} #{$duration}s #{$timingFunction} #{$waitTime}s #{$iterationCount};

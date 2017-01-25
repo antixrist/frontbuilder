@@ -1,4 +1,4 @@
-@mixin reset-list ($important: false) {
+@mixin list-reset ($important: false) {
   $i: important($important);
 
   list-style: none $i;
