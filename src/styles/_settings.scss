@@ -4,12 +4,15 @@
 
 $base-font-size: 16px !default;
 $base-line-height: 1.42857143 !default;
-
+$base-color: #060606 !default;
 $base-radius: 3px !default;
 
 $selection-color: #363636 !default;
 $selection-background-color: #b3d4fc !default;
 
+
+//$font-path: '../fonts/' !default;
+$font-formats: 'ttf' 'otf' 'woff' 'woff2' 'svg' 'svgz' 'eot' !default;
 $fonts: (
   //'heading': ( // give your font a semantic name for reference
   //  'name': 'maven', // optionally set a different font name

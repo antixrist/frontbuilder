@@ -6,7 +6,7 @@
   @include ir;
 }
 
-@include u(hidden-text) {
+@include u(hide-text) {
   @include hide-text(true);
 }
 

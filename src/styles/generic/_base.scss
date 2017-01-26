@@ -1,10 +1,9 @@
+$base-color: #060606 !default;
 $base-font-size: 16px !default;
 $base-line-height: 1.42857143 !default;
 
 $selection-color: #363636 !default;
 $selection-background-color: #b3d4fc !default;
-
-@include import-webfonts;
 
 *,
 *:before,
@@ -26,10 +25,11 @@ input,
 optgroup,
 select,
 textarea {
-  font-size: $base-font-size;
-  line-height: $base-line-height;
   @include font-family(base);
   @include font-type(regular);
+  font-size: $base-font-size;
+  line-height: $base-line-height;
+  color: $base-color;
 }
 
 @include selection($selection-color, $selection-background-color);

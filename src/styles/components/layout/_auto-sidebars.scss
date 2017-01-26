@@ -1,5 +1,5 @@
 $auto-columns-gutter: 1em !default;
-$auto-columns-gutter-style: margin !default;
+$auto-columns-gutter-style: padding !default;
 
 .auto-columns {
   @include clearfix;

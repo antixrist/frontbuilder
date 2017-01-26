@@ -1,4 +1,4 @@
-/*! Flexible Grid System 5.5.3 | Settings | Scss | MIT License | flexible.gs */
+@import '~flexiblegs-scss-plus/scss/helper/flexiblegs-settings';
 
 $flexiblegs-method: (
   "css",
@@ -52,5 +52,4 @@ $wrap-masonry: (
 );
 
 @import '~flexiblegs-scss/flexiblegs-scss';
-@import '~flexiblegs-scss-plus/scss/helper/flexiblegs-settings';
 @import '~flexiblegs-scss-plus/scss/helper/flexiblegs-scss-plus';

@@ -52,24 +52,27 @@
   }
 }
 
-@mixin content-gutter ($gutter, $direction: top, $selector: '> *') {
-  $selector: if(is-string($selector), unquote($selector), null);
-  $selector: if(not is-null($selector) and $selector != '', $selector, null);
-
-  $direction: if(is-string($direction), unquote($direction), '');
-  $direction: if($direction != top and $direction != bottom, top, $direction);
-
-  @if (not is-measure($gutter)) {
-    $gutter: if(is-number($gutter), $gutter *1px, null);
-  }
-
-  @if ($gutter and $selector) {
-    & #{$selector} {
-      margin-#{$direction}: $gutter;
-
-      &:first-child {
-        margin-#{$direction}: 0;
-      }
-    }
-  }
+@mixin gutter (
+  $gutter,
+  $type, // (inner || outer) && ((top || bottom || left || right) || (x y))
+  $items: '> *'
+) {
+  //$items: if(type-of($items) == string, unquote($items), null);
+  //$items: if($items and $items != '', $items, null);
+  //
+  //$type: if(type-of($type) == string, unquote($type), null);
+  //$type: if($type != margin and $type != padding, margin, $type);
+  //
+  //$direction: if(type-of($direction) == string, unquote($direction), null);
+  //$direction: if($direction != top and $direction != bottom, top, $direction);
+  //
+  //@if ($gutter and $items) {
+  //  & #{$items} {
+  //    #{$type}-#{$direction}: $gutter;
+  //
+  //    &:first-child {
+  //      #{$type}-#{$direction}: 0;
+  //    }
+  //  }
+  //}
 }
