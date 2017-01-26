@@ -1,0 +1,17 @@
+@include u(pull-left) {
+  float: left !important;
+}
+@include u(pull-right) {
+  float: right !important;
+}
+
+@include u(text-left) {
+  text-align: left !important;
+}
+@include u(text-center) {
+  text-align: center !important;
+}
+@include u(text-right) {
+  text-align: right !important;
+}
+

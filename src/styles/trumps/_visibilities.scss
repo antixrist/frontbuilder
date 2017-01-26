@@ -7,15 +7,15 @@
 }
 
 @include u(hidden-text) {
-  @include hide-text;
+  @include hide-text(true);
 }
 
 @include is(hidden) {
-  @include is-hidden;
+  @include is-hidden(true);
 }
 
 @include is(invisible) {
-  @include is-invisible;
+  @include is-invisible(true);
 }
 
 @include is(visually-hidden) {

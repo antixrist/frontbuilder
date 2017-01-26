@@ -2,29 +2,12 @@
   @include clearfix;
 }
 
-@include u(pull-left) {
-  float: left;
-}
-@include u(pull-right) {
-  float: right;
-}
-
 @include u(unselectable) {
   @include is-unselectable;
 }
 
 @include u(unactionable) {
   @include is-unactionable;
-}
-
-@include u(text-left) {
-  text-align: left;
-}
-@include u(text-center) {
-  text-align: center;
-}
-@include u(text-right) {
-  text-align: right;
 }
 
 @include u(is-centered-block) {

@@ -1,0 +1,8 @@
+@include has(lines) {
+  @include has-lines(
+    $gutter: 20px,
+    $color: #ccc,
+    $minWidth: 20px,
+    $height: 1px
+  );
+}
