@@ -47,7 +47,7 @@
   $sides: null,
   $type: margin // `margin` or `absolute` or `fixed`
 ) {
-  $bounds:   get-bounds-map($bounds);
+  $bounds: get-bounds-map($bounds);
 
   $property: margin-;
   @if $type == fixed {
