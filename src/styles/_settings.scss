@@ -1,10 +1,39 @@
+//$btn-bg-color-normal: #fff !default;
+//$btn-border-color-normal: #ccc !default;
+
+
 $base-font-size: 16px !default;
-$base-line-height: 1.4 !default;
+$base-line-height: 1.42857143 !default;
 
 $base-radius: 3px !default;
 
-$auto-columns-gutter: 1em !default;
-$auto-columns-gutter-style: margin !default;
+$selection-color: #363636 !default;
+$selection-background-color: #b3d4fc !default;
 
-$btn-bg-color-normal: #fff !default;
-$btn-border-color-normal: #ccc !default;
+$fonts: (
+  //'heading': ( // give your font a semantic name for reference
+  //  'name': 'maven', // optionally set a different font name
+  //  'stack': ('helvetica', 'arial', sans-serif), // define the stack
+  //  'normal': 'maven/maven_pro_regular-webfont', // point to any webfont files
+  //  'bold': 'maven/maven_pro_bold-webfont',
+  //),
+
+  'base': (
+    'name': Roboto,
+    'stack': font-stack(systems),
+    'normal': false,
+    'italic': false,
+    'bold': false,
+    'bold' 'italic': false,
+  ),
+
+  'mono': (
+    'name': nth(font-stack(lucida-console), 1),
+    'stack': font-stack(lucida-console),
+    'normal': false,
+    'italic': false,
+    'bold': false,
+    'bold' 'italic': false,
+  ),
+
+);

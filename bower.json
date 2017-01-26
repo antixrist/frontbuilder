@@ -10,7 +10,6 @@
     "PACE": "pace#^1.0.2",
     "SassMagic": "git://github.com/W3cplus/SassMagic.git",
     "Scut": "scut#^1.4.0",
-    "accoutrement-fonts": "git://github.com/oddbird/accoutrement-type.git#^1.0.4",
     "angled-edges": "^1.1.2",
     "autosize": "^3.0.17",
     "css-element-queries": "git://github.com/marcj/css-element-queries.git#^0.3.2",

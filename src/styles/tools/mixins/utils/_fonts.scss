@@ -71,7 +71,6 @@ $font-types-defaults: (
   bold-italic: (weight: 700, style: italic)
 );
 
-
 $font-stacks: map-merge($font-stacks-defaults, $font-stacks);
 $font-types: map-merge($font-types, $font-types);
 

@@ -1,5 +1,6 @@
 code,
 pre,
 samp {
-  /** todo monospaced fonts */
+  @include font-family(mono);
+  @include font-type(regular);
 }

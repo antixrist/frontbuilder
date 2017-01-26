@@ -1,7 +1,7 @@
 @mixin auto-sidebars-aside (
   $position,
   $gutter: 0,
-  $gutter-property: margin
+  $gutter-property: padding
 ) {
   $position: unquote($position);
   float: $position;
