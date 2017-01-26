@@ -1,15 +1,15 @@
 @mixin box (
   $bounds,
   $sides: null,
-  $type: default
+  $type: padding // `padding` or `margin` or `absolute` or `fixed`
 ) {
   $bounds: get-bounds-map($bounds);
 
   $property: padding-;
-  @if $type == outer {
+  @if $type == margin {
     $property: margin-;
   }
-  @elseif $type == fixed {
+  @if $type == fixed {
     $property: null;
     position: fixed;
   }
@@ -26,7 +26,7 @@
   }
 
   @each $side in (top right bottom left x y) {
-    @if index($sides, $side) != null and map-has-key($bounds, $side) == true {
+    @if index($sides, $side) and map-has-key($bounds, $side) {
       @if $side == x {
         #{$property}left:  _get($bounds, x);
         #{$property}right: _get($bounds, x);
@@ -44,13 +44,22 @@
 
 @mixin unboxing (
   $bounds,
-  $sides: null
+  $sides: null,
+  $type: margin // `margin` or `absolute` or `fixed`
 ) {
-  $bounds:   _map(get-bounds-list($bounds), invert-number);
   $bounds:   get-bounds-map($bounds);
-  $property: margin-;
 
-  @if $sides == null {
+  $property: margin-;
+  @if $type == fixed {
+    $property: null;
+    position: fixed;
+  }
+  @elseif $type == absolute {
+    $property: null;
+    position: absolute;
+  }
+
+  @if not $sides {
     $sides: map-keys(get-bounds-map($bounds));
   }
   @if type_of($sides) != list {
@@ -58,17 +67,21 @@
   }
 
   @each $side in (top right bottom left x y) {
-    @if index($sides, $side) != null and map-has-key($bounds, $side) == true {
+    @if index($sides, $side) and map-has-key($bounds, $side) {
       @if $side == x {
-        #{$property}left:  _get($bounds, x);
-        #{$property}right: _get($bounds, x);
+        $x: invert-number(_get($bounds, x));
+
+        #{$property}left:  $x;
+        #{$property}right: $x;
       }
       @elseif $side == y {
-        #{$property}top:    _get($bounds, y);
-        #{$property}bottom: _get($bounds, y);
+        $y: invert-number(_get($bounds, y));
+
+        #{$property}top:    _get($bounds, $y);
+        #{$property}bottom: _get($bounds, $y);
       }
       @else {
-        #{$property}#{$side}: _get($bounds, $side);
+        #{$property}#{$side}: invert-number(_get($bounds, $side));
       }
     }
   }
