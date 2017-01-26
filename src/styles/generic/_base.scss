@@ -4,6 +4,8 @@ $base-line-height: 1.42857143 !default;
 $selection-color: #363636 !default;
 $selection-background-color: #b3d4fc !default;
 
+@include import-webfonts;
+
 *,
 *:before,
 *:after { box-sizing: inherit; }
