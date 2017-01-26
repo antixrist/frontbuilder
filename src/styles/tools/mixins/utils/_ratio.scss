@@ -88,7 +88,7 @@
 /// @param {number|list} $arg1
 /// @param {number|list} $arg2 [null]
 /// @param {string} $fluid-fallback [large] // or 'small'
-/// @param {string} $pseudo [before] // or 'after'
+/// @param {string} $pseudo [after] // or 'before'
 /// @example
 ///   .ratio {
 ///      @include ratio-block(16 / 9);
@@ -102,7 +102,7 @@
 ///   .ratio {
 ///      @include ratio-block(800px 200px, 300px 150px, small);
 ///   }
-@mixin proportional ($arg1, $arg2: null, $fluid-fallback: large, $pseudo: before) {
+@mixin proportional ($arg1, $arg2: null, $fluid-fallback: large, $pseudo: after) {
   &:#{$pseudo} {
     content: '';
     display: block;

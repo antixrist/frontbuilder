@@ -16,9 +16,10 @@
 
 // Hide from both screenreaders and browsers
 @mixin is-hidden ($important: false) {
-  display: none important($important);
-  visibility: hidden;
+  $i: important($important);
 
+  display: none $i;
+  visibility: hidden $i;
 }
 
 // Hide visually and from screenreaders, but maintain layout

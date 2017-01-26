@@ -22,9 +22,11 @@ img {
 }
 
 .fluid-ratio {
-  @include fluid-ratio(800px 200px, 300px 150px);
+  background-position: center center;
+  @include bg-size(cover);
+  @include proportional(800px 200px, 300px 150px);
 }
 
 .ir {
-  @include ir;
+  @include ir();
 }
