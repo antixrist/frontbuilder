@@ -39,34 +39,6 @@ pre {
   overflow: auto;
 }
 
-blockquote {
-  font-style: italic;
-  padding: 1em 1em 1em 2em;
-}
-
-menu,
-ol,
-ul,
-dl {
-  padding-left: 1.5em;
-}
-
-li,
-dd {
-  margin-bottom: .5em;
-}
-
-p,
-ul,
-ol,
-blockquote,
-table,
-hr,
-dd,
-menu {
-  margin: 0 0 1em;
-}
-
 img {
   max-width: 100%;
   height: auto;
@@ -97,9 +69,3 @@ a, .link {
   }
 }
 
-:first-child {
-  margin-top: 0;
-}
-:last-child {
-  margin-bottom: 0;
-}

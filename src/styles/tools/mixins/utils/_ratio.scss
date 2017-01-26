@@ -1,0 +1,136 @@
+/// @param {number|list} $width
+/// @param {number} $height [null]
+/// @example
+///   .ratio {
+///      @include aspect-ratio(720px 480px);
+///   }
+///   .ratio {
+///      @include aspect-ratio(720px, 480px);
+///   }
+@mixin ratio ($width, $height: null) {
+  @if ((type-of($width) == list and not $height) or
+       (type-of($width) == number and type-of($height) == number)
+  ) {
+    $width: $width;
+    $height: $height;
+
+    @if type-of($width) == list {
+      $sizes: get-bounds-map($width);
+      $width: map-get($sizes, y); // так надо
+      $height: map-get($sizes, x); // так надо
+    }
+
+    height: 0;
+    padding-bottom: $height / $width * 100%;
+  }
+
+  @content;
+}
+
+
+/// @param {number} $ratio [1/1]
+/// @example
+///   //SCSS
+///   .aspect-ratio {
+///   	@include aspect-ratio(16 / 9);
+///   	background-size: cover;
+///   	background-position: center;
+///   }
+@mixin aspect-ratio ($ratio: 1/1) {
+  height: 0;
+  padding-top: (1 / $ratio) * 100%;
+
+  @content;
+}
+
+
+/// @param {list} $large-size
+/// @param {list} $small-size
+/// @param {string} $fallback [large] // or 'small'
+/// @example
+///   //SCSS
+///   .fluid-ratio {
+///   	@include fluid-ratio(800px 400px, 300px 150px);
+///   	background-size: cover;
+///   	background-position: center;
+///   }
+/// @link http://voormedia.com/blog/2012/11/responsive-background-images-with-fixed-or-fluid-aspect-ratios
+@mixin fluid-ratio ($large-size, $small-size, $fallback: large) {
+  $large-size: get-bounds-map($large-size);
+  $small-size: get-bounds-map($small-size);
+
+  $width-large: map-get($large-size, y); // так надо
+  $width-small: map-get($small-size, y); // так надо
+  $height-large: map-get($large-size, x); // так надо
+  $height-small: map-get($small-size, x); // так надо
+
+  $slope: ($height-large - $height-small) / ($width-large - $width-small);
+  $height: $height-small - $width-small * $slope;
+
+  @if $height < 0 {
+    height: 0;
+    @if $fallback == large {
+      padding-bottom: $height-large / $width-large * 100%;
+    }
+    @else {
+      padding-bottom: $height-small / $width-small * 100%;
+    }
+  }
+  @else {
+    height: $height;
+    padding-bottom: $slope * 100%;
+  }
+
+  @content;
+}
+
+
+/// @param {number|list} $arg1
+/// @param {number|list} $arg2 [null]
+/// @param {string} $fluid-fallback [large] // or 'small'
+/// @param {string} $pseudo [before] // or 'after'
+/// @example
+///   .ratio {
+///      @include ratio-block(16 / 9);
+///   }
+///   .ratio {
+///      @include ratio-block(720px 480px);
+///   }
+///   .ratio {
+///      @include ratio-block(720px, 480px);
+///   }
+///   .ratio {
+///      @include ratio-block(800px 200px, 300px 150px, small);
+///   }
+@mixin proportional ($arg1, $arg2: null, $fluid-fallback: large, $pseudo: before) {
+  &:#{$pseudo} {
+    content: '';
+    display: block;
+
+    /**
+     * @include aspect-ratio(16 / 9);
+     */
+    @if type-of($arg1) == number and unitless($arg1) {
+      @include aspect-ratio($arg1);
+    }
+
+    /**
+     * @include aspect-ratio(720px 480px);
+     * @include aspect-ratio(720px, 480px);
+     */
+    @if ((type-of($arg1) == list and not $arg2) or
+         (type-of($arg1) == number and type-of($arg2) == number)
+    ) {
+      @include ratio($arg1, $arg2);
+    }
+
+    /**
+     * @include aspect-ratio(800px 200px, 300px 150px);
+     */
+    @if type-of($arg1) == list and type-of($arg2) == list {
+      @include fluid-ratio($arg1, $arg2, $fluid-fallback);
+    }
+  }
+
+  @content;
+}

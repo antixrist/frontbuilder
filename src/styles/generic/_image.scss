@@ -1,0 +1,30 @@
+img {
+  @include is-responsive-image;
+}
+
+@include o(img) {
+  &.-center {
+    @include is-centered-image;
+    margin-bottom: .5em;
+  }
+
+  &.-left {
+    float: left;
+    margin-right: 1em;
+    margin-bottom: .5em;
+  }
+
+  &.-right {
+    float: right;
+    margin-left: 1em;
+    margin-bottom: .5em;
+  }
+}
+
+.fluid-ratio {
+  @include fluid-ratio(800px 200px, 300px 150px);
+}
+
+.ir {
+  @include ir;
+}

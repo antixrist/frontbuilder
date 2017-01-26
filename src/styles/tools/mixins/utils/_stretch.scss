@@ -1,22 +1,21 @@
 @mixin stretch ($sides: x y) {
-  $position-added: false;
+  $sides: if(type-of($sides) != list, ($sides,), $sides);
+  $position-needed: false;
 
-  @each $side in (x y) {
-    @if index($sides, $side) != null {
-       @if not $position-added {
-         position: absolute;
-         $position-added: true;
-       }
+  @if index($sides, x) {
+    left:  0;
+    right: 0;
+    $position-needed: true;
+  }
 
-      @if $side == x {
-        left:  0;
-        right: 0;
-      }
-      @elseif $side == y {
-        top:    0;
-        bottom: 0;
-      }
-    }
+  @if index($sides, y) {
+    top:    0;
+    bottom: 0;
+    $position-needed: true;
+  }
+
+  @if $position-needed {
+    position: absolute;
   }
 }
 
