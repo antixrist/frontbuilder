@@ -6,26 +6,24 @@ $base-radius: 3px !default;
 $selection-color: #363636 !default;
 $selection-background-color: #b3d4fc !default;
 
+$layout-main: '.layout-main' !default;
+$layout-footer: '.layout-footer' !default;
+$layout-header: '.layout-header' !default;
+$sticky-footer-method: table !default; // or "flex"
 
-//$layout-main: '.layout-main' !default;
-//$layout-footer: '.layout-footer' !default;
-//$layout-header: '.layout-header' !default;
-//$sticky-footer-method: table !default; // or "flex"
+$layout-min-width: 960px !default;
+$layout-max-width: 1400px !default;
+$layout-side-space-width: 20px !default;
+$layout-side-space-type: padding !default; // or "margin"
 
-//$layout-min-width: 960px !default;
-//$layout-max-width: 1400px !default;
-//$layout-side-space-width: 20px !default;
-//$layout-side-space-type: padding !default; // or "margin"
-//
-//$layout-content-outer: '.layout-content' !default;
-//$layout-content: '.layout-content' !default;
-//$layout-left: '.layout-left' !default;
-//$layout-right: '.layout-right' !default;
-//$layout-left-width: 0 !default;
-//$layout-right-width: 0 !default;
-//$layout-left-gutter: 0 !default;
-//$layout-right-gutter: 0 !default;
-
+$layout-content-outer: '.layout-content' !default;
+$layout-content: '.layout-content' !default;
+$layout-left: '.layout-left' !default;
+$layout-right: '.layout-right' !default;
+$layout-left-width: 0 !default;
+$layout-right-width: 0 !default;
+$layout-left-gutter: 0 !default;
+$layout-right-gutter: 0 !default;
 
 //$font-path: '../fonts/' !default;
 $font-formats: 'ttf' 'otf' 'woff' 'woff2' 'svg' 'svgz' 'eot' !default;
