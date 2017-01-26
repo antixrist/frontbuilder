@@ -1,0 +1,23 @@
+@include u(ir) {
+  @include ir;
+}
+
+@include u(image-replacement) {
+  @include ir;
+}
+
+@include u(hidden-text) {
+  @include hide-text;
+}
+
+@include is(hidden) {
+  @include is-hidden;
+}
+
+@include is(invisible) {
+  @include is-invisible;
+}
+
+@include is(visually-hidden) {
+  @include is-visually-hidden;
+}

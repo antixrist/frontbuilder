@@ -1,4 +1,4 @@
-// Image replacement
+// Убрать картинку
 @mixin ir {
   background-color: transparent;
   border: 0;
@@ -12,6 +12,13 @@
     width: 0;
     height: 150%;
   }
+}
+
+// Скрыть только текст внутри блока
+@mixin hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
 }
 
 // Hide from both screenreaders and browsers
@@ -57,11 +64,4 @@
       width: auto;
     }
   }
-}
-
-// Скрыть только текст внутри блока
-@mixin is-text-hidden {
-  font: 0/0 a;
-  color: transparent;
-  text-shadow: none;
 }

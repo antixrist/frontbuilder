@@ -1,0 +1,25 @@
+/** todo: добавить переменных для ссылок */
+
+%link {
+  @include link();
+
+  &.-pseudo {
+    @include link-pseudo();
+  }
+
+  &.-reset {
+    @include link-reset();
+  }
+
+  .logo &, &.logo {
+    @include link-reset();
+  }
+}
+
+a {
+  @extend %link;
+}
+
+@include o(link) {
+  @extend %link;
+}

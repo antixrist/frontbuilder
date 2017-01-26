@@ -1,69 +1,39 @@
-@import '../mixins';
-
-._clearfix {
+@include u(clearfix) {
   @include clearfix;
 }
 
-._unselectable {
-  @include is-unselectable;
-}
-
-._not-actionable {
-  @include is-unactionable;
-}
-
-._pull-left {
+@include u(pull-left) {
   float: left;
 }
-._pull-right {
+@include u(pull-right) {
   float: right;
 }
 
-._text-left {
+@include u(unselectable) {
+  @include is-unselectable;
+}
+
+@include u(unactionable) {
+  @include is-unactionable;
+}
+
+@include u(text-left) {
   text-align: left;
 }
-._text-center {
+@include u(text-center) {
   text-align: center;
 }
-._text-right {
+@include u(text-right) {
   text-align: right;
 }
 
-._vertical-center-table {
-  @include vertical-center-table;
-}
-._vertical-center-cell {
-  @include vertical-center-cell;
-}
-
-._not-a-list {
-  @include list-reset();
-}
-
-._not-a-link {
-  @include link-reset();
-}
-
-._centered-block {
+@include u(is-centered-block) {
   @include is-centered-block;
 }
 
-._ir {
-  @include ir;
-}
-
-._is-hidden {
-  @include is-hidden;
-}
-
-._is-invisible {
-  @include is-invisible;
-}
-
-._is-visually-hidden {
-  @include is-visually-hidden;
-}
-
-._is-text-hidden {
-  @include is-text-hidden;
-}
+//._vertical-center-table {
+//  @include vertical-center-table;
+//}
+//._vertical-center-cell {
+//  @include vertical-center-cell;
+//}

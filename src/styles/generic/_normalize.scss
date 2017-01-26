@@ -1,3 +1,26 @@
-@import '~normalize.css/normalize';
 @import '~sanitize.css/sanitize';
+@import '~normalize.css/normalize';
 @import '~html5-boilerplate/src/css/main.css';
+
+/**
+ * 1. Edge 12+, Internet Explorer 11-
+ * 2. Fonts on OSX will look more consistent with other systems that do not render text using sub-pixel anti-aliasing.
+ */
+html, body {
+  -ms-overflow-style: -ms-autohiding-scrollbar; /* 1 */
+  -moz-osx-font-smoothing: grayscale;   /* 2 */
+  -webkit-font-smoothing:  antialiased; /* 2 */
+}
+
+/**
+ * Fix firefox fieldset display:
+ * http://stackoverflow.com/questions/17408815
+ */
+@-moz-document url-prefix () {
+  fieldset { display: table-cell; }
+}
+
+// Internet Explorer 11-
+pre {
+  overflow: auto;
+}

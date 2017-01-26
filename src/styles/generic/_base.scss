@@ -1,21 +1,22 @@
-/**
- * 1. Edge 12+, Internet Explorer 11-
- * 2. Fonts on OSX will look more consistent with other systems that do not render text using sub-pixel anti-aliasing.
- */
+$base-font-size: 16px !default;
+$base-line-height: 1.42857143 !default;
+
+$selection-color: #363636 !default;
+$selection-background-color: #b3d4fc !default;
+
+*,
+*:before,
+*:after { box-sizing: inherit; }
+
 html, body {
+  box-sizing: border-box;
   overflow-x: hidden;
+  //overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar; /* 1 */
-  -moz-osx-font-smoothing: grayscale;   /* 2 */
-  -webkit-font-smoothing:  antialiased; /* 2 */
 }
 
-html {
-  height: 100%;
-}
-body {
-  min-height: 100%;
-}
+html { height: 100%; }
+body { min-height: 100%; }
 
 html,
 button,
@@ -23,49 +24,10 @@ input,
 optgroup,
 select,
 textarea {
+  font-size: $base-font-size;
+  line-height: $base-line-height;
+  font-weight: normal;
   @include font($stack: systems);
 }
 
-/**
- * Fix firefox fieldset display:
- * http://stackoverflow.com/questions/17408815
- */
-@-moz-document url-prefix () {
-  fieldset { display: table-cell; }
-}
-
-// Internet Explorer 11-
-pre {
-  overflow: auto;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-label {
-  cursor: pointer;
-}
-
-hr {
-  color: inherit;
-  @include hr($height: 1px);
-}
-
-a, .link {
-  @include link();
-
-  &.not-a-link {
-    @include link-reset();
-  }
-  &.pseudo,
-  &.link--pseudo {
-    @include link-pseudo();
-  }
-  .logo &, &.logo {
-    @include link-reset();
-  }
-}
-
+@include selection($selection-color, $selection-background-color);

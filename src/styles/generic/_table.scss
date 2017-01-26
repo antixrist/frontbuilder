@@ -1,0 +1,7 @@
+table { width: 100%; }
+
+[colspan]     { text-align: center; }
+[colspan='1'] { text-align: left; }
+
+[rowspan]     { vertical-align: middle; }
+[rowspan='1'] { vertical-align: top; }

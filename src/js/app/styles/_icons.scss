@@ -1,5 +1,5 @@
 .i {
-  @include is-text-hidden;
+  @include hide-text;
   @include icon-base;
 
   &.i--megafon {
