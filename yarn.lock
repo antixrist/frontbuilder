@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"SassMagic@github:W3cplus/SassMagic":
-  version "1.0.0"
-  resolved "https://codeload.github.com/W3cplus/SassMagic/tar.gz/b083128f87a1aa7c659c0d35555db7eab34dcc5c"
-
 abbrev@1:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"

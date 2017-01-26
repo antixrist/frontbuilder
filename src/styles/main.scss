@@ -7,3 +7,11 @@
 @import 'trumps';
 
 //@import 'main/index';
+
+#map {
+  .justify-cnter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

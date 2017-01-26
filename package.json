@@ -26,7 +26,6 @@
     "test": "echo lol"
   },
   "dependencies": {
-    "SassMagic": "github:W3cplus/SassMagic",
     "accoutrement-color": "^2.0.1",
     "accoutrement-type": "github:oddbird/accoutrement-type",
     "animate.css": "^3.5.2",

@@ -52,27 +52,71 @@
   }
 }
 
-@mixin gutter (
-  $gutter,
-  $type, // (inner || outer) && ((top || bottom || left || right) || (x y))
-  $items: '> *'
-) {
-  //$items: if(type-of($items) == string, unquote($items), null);
-  //$items: if($items and $items != '', $items, null);
-  //
-  //$type: if(type-of($type) == string, unquote($type), null);
-  //$type: if($type != margin and $type != padding, margin, $type);
-  //
-  //$direction: if(type-of($direction) == string, unquote($direction), null);
-  //$direction: if($direction != top and $direction != bottom, top, $direction);
-  //
-  //@if ($gutter and $items) {
-  //  & #{$items} {
-  //    #{$type}-#{$direction}: $gutter;
-  //
-  //    &:first-child {
-  //      #{$type}-#{$direction}: 0;
-  //    }
-  //  }
-  //}
-}
+//@mixin gutter (
+//  $gutter,
+//  $options, // (inner || outer) && ((top || bottom || left || right) || (x y)) split edges,
+//  $count-per-row: null
+//) {
+//  $gutter: if(type-of($gutter) != number, 0, $gutter);
+//  $options: if(type-of($options) != list, ($options,), $options);
+//  $count-per-row: if(type-of($count-per-row) == number and $count-per-row, $count-per-row, 0);
+//
+//  $type: if(index($options, inner), inner, outer);
+//  $property: if($type == inner, padding, margin);
+//  $split: if(index($options, split), true, false);
+//  $edges: if(index($options, edges), true, false);
+//
+//  @if index($options, x) {
+//    @if $split {
+//      #{$property}-left: $gutter /2;
+//      #{$property}-right: $gutter /2;
+//
+//      @if not $edges {
+//        @if $count-per-row {
+//          // каждый последний элемент в строке
+//          &:nth-child(#{$count-per-row}n) { #{$property}-right: 0; }
+//          // каждый первый элемент в строке
+//          &:nth-child(#{$count-per-row}n + 1) { #{$property}-left: 0; }
+//          // самый последний элемент, но не последний в строке
+//          &:last-child:not(:nth-child(#{$count-per-row}n)) { #{$property}-right: $gutter /2; }
+//        }
+//
+//        &:first-child { #{$property}-left: 0; }
+//        &:last-child { #{$property}-right: 0; }
+//      }
+//    }
+//    @else {
+//      #{$property}-left: $gutter;
+//
+//      @if $edges {
+//        &:last-child { #{$property}-right: $gutter; }
+//      }
+//      @elseif $count-per-row {
+//        &:nth-child(#{$count-per-row}n + 1) { #{$property}-left: 0; }
+//        //&:nth-child(#{$count-per-row}n) { #{$property}-right: 0; }
+//
+//        &:first-child { #{$property}-left: 0; }
+//      }
+//    }
+//  }
+//
+//  @if index($options, y) {
+//    @if $split {
+//      #{$property}-top: $gutter;
+//      #{$property}-bottom: $gutter;
+//
+//      @if $edges {
+//        &:first-child { #{$property}-top: $gutter /2; }
+//        &:last-child { #{$property}-bottom: $gutter /2; }
+//      }
+//      @else {
+//        &:first-child { #{$property}-top: 0; }
+//        &:last-child { #{$property}-bottom: 0; }
+//      }
+//    }
+//    @else {
+//      #{$property}-top: $gutter;
+//      &:first-child { #{$property}-top: 0; }
+//    }
+//  }
+//}
