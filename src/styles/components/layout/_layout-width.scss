@@ -1,0 +1,30 @@
+$layout-min-width: 960px !default;
+$layout-max-width: 1400px !default;
+$layout-side-space-width: 20px !default;
+$layout-side-space-type: padding !default; // or "margin"
+
+%layout-width,
+.layout-width {
+  @include layout-width (
+    $min-width: $layout-min-width,
+    $max-width: $layout-max-width,
+    $side-space-width: $layout-side-space-width,
+    $side-space-type: $layout-side-space-type
+  );
+}
+
+//%layout-min-width,
+//.layout-min-width {
+//  @include layout-width (
+//    $min-width: $layout-min-width,
+//    $side-space-width: $layout-side-space-width,
+//    $side-space-type: $layout-side-space-type
+//  );
+//}
+//
+//%layout-max-width,
+//.layout-max-width {
+//  @include layout-width (
+//    $max-width: $layout-max-width
+//  );
+//}

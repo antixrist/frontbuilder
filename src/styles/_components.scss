@@ -1,5 +1,8 @@
 @import '~nprogress/nprogress.css';
 
+@import 'components/layout/layout-width';
+@import 'components/layout/layout-sidebars';
+@import 'components/layout/layout-sticky-footer';
 @import 'components/layout/flexiblegs';
 @import 'components/layout/auto-sidebars';
 @import 'components/layout/include-media';

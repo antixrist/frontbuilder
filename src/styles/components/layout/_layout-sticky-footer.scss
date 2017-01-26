@@ -1,0 +1,11 @@
+$layout-main: '.layout-main' !default;
+$layout-footer: '.layout-footer' !default;
+$layout-header: '.layout-header' !default;
+$sticky-footer-method: table !default; // or "flex"
+
+@include layout-sticky-footer (
+  $main: $layout-main,
+  $footer: $layout-footer,
+  $header: $layout-header,
+  $method: $sticky-footer-method
+);

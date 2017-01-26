@@ -1,13 +1,8 @@
-$layout-min-width: 960px !default;
-$layout-max-width: 1400px !default;
-$layout-side-space-width: 20px !default;
-$layout-side-space-type: padding !default; // or "margin"
-
 @mixin layout-width (
-  $min-width: $layout-min-width,
-  $max-width: $layout-max-width,
-  $side-space-width: $layout-side-space-width,
-  $side-space-type: $layout-side-space-type
+  $min-width: null,
+  $max-width: null,
+  $side-space-width: 0,
+  $side-space-type: padding // `padding` or `margin`
 ) {
   /** сбрасываем значения переменных, если у них неправильный формат */
   $min-width: if(type-of($min-width) == number and $min-width > 0, $min-width, null);
@@ -16,17 +11,15 @@ $layout-side-space-type: padding !default; // or "margin"
   $side-space-type: if($side-space-type == padding or $side-space-type == margin, $side-space-type, padding);
 
   @if $min-width or $max-width {
-    @include centered-block;
+    @include is-centered-block;
 
-    @if $min-width {
-      min-width: $min-width + $side-space-width*2;
-    }
-    @if $max-width {
-      max-width: $max-width + $side-space-width*2;
-    }
+    @if $min-width { min-width: $min-width + $side-space-width*2; }
+    @if $max-width { max-width: $max-width + $side-space-width*2; }
 
-    #{$side-space-type}-left: $side-space-width;
-    #{$side-space-type}-right: $side-space-width;
+    @if $side-space-width {
+      #{$side-space-type}-left: $side-space-width;
+      #{$side-space-type}-right: $side-space-width;
+    }
   }
 }
 
@@ -35,16 +28,11 @@ $layout-side-space-type: padding !default; // or "margin"
 //    <div class="layout-main">…</div>
 //    <footer class="layout-footer">…</footer>
 //  </body>
-$layout-main: '.layout-main' !default;
-$layout-footer: '.layout-footer' !default;
-$layout-header: '.layout-header' !default;
-$sticky-footer-method: table !default; // or "flex"
-
 @mixin layout-sticky-footer (
   $main: $layout-main,
   $footer: $layout-footer,
   $header: $layout-header,
-  $method: $sticky-footer-method
+  $method: table // `table` or `flex`
 ) {
   /** сбрасываем значения переменных, если у них неправильный формат */
   $main: if(type-of($main) == string and $main != '', $main, null);
@@ -61,9 +49,7 @@ $sticky-footer-method: table !default; // or "flex"
      *    чтобы не дать этим элементам в Chrome, Opera и Safari
      *    стать меньше чем их минимальный размер контента по умолчанию.
      */
-    html {
-      height: 100%;
-    }
+    html { height: 100%; }
     body {
       display: flex;
       flex-direction: column;
@@ -71,26 +57,18 @@ $sticky-footer-method: table !default; // or "flex"
     }
 
     @if $main {
-      #{$main} {
-        flex: 1 0 auto; /* 2 */
-      }
+      #{$main} { flex: 1 0 auto; /* 2 */ }
     }
     @if $header {
-      #{$header} {
-        flex-shrink: 0; /* 2 */
-      }
+      #{$header} { flex-shrink: 0; /* 2 */ }
     }
     @if $footer {
-      #{$footer} {
-        flex-shrink: 0; /* 2 */
-      }
+      #{$footer} { flex-shrink: 0; /* 2 */ }
     }
   }
 
   @if $method == table {
-    html {
-      height: 100%;
-    }
+    html { height: 100%; }
     body {
       min-height: 100%;
       display: table;
@@ -114,28 +92,18 @@ $sticky-footer-method: table !default; // or "flex"
 //    <aside #{$left}>…</aside>
 //    <aside #{$right}>…</aside>
 //  </div>
+@mixin layout-sidebars (
+  $content-outer,
+  $content,
 
-$layout-content-outer: '.layout-content' !default;
-$layout-content: '.layout-content' !default;
-$layout-left: '.layout-left' !default;
-$layout-right: '.layout-right' !default;
-$layout-left-width: 0 !default;
-$layout-right-width: 0 !default;
-$layout-left-gutter: 0 !default;
-$layout-right-gutter: 0 !default;
+  $left,
+  $right,
 
-@mixin sidebars (
-  $content-outer: $layout-content-outer,
-  $content: $layout-content,
+  $left-width: 0,
+  $right-width: 0,
 
-  $left: $layout-left,
-  $right: $layout-right,
-
-  $left-width: $layout-left-width,
-  $right-width: $layout-right-width,
-
-  $left-gutter: $layout-left-gutter,
-  $right-gutter: $layout-right-gutter
+  $left-gutter: 0,
+  $right-gutter: 0
 ) {
   @include clearfix;
 
