@@ -1,0 +1,71 @@
+@include c(table) {
+  border: none;
+
+  td, th {
+    padding: 0;
+    text-align: left;
+    border: none;
+
+    @include font-type(regular);
+  }
+
+  th { @include font-type(bold); }
+
+  thead {
+    th, td {
+      &:first-child { }
+      &:last-child { }
+    }
+    th {  }
+    td {  }
+
+    tr {
+      &:first-child {
+        th, td {
+          &:first-child { }
+          &:last-child { }
+        }
+        th {  }
+        td {  }
+      }
+      &:last-child {
+        th, td {
+          &:first-child { }
+          &:last-child { }
+        }
+        th {  }
+        td {  }
+      }
+    }
+  }
+
+  tbody {
+    th, td {
+      &:first-child { }
+      &:last-child { }
+    }
+    th {  }
+    td {  }
+
+    tr {
+      &:first-child {
+        th, td {
+          &:first-child { }
+          &:last-child { }
+        }
+        th {  }
+        td {  }
+      }
+      &:last-child {
+        th, td {
+          &:first-child { }
+          &:last-child { }
+        }
+        th {  }
+        td {  }
+      }
+    }
+  }
+
+
+}

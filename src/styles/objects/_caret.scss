@@ -1,0 +1,40 @@
+$caret-size: .5em .3em !default;
+$caret-color: currentColor !default;
+
+@include o(caret) {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+
+  $caret-size: get-bounds-map($caret-size);
+  $width: map-get($caret-size, y); // так надо
+  $height: map-get($caret-size, x); // так надо
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+  }
+  &:before {
+    @include triangle($width $height, up, $color: $caret-color);
+  }
+  &:after {
+    @include triangle($width $height, down, $color: $caret-color);
+    margin-top: 1px;
+  }
+
+  &.-up {
+    padding-top: $height /2;
+    padding-bottom: $height /2;
+
+    &:after { display: none; }
+  }
+
+  &.-down {
+    padding-top: $height /2;
+    padding-bottom: $height /2;
+
+    &:before { display: none; }
+    &:after { margin-top: 0; }
+  }
+}

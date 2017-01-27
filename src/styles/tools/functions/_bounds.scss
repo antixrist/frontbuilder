@@ -1,3 +1,8 @@
+/** todo:
+ * get-sizes-map((width: 20px, height: 10px))
+ * get-sizes-map(20px 10px)
+ */
+
 @function get-bounds-map ($list) {
   @if (type_of($list) == map) {
     @return $list;
