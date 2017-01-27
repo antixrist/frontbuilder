@@ -1,0 +1,50 @@
+extends layouts/default.pug
+
+block vars
+  -
+    var pageEntry = 'ui';
+    var chunks = ['manifest', 'common', pageEntry];
+
+block before-app-content
+  #ui
+    h1 Это юай!
+    p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
+    p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
+    p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
+    p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
+    p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
+
+    table
+      thead
+        tr
+          th Оператор
+          th LAC #[i.o-caret.-up-down]
+          th CID #[i.o-caret.-up]
+          th MNC #[i.o-caret.-down]
+          th MCC
+          th Тип
+          th БС
+          th
+      tbody
+        tr
+          td i.o-icon.-megaphone
+          td 5043
+          td 254688791
+          td 2
+          td 4G
+          td: div.opacity-list
+            i.o-icon.-eagle
+            i.o-icon.-google
+            i.o-icon.-yandex
+          td: a.-pseudo(href="#") Свернуть
+        tr
+          td i.o-icon.-beeline
+          td 5042
+          td 2546987654
+          td 2
+          td 4G
+          td: div.opacity-list
+            i.o-icon.-eagle
+            i.o-icon.-google
+            i.o-icon.-yandex
+          td: a.-pseudo(href="#") Развернуть
