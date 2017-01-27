@@ -40,8 +40,8 @@ $table-border-color: #edeef0 !default;
             &:last-child { padding-right: map-get($bounds, right); }
           }
           @elseif not $edges and $between {
-            &:first-child { padding-right: map-get($bounds, right); }
-            &:last-child { padding-left: map-get($bounds, left); }
+            &:first-child:not(:last-child) { padding-right: map-get($bounds, right); }
+            &:last-child:not(:first-child) { padding-left: map-get($bounds, left); }
             &:not(:last-child):not(:first-child) {
               padding-left: map-get($bounds, left);
               padding-right: map-get($bounds, right);
@@ -53,6 +53,14 @@ $table-border-color: #edeef0 !default;
         @if $between and $edges {
           padding-top: map-get($bounds, top);
           padding-bottom: map-get($bounds, bottom);
+        }
+        @else {
+          @if $edges and not $between {
+            
+          }
+          @if not $edges and $between {
+
+          }
         }
       }
     }
