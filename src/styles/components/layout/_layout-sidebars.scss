@@ -1,22 +1,25 @@
+$layout-main: '.layout-main' !default;
 $layout-content-outer: '.layout-content-outer' !default;
 $layout-content: '.layout-content' !default;
 $layout-left: '.layout-left' !default;
 $layout-right: '.layout-right' !default;
-$layout-left-width: 0 !default;
+$layout-left-width: 100px !default;
 $layout-right-width: 0 !default;
-$layout-left-gutter: 0 !default;
-$layout-right-gutter: 0 !default;
+$layout-left-gutter: 20px !default;
+$layout-right-gutter: 20px !default;
 
-@include layout-sidebars (
-  $content-outer: $layout-content-outer,
-  $content: $layout-content,
+.layout-sidebars {
+  @include layout-sidebars (
+    $content-outer: $layout-content-outer,
+    $content: $layout-content,
 
-  $left: $layout-left,
-  $right: $layout-right,
+    $left: $layout-left,
+    $right: $layout-right,
 
-  $left-width: $layout-left-width,
-  $right-width: $layout-right-width,
+    $left-width: $layout-left-width,
+    $right-width: $layout-right-width,
 
-  $left-gutter: $layout-left-gutter,
-  $right-gutter: $layout-right-gutter
-);
+    $left-gutter: $layout-left-gutter,
+    $right-gutter: $layout-right-gutter
+  );
+}

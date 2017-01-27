@@ -3,7 +3,8 @@ $caret-color: currentColor !default;
 
 @include o(caret) {
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: top;
+  margin-top: .3em;
   line-height: 1;
 
   $caret-size: get-bounds-map($caret-size);

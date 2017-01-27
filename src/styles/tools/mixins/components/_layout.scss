@@ -24,14 +24,17 @@
 }
 
 //  <body>
-//    <header class="layout-header">…</header>
-//    <div class="layout-main">…</div>
-//    <footer class="layout-footer">…</footer>
+//    <div class="#{$container}">
+//      <header class="#{$header}">…</header>
+//      <div class="#{$main}">…</div>
+//      <footer class="#{$footer}">…</footer>
+//    </div>
 //  </body>
 @mixin layout-sticky-footer (
-  $main: $layout-main,
-  $footer: $layout-footer,
-  $header: $layout-header,
+  $container,
+  $main,
+  $footer: null,
+  $header: null,
   $method: table // `table` or `flex`
 ) {
   /** сбрасываем значения переменных, если у них неправильный формат */
@@ -50,7 +53,9 @@
      *    стать меньше чем их минимальный размер контента по умолчанию.
      */
     html { height: 100%; }
-    body {
+    body { min-height: 100%; }
+
+    #{$container} {
       display: flex;
       flex-direction: column;
       height: 100vh; /* 1 */
@@ -71,21 +76,25 @@
     html { height: 100%; }
     body {
       min-height: 100%;
-      display: table;
       width: 100%;
+    }
+
+    #{$container} {
+      display: table;
+      min-height: 100%;
+      min-width: 100%;
     }
 
     @if $main {
       #{$main} {
         display: table-row;
         height: 100%;
-        padding: 20px;
       }
     }
   }
 }
 
-//  <div class="layout-main"> <!-- here is conteXt -->
+//  <div class="layout-sidebars"> <!-- here is conteXt -->
 //    <div #{$content-outer} role="main">
 //      <main #{$content} role="main">…</main>
 //    </div>
@@ -114,11 +123,11 @@
   $left: if(type-of($left) == string and $left != '', $left, null);
   $right: if(type-of($right) == string and $right != '', $right, null);
 
-  $left-width: if(type-of($left-width) == number and $left-width, $left-width, 0);
-  $right-width: if(type-of($left-width) == number and $right-width, $right-width, 0);
+  $left-width: if(type-of($left-width) == number and $left-width > 0, $left-width, null);
+  $right-width: if(type-of($left-width) == number and $right-width > 0, $right-width, null);
 
-  $left-gutter: if(type-of($left-gutter) == number and $left-gutter, $left-gutter, 0);
-  $right-gutter: if(type-of($left-gutter) == number and $right-gutter, $right-gutter, 0);
+  $left-gutter: if(type-of($left-gutter) == number and $left-gutter > 0, $left-gutter, 0);
+  $right-gutter: if(type-of($left-gutter) == number and $right-gutter > 0, $right-gutter, 0);
 
   /** если нужен либо левый, либо правый (ну или оба сразу) сайдбары */
   @if ($left and $left-width) or ($right and $right-width) {
@@ -126,24 +135,35 @@
     $content-padding-right: 0;
 
     /** если нужен левый */
-    @if $left and $left-width {
-      $content-padding-left: $left-width + $left-gutter;
+    @if $left {
       #{$left} {
-        float: left;
-        margin-left: -100%;
-        position: relative;
-        width: $left-width;
+        @if not $left-width {
+          display: none;
+        }
+        @else {
+          $content-padding-left: $left-width + $left-gutter;
+          float: left;
+          margin-left: -100%;
+          position: relative;
+          width: $left-width;
+        }
       }
     }
 
     /** если нужен правый */
-    @if $right and $right-width {
-      $content-padding-right: $right-width + $right-gutter;
+    @if $right {
       #{$right} {
-        float: left;
-        margin-left: -$right-width;
-        position: relative;
-        width: $right-width;
+        @if not $right-width {
+          display: none;
+        }
+        @else {
+          $content-padding-right: $right-width + $right-gutter;
+
+          float: left;
+          margin-left: -$right-width;
+          position: relative;
+          width: $right-width;
+        }
       }
     }
 

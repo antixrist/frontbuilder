@@ -1,10 +1,18 @@
 @include c(table) {
   border: none;
 
+  &.-responsive {
+    display: block;
+    min-width: 100%;
+    overflow-x: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+
   td, th {
     padding: 0;
     text-align: left;
     border: none;
+    vertical-align: top;
 
     @include font-type(regular);
   }
@@ -16,7 +24,7 @@
       &:first-child { }
       &:last-child { }
     }
-    th {  }
+    th { vertical-align: bottom; }
     td {  }
 
     tr {

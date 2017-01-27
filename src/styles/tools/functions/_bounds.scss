@@ -1,12 +1,17 @@
 ///
 /// get-sizes-map(20px 10px) => (width: 20px, height: 10px)
+/// get-sizes-map(20px, 10px) => (width: 20px, height: 10px)
 ///
 @function get-sizes-map ($list, $height: null) {
   @if (type_of($list) == map) { @return $list; }
 
-  
+  @if type-of($list) == number and type-of($height) == number {
+    $list: $list $height;
+  }
+  @else {
+    $list: if(type_of($list) == list, $list, ($list,));
+  }
 
-  $list: if(type_of($list) == list, $list, ($list,));
   $length: length($list);
 
   $width:  null;

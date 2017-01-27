@@ -47,17 +47,26 @@ block vars
     <!--[if lte IE 9]>
     <p class="browserupgrade">Ваш браузер ну слииишком старый. <a href="http://browsehappy.com/">Скачайте</a> себе чего-нибудь модного, нового и молодёжного.</p>
     <![endif]-->
-    noscript Не, ну кто сейчас в энторнеты без javascript'а ходит? Боты да групцы. Будьте паинькой! Не будьте ни ботом, ни глупцом!
+    noscript Не, ну кто сейчас в энторнеты без javascript'а ходит? Боты. Да групцы. Будьте паинькой! Не будьте ни тем, ни другим!
 
-    block header
+    .layout
+      .layout-header
+        block header
+      .layout-main
+        .layout-sidebars
+          .layout-content-outer
+            main.layout-content(role="main") И вот он контент
+              block content
+                block app
+                  //- сюда воткнётся vue-приложение
+                  #app
+          aside.layout-left
+            block left
+          aside.layout-right
+            block right
 
-    block before-app-content
-
-    block app
-      //- сюда воткнётся vue-приложение
-      #app
-
-    block after-app-content
+      .layout-footer
+        block footer
 
     block scripts-before
 
