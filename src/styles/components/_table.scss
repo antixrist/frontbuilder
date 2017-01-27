@@ -3,144 +3,70 @@ $table-cell-padding-between: true !default;
 $table-cell-padding-around: false !default;
 $table-border-color: #edeef0 !default;
 
-@include c(table-responsive) {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
-}
-
-@mixin table-cells-padding ($padding: 0, $options: between around x y, $cells: 'td, th') {
-  $options: if(type-of($options) != list, ($options,), $options);
-  $between: index($options, between);
-  $around: index($options, around);
-  $x: index($options, x);
-  $y: index($options, y);
-
-  @if not $between and not $around {
-    $between: true;
-    $around: true;
-  }
-
-  @if not $x and not $y {
-    $x: true;
-    $y: true;
-  }
-
-  #{$cells} {
-    @content;
-
-    @if $x and $y and $between and $around {
-      padding: $padding;
-    } @else {
-      $bounds: get-bounds-map($padding);
-
-      @if $x {
-        @if $between and $around {
-          padding-left: map-get($bounds, left);
-          padding-right: map-get($bounds, right);
-        }
-        @else {
-          @if $around and not $between {
-            &:first-child { padding-left: map-get($bounds, left); }
-            &:last-child { padding-right: map-get($bounds, right); }
-          }
-          @elseif not $around and $between {
-            &:first-child:not(:last-child) { padding-right: map-get($bounds, right); }
-            &:last-child:not(:first-child) { padding-left: map-get($bounds, left); }
-            &:not(:last-child):not(:first-child) {
-              padding-left: map-get($bounds, left);
-              padding-right: map-get($bounds, right);
-            }
-          }
-        }
-      }
-
-      @if $y {
-        @if $between and $around {
-          padding-top: map-get($bounds, top);
-          padding-bottom: map-get($bounds, bottom);
-        }
-        @else {
-          @if $around and not $between {
-            // когда внутри `table` есть только `thead` или только `tbody`, или только `tfoot`
-            thead:first-child tr:first-child &,
-            tbody:first-child tr:first-child &,
-            tfoot:first-child tr:first-child & {
-              padding-top: map-get($bounds, top);
-            }
-
-            thead:last-child tr:last-child &,
-            tbody:last-child tr:last-child &,
-            tfoot:last-child tr:last-child & {
-              padding-bottom: map-get($bounds, bottom);
-            }
-          }
-          @if not $around and $between {
-            thead:first-child:last-child tr:first-child:not(:last-child) &,
-            tbody:first-child:last-child tr:first-child:not(:last-child) &,
-            tfoot:first-child:last-child tr:first-child:not(:last-child) & {
-              padding-bottom: map-get($bounds, bottom);
-            }
-            thead:last-child:first-child tr:last-child:not(:first-child) &,
-            tbody:last-child:first-child tr:last-child:not(:first-child) &,
-            tfoot:last-child:first-child tr:last-child:not(:first-child) & {
-              padding-top: map-get($bounds, top);
-            }
-            thead:first-child:last-child tr:not(:first-child):not(:last-child) &,
-            tbody:first-child:last-child tr:not(:first-child):not(:last-child) &,
-            tfoot:first-child:last-child tr:not(:first-child):not(:last-child) & {
-              padding-top: map-get($bounds, top);
-              padding-bottom: map-get($bounds, bottom);
-            }
-
-            thead:first-child:not(:last-child) &,
-            tbody:first-child:not(:last-child) &,
-            tfoot:first-child:not(:last-child) &,
-            thead:last-child:not(:first-child) tr:not(:last-child) &,
-            tbody:last-child:not(:first-child) tr:not(:last-child) &,
-            tfoot:last-child:not(:first-child) tr:not(:last-child) & {
-              padding-bottom: map-get($bounds, bottom);
-            }
-
-            thead:last-child:not(:first-child) &,
-            tbody:last-child:not(:first-child) &,
-            tfoot:last-child:not(:first-child) &,
-            thead:first-child:not(:last-child) tr:not(:first-child) &,
-            tbody:first-child:not(:last-child) tr:not(:first-child) &,
-            tfoot:first-child:not(:last-child) tr:not(:first-child) & {
-              padding-top: map-get($bounds, top);
-            }
-
-            thead:not(:first-child):not(:last-child) &,
-            tbody:not(:first-child):not(:last-child) &,
-            tfoot:not(:first-child):not(:last-child) &,
-            thead:not(:last-child):not(:first-child) &,
-            tbody:not(:last-child):not(:first-child) &,
-            tfoot:not(:last-child):not(:first-child) & {
-              padding-top: map-get($bounds, top);
-              padding-bottom: map-get($bounds, bottom);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
-@include c(table) {
-  //border: none;
+//@include c(table) {
+table {
+  border: none;
 
   td, th {
     @include font-type(regular);
     text-align: left;
-    //border: none;
+    border: none;
     vertical-align: top;
-    //padding: 0;
+    padding: 0;
   }
 
+  th, td { padding: 0; }
+
+  $table-cell-border: 1px solid #ccc;
+
+  //@include table-cells-border(1px solid #ccc, around);
+  //@include table-cells-border(1px dashed #ccc, between y);
+
+  //@include table-cells-border($table-cell-border, around y);
+  //@include table-cells-border($table-cell-border, between y);
+  //@include table-cells-border($table-cell-border, y);
+
+  //@include table-cells-border($table-cell-border, around x);
+  //@include table-cells-border($table-cell-border, between x);
+  //@include table-cells-border($table-cell-border, x);
+
+  //@include table-cells-border($table-cell-border, around);
+  //@include table-cells-border($table-cell-border, between);
+
+  //@include table-cells-border($table-cell-border, x);
+  //@include table-cells-border($table-cell-border, y);
+
+  //@include table-cells-border($table-cell-border, around between);
+  //@include table-cells-border($table-cell-border, x y);
+  //@include table-cells-border($table-cell-border, around between x y);
+  @include table-cells-border($table-cell-border);
+
+  //@include table-cells-padding($table-cell-padding, around y);
+  //@include table-cells-padding($table-cell-padding, between y);
+  //@include table-cells-padding($table-cell-padding, between between-half y);
+  //@include table-cells-padding($table-cell-padding, between-half y);
+  //@include table-cells-padding($table-cell-padding, y);
+
+  //@include table-cells-padding($table-cell-padding, around x);
+  //@include table-cells-padding($table-cell-padding, between x);
+  //@include table-cells-padding($table-cell-padding, between between-half x);
+  //@include table-cells-padding($table-cell-padding, between-half x);
+  //@include table-cells-padding($table-cell-padding, x);
+
+  //@include table-cells-padding($table-cell-padding, around);
+  //@include table-cells-padding($table-cell-padding, between);
+
+  //@include table-cells-padding($table-cell-padding, x);
+  //@include table-cells-padding($table-cell-padding, y);
+
+  //@include table-cells-padding($table-cell-padding, around between);
+  //@include table-cells-padding($table-cell-padding, around between between-half);
+  //@include table-cells-padding($table-cell-padding, x y);
+  //@include table-cells-padding($table-cell-padding, x y between-half);
+  //@include table-cells-padding($table-cell-padding, around between x y);
+  //@include table-cells-padding($table-cell-padding, around between between-half x y);
+  //@include table-cells-padding($table-cell-padding);
+  @include table-cells-padding($table-cell-padding, between-half);
 
 
   th { @include font-type(bold); }
@@ -200,25 +126,4 @@ $table-border-color: #edeef0 !default;
       }
     }
   }
-
-
 }
-
-th, td {
-  padding: 0;
-  border: 1px solid #ccc;
-}
-
-//@include table-cells-padding($table-cell-padding, around y);
-//@include table-cells-padding($table-cell-padding, between y);
-
-//@include table-cells-padding($table-cell-padding, around x);
-//@include table-cells-padding($table-cell-padding, between x);
-
-//@include table-cells-padding($table-cell-padding, around);
-//@include table-cells-padding($table-cell-padding, between);
-
-//@include table-cells-padding($table-cell-padding, x);
-//@include table-cells-padding($table-cell-padding, y);
-
-@include table-cells-padding($table-cell-padding);

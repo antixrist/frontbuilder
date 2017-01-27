@@ -1,0 +1,357 @@
+@mixin table-responsive {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
+}
+
+@mixin table-cells-padding ($padding: 0, $options: between around x y, $cells: 'td, th') {
+  $options: if(type-of($options) != list, ($options,), $options);
+  $x: not not index($options, x);
+  $y: not not index($options, y);
+  $around: not not index($options, around);
+  $between: not not index($options, between);
+  $between-half: not not index($options, between-half);
+
+  @if not $between and not $around {
+    $between: true;
+    $around: true;
+  }
+
+  @if not $x and not $y {
+    $x: true;
+    $y: true;
+  }
+
+  #{$cells} { @content; }
+
+  @if $x and $y and $around and $between and not $between-half {
+    #{$cells} { padding: $padding; }
+  } @else {
+    $bounds: get-bounds-map($padding);
+    $bounds-half: get-bounds-list($bounds);
+    $bounds-half: get-bounds-map(
+      (nth($bounds-half, 1) /2)
+      (nth($bounds-half, 2) /2)
+      (nth($bounds-half, 3) /2)
+      (nth($bounds-half, 4) /2)
+    );
+
+    @if $x {
+      @if $between and $around and not $between-half {
+        #{$cells} {
+          padding-left: map-get($bounds, left);
+          padding-right: map-get($bounds, right);
+        }
+      }
+      @else {
+        @if $around {
+          #{$cells} {
+            &:first-child { padding-left: map-get($bounds, left); }
+            &:last-child { padding-right: map-get($bounds, right); }
+          }
+        }
+        @if $between {
+          #{$cells} {
+            $bounds: if($between-half, $bounds-half, $bounds);
+
+            &:first-child:not(:last-child) { padding-right: map-get($bounds, right); }
+            &:last-child:not(:first-child) { padding-left: map-get($bounds, left); }
+            &:not(:last-child):not(:first-child) {
+              padding-left: map-get($bounds, left);
+              padding-right: map-get($bounds, right);
+            }
+          }
+        }
+      }
+    }
+
+    @if $y {
+      @if $between and $around and not $between-half {
+        #{$cells} {
+          padding-top: map-get($bounds, top);
+          padding-bottom: map-get($bounds, bottom);
+        }
+      }
+      @else {
+        @if $around {
+          // когда внутри `table` есть только `thead` или только `tbody`, или только `tfoot`
+          thead, tbody, tfoot {
+            &:first-child tr:first-child {
+              #{$cells} { padding-top: map-get($bounds, top); }
+            }
+
+            &:last-child tr:last-child {
+              #{$cells} { padding-bottom: map-get($bounds, bottom); }
+            }
+          }
+        }
+        @if $between {
+          thead, tbody, tfoot {
+            &:first-child:last-child {
+              tr:first-child:not(:last-child) {
+                //$bounds: if($between-half, $bounds-half, $bounds);
+                #{$cells} { padding-bottom: map-get($bounds, bottom); }
+              }
+
+              tr:last-child:not(:first-child) {
+                //$bounds: if($between-half, $bounds-half, $bounds);
+                #{$cells} { padding-top: map-get($bounds, top); }
+              }
+
+              tr:not(:first-child):not(:last-child) {
+                //$bounds: if($between-half, $bounds-half, $bounds);
+                #{$cells} {
+                  padding-top: map-get($bounds, top);
+                  padding-bottom: map-get($bounds, bottom);
+                }
+              }
+            }
+
+            &:first-child:not(:last-child),
+            &:last-child:not(:first-child) tr:not(:last-child) {
+              #{$cells} { padding-bottom: map-get($bounds, bottom); }
+            }
+
+            &:last-child:not(:first-child),
+            &:first-child:not(:last-child) tr:not(:first-child) {
+              #{$cells} { padding-top: map-get($bounds, top); }
+            }
+
+            &:not(:first-child):not(:last-child),
+            &:not(:last-child):not(:first-child) {
+              #{$cells} {
+                padding-top: map-get($bounds, top);
+                padding-bottom: map-get($bounds, bottom);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin table-cells-border ($border: 1px solid black, $options: between around x y, $cells: 'td, th') {
+  $options: if(type-of($options) != list, ($options,), $options);
+  $x: not not index($options, x);
+  $y: not not index($options, y);
+  $around: not not index($options, around);
+  $between: not not index($options, between);
+
+  @if not $between and not $around {
+    $between: true;
+    $around: true;
+  }
+
+  @if not $x and not $y {
+    $x: true;
+    $y: true;
+  }
+
+  #{$cells} { @content; }
+
+  @if $x and $y and $between and $around {
+    #{$cells} { border: $border; }
+  } @else {
+    @if $x {
+      @if $between and $around {
+        #{$cells} {
+          border-left: $border;
+          border-right: $border;
+        }
+      }
+      @else {
+        @if $around and not $between {
+          #{$cells} {
+            &:first-child { border-left: $border; }
+            &:last-child { border-right: $border; }
+          }
+        }
+        @elseif not $around and $between {
+          #{$cells} {
+            &:first-child:not(:last-child) { border-right: $border; }
+            &:last-child:not(:first-child) { border-left: $border; }
+            &:not(:last-child):not(:first-child) {
+              border-left: $border;
+              border-right: $border;
+            }
+          }
+        }
+      }
+    }
+
+    @if $y {
+      @if $between and $around {
+        #{$cells} {
+          border-top: $border;
+          border-bottom: $border;
+        }
+      }
+      @else {
+        @if $around and not $between {
+          // когда внутри `table` есть только `thead` или только `tbody`, или только `tfoot`
+          thead, tbody, tfoot {
+            &:first-child tr:first-child {
+              #{$cells} { border-top: $border; }
+            }
+
+            &:last-child tr:last-child {
+              #{$cells} { border-bottom: $border; }
+            }
+          }
+        }
+        @if not $around and $between {
+          thead, tbody, tfoot {
+            &:first-child:last-child tr:first-child:not(:last-child) {
+              #{$cells} { border-bottom: $border; }
+            }
+
+            &:last-child:first-child tr:last-child:not(:first-child) {
+              #{$cells} { border-top: $border; }
+            }
+
+            &:first-child:last-child tr:not(:first-child):not(:last-child) {
+              #{$cells} {
+                border-top: $border;
+                border-bottom: $border;
+              }
+            }
+
+
+            &:first-child:not(:last-child),
+            &:last-child:not(:first-child) tr:not(:last-child) {
+              #{$cells} { border-bottom: $border; }
+            }
+
+            &:last-child:not(:first-child),
+            &:first-child:not(:last-child) tr:not(:first-child) {
+              #{$cells} { border-top: $border; }
+            }
+
+            &:not(:first-child):not(:last-child),
+            &:not(:last-child):not(:first-child) {
+              #{$cells} {
+                border-top: $border;
+                border-bottom: $border;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
+}
+
+@mixin table-odd-rows () {
+
+  @content;
+
+  //@if $x and $y and $between and $around {
+  //  #{$cells} { border: $border; }
+  //} @else {
+  //  @if $x {
+  //    @if $between and $around {
+  //      #{$cells} {
+  //        border-left: $border;
+  //        border-right: $border;
+  //      }
+  //    }
+  //    @else {
+  //      @if $around and not $between {
+  //        #{$cells} {
+  //          &:first-child { border-left: $border; }
+  //          &:last-child { border-right: $border; }
+  //        }
+  //      }
+  //      @elseif not $around and $between {
+  //        #{$cells} {
+  //          &:first-child:not(:last-child) { border-right: $border; }
+  //          &:last-child:not(:first-child) { border-left: $border; }
+  //          &:not(:last-child):not(:first-child) {
+  //            border-left: $border;
+  //            border-right: $border;
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  //
+  //  @if $y {
+  //    @if $between and $around {
+  //      #{$cells} {
+  //        border-top: $border;
+  //        border-bottom: $border;
+  //      }
+  //    }
+  //    @else {
+  //      @if $around and not $between {
+  //        // когда внутри `table` есть только `thead` или только `tbody`, или только `tfoot`
+  //        thead:first-child tr:first-child,
+  //        tbody:first-child tr:first-child,
+  //        tfoot:first-child tr:first-child {
+  //          #{$cells} { border-top: $border; }
+  //        }
+  //
+  //        thead:last-child tr:last-child,
+  //        tbody:last-child tr:last-child,
+  //        tfoot:last-child tr:last-child {
+  //          #{$cells} { border-bottom: $border; }
+  //        }
+  //      }
+  //      @if not $around and $between {
+  //        thead:first-child:last-child tr:first-child:not(:last-child),
+  //        tbody:first-child:last-child tr:first-child:not(:last-child),
+  //        tfoot:first-child:last-child tr:first-child:not(:last-child) {
+  //          #{$cells} { border-bottom: $border; }
+  //        }
+  //        thead:last-child:first-child tr:last-child:not(:first-child),
+  //        tbody:last-child:first-child tr:last-child:not(:first-child),
+  //        tfoot:last-child:first-child tr:last-child:not(:first-child) {
+  //          #{$cells} { border-top: $border; }
+  //        }
+  //        thead:first-child:last-child tr:not(:first-child):not(:last-child),
+  //        tbody:first-child:last-child tr:not(:first-child):not(:last-child),
+  //        tfoot:first-child:last-child tr:not(:first-child):not(:last-child) {
+  //          #{$cells} {
+  //            border-top: $border;
+  //            border-bottom: $border;
+  //          }
+  //        }
+  //
+  //        thead:first-child:not(:last-child),
+  //        tbody:first-child:not(:last-child),
+  //        tfoot:first-child:not(:last-child),
+  //        thead:last-child:not(:first-child) tr:not(:last-child),
+  //        tbody:last-child:not(:first-child) tr:not(:last-child),
+  //        tfoot:last-child:not(:first-child) tr:not(:last-child) {
+  //          #{$cells} { border-bottom: $border; }
+  //        }
+  //
+  //        thead:last-child:not(:first-child),
+  //        tbody:last-child:not(:first-child),
+  //        tfoot:last-child:not(:first-child),
+  //        thead:first-child:not(:last-child) tr:not(:first-child),
+  //        tbody:first-child:not(:last-child) tr:not(:first-child),
+  //        tfoot:first-child:not(:last-child) tr:not(:first-child) {
+  //          #{$cells} { border-top: $border; }
+  //        }
+  //
+  //        thead:not(:first-child):not(:last-child),
+  //        tbody:not(:first-child):not(:last-child),
+  //        tfoot:not(:first-child):not(:last-child),
+  //        thead:not(:last-child):not(:first-child),
+  //        tbody:not(:last-child):not(:first-child),
+  //        tfoot:not(:last-child):not(:first-child) {
+  //          #{$cells} {
+  //            border-top: $border;
+  //            border-bottom: $border;
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  //}
+}
