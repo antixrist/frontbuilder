@@ -46,22 +46,23 @@
         }
       }
       @else {
+        @if $between {
+          #{$cells} {
+            $_bounds: if($between-half, $bounds-half, $bounds);
+
+            &:first-child:not(:last-child) { padding-right: map-get($_bounds, right); }
+            &:last-child:not(:first-child) { padding-left: map-get($_bounds, left); }
+            &:not(:last-child):not(:first-child) {
+              padding-left: map-get($_bounds, left);
+              padding-right: map-get($_bounds, right);
+            }
+          }
+        }
+
         @if $around {
           #{$cells} {
             &:first-child { padding-left: map-get($bounds, left); }
             &:last-child { padding-right: map-get($bounds, right); }
-          }
-        }
-        @if $between {
-          #{$cells} {
-            $bounds: if($between-half, $bounds-half, $bounds);
-
-            &:first-child:not(:last-child) { padding-right: map-get($bounds, right); }
-            &:last-child:not(:first-child) { padding-left: map-get($bounds, left); }
-            &:not(:last-child):not(:first-child) {
-              padding-left: map-get($bounds, left);
-              padding-right: map-get($bounds, right);
-            }
           }
         }
       }
@@ -76,7 +77,6 @@
       }
       @else {
         @if $around {
-          // когда внутри `table` есть только `thead` или только `tbody`, или только `tfoot`
           thead, tbody, tfoot {
             &:first-child tr:first-child {
               #{$cells} { padding-top: map-get($bounds, top); }
@@ -87,21 +87,21 @@
             }
           }
         }
+
         @if $between {
+          $bounds: if($between-half, $bounds-half, $bounds);
+
           thead, tbody, tfoot {
             &:first-child:last-child {
               tr:first-child:not(:last-child) {
-                //$bounds: if($between-half, $bounds-half, $bounds);
                 #{$cells} { padding-bottom: map-get($bounds, bottom); }
               }
 
               tr:last-child:not(:first-child) {
-                //$bounds: if($between-half, $bounds-half, $bounds);
                 #{$cells} { padding-top: map-get($bounds, top); }
               }
 
               tr:not(:first-child):not(:last-child) {
-                //$bounds: if($between-half, $bounds-half, $bounds);
                 #{$cells} {
                   padding-top: map-get($bounds, top);
                   padding-bottom: map-get($bounds, bottom);

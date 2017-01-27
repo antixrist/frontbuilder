@@ -3,8 +3,8 @@ $table-cell-padding-between: true !default;
 $table-cell-padding-around: false !default;
 $table-border-color: #edeef0 !default;
 
-//@include c(table) {
-table {
+@include c(table) {
+//table {
   border: none;
 
   td, th {
@@ -66,8 +66,6 @@ table {
   //@include table-cells-padding($table-cell-padding, around between x y);
   //@include table-cells-padding($table-cell-padding, around between between-half x y);
   //@include table-cells-padding($table-cell-padding);
-  @include table-cells-padding($table-cell-padding, between-half);
-
 
   th { @include font-type(bold); }
 
