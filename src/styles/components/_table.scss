@@ -1,3 +1,8 @@
+$table-cell-padding: 0.5rem 1rem !default;
+$table-cell-padding-between: true !default;
+$table-cell-padding-edges: false !default;
+$table-border-color: #edeef0 !default;
+
 @include c(table-responsive) {
   display: block;
   max-width: 100%;
@@ -6,16 +11,79 @@
   -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
 }
 
+@mixin table-cells-spaces ($padding: 0, $options: between edges x y) {
+  $options: if(type-of($options) != list, ($options,), $options);
+  $table-cell-padding-between: index($options, between);
+  $table-cell-padding-edges: index($options, edges);
+
+  $x: index($options, x);
+  $y: index($options, y);
+
+  @if not $x and not $y {
+    $x: true;
+    $y: true;
+  }
+
+  @if $table-cell-padding-between and $table-cell-padding-edges {
+    padding: $table-cell-padding;
+  } @else {
+    $bounds: get-bounds-map($table-cell-padding);
+
+    padding-top: map-get($bounds, top);
+    padding-bottom: map-get($bounds, bottom);
+
+    @if $table-cell-padding-edges and not $table-cell-padding-between {
+      &:first-child { padding-left: map-get($bounds, left); }
+      &:last-child { padding-right: map-get($bounds, right); }
+    }
+    @elseif not $table-cell-padding-edges and $table-cell-padding-between {
+      &:first-child { padding-right: map-get($bounds, right); }
+      &:last-child { padding-left: map-get($bounds, left); }
+      &:not(:last-child):not(:first-child) {
+        padding-left: map-get($bounds, left);
+        padding-right: map-get($bounds, right);
+      }
+    }
+  }
+}
+
+
+
+
 @include c(table) {
   border: none;
 
   td, th {
-    padding: 0;
+    @include font-type(regular);
     text-align: left;
     border: none;
     vertical-align: top;
 
-    @include font-type(regular);
+    @include table-cells-spaces($table-cell-padding, between /*edges*/);
+
+    //@if $table-cell-padding-between and $table-cell-padding-edges {
+    //  padding: $table-cell-padding;
+    //} @else {
+    //  $bounds: get-bounds-map($table-cell-padding);
+    //
+    //  padding: 0;
+    //  padding-top: map-get($bounds, top);
+    //  padding-bottom: map-get($bounds, bottom);
+    //
+    //  @if $table-cell-padding-edges and not $table-cell-padding-between {
+    //    &:first-child { padding-left: map-get($bounds, left); }
+    //    &:last-child { padding-right: map-get($bounds, right); }
+    //  }
+    //  @elseif not $table-cell-padding-edges and $table-cell-padding-between {
+    //    padding: $table-cell-padding;
+    //
+    //    &:first-child { padding-left: 0 }
+    //    &:last-child { padding-right: 0 }
+    //  }
+    //  @else {
+    //    padding: 0;
+    //  }
+    //}
   }
 
   th { @include font-type(bold); }
