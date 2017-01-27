@@ -1,7 +1,62 @@
-/** todo:
- * get-sizes-map((width: 20px, height: 10px))
- * get-sizes-map(20px 10px)
- */
+///
+/// get-sizes-map(20px 10px) => (width: 20px, height: 10px)
+///
+@function get-sizes-map ($list, $height: null) {
+  @if (type_of($list) == map) { @return $list; }
+
+  
+
+  $list: if(type_of($list) == list, $list, ($list,));
+  $length: length($list);
+
+  $width:  null;
+  $height: null;
+
+  @if $length == 1 {
+    $width: nth($list, 1);
+    $height: $width;
+  }
+  @elseif $length == 2 {
+    $width:  nth($list, 1);
+    $height: nth($list, 2);
+  }
+
+  @if not $width or not $height {
+    @error('[get-sizes-map] Invalid arguments!');
+
+    @return null;
+  }
+
+  $sizes: (
+    width:  $width,
+    height: $height
+  );
+
+  @return $sizes;
+}
+
+///
+/// get-sizes-list((width: 20px, height: 10px)) => (20px 10px)
+///
+@function get-sizes-list ($map) {
+  @if (type_of($map) != map) {
+    @return if(type_of($map) == list, $map, ($map,));
+  }
+
+  $width:  _get($map, width);
+  $height: _get($map, height);
+
+  @if not $width or not $height {
+    @error('[get-sizes-list] Invalid arguments!');
+
+    @return null;
+  }
+
+  $list: $width $height;
+
+  @return $list;
+}
+
 
 @function get-bounds-map ($list) {
   @if (type_of($list) == map) {
