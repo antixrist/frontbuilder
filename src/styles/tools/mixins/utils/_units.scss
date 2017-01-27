@@ -2,7 +2,7 @@ $base-font-size: 16px !default;
 
 @function clear-unit ($value) {
   @if type-of($value) != "number" {
-    @warn ('"#{$value}" is not a number!');
+    //@warn ('"#{$value}" is not a number!');
     @return $value;
   } @else {
     $unit: unit($value);
@@ -43,8 +43,12 @@ $base-font-size: 16px !default;
     }
   }
 
-  @warn ('Unknown unit of "#{$value}"!');
+  //@warn ('Unknown unit of "#{$value}"!');
   @return $value;
+}
+
+@function strip-units ($args...) {
+  @return clear-unit($args...);
 }
 
 @function replace-unit (

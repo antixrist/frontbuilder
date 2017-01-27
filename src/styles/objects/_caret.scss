@@ -7,9 +7,9 @@ $caret-color: currentColor !default;
   margin-top: .3em;
   line-height: 1;
 
-  $caret-size: get-bounds-map($caret-size);
-  $width: map-get($caret-size, y); // так надо
-  $height: map-get($caret-size, x); // так надо
+  $caret-size: get-sizes-map($caret-size);
+  $width: map-get($caret-size, width);
+  $height: map-get($caret-size, height);
 
   &:before,
   &:after {

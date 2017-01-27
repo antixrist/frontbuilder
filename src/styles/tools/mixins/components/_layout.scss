@@ -5,9 +5,9 @@
   $side-space-type: padding // `padding` or `margin`
 ) {
   /** сбрасываем значения переменных, если у них неправильный формат */
-  $min-width: if(type-of($min-width) == number and $min-width > 0, $min-width, null);
-  $max-width: if(type-of($max-width) == number and $max-width > 0, $max-width, null);
-  $side-space-width: if(type-of($side-space-width) == number and $side-space-width > 0, $side-space-width, 0);
+  $min-width: if(type-of($min-width) == number and strip-units($min-width >= 0), $min-width, null);
+  $max-width: if(type-of($max-width) == number and strip-units($max-width) >= 0, $max-width, null);
+  $side-space-width: if(type-of($side-space-width) == number and strip-units($side-space-width) >= 0, $side-space-width, 0);
   $side-space-type: if($side-space-type == padding or $side-space-type == margin, $side-space-type, padding);
 
   @if $min-width or $max-width {
@@ -123,14 +123,14 @@
   $left: if(type-of($left) == string and $left != '', $left, null);
   $right: if(type-of($right) == string and $right != '', $right, null);
 
-  $left-width: if(type-of($left-width) == number and $left-width > 0, $left-width, null);
-  $right-width: if(type-of($left-width) == number and $right-width > 0, $right-width, null);
+  $left-width: if(type-of($left-width) == number and strip-units($left-width) > 0, $left-width, null);
+  $right-width: if(type-of($left-width) == number and strip-units($right-width) > 0, $right-width, null);
 
-  $left-gutter: if(type-of($left-gutter) == number and $left-gutter > 0, $left-gutter, 0);
-  $right-gutter: if(type-of($left-gutter) == number and $right-gutter > 0, $right-gutter, 0);
+  $left-gutter: if(type-of($left-gutter) == number and strip-units($left-gutter) > 0, $left-gutter, 0);
+  $right-gutter: if(type-of($left-gutter) == number and strip-units($right-gutter) > 0, $right-gutter, 0);
 
   /** если нужен либо левый, либо правый (ну или оба сразу) сайдбары */
-  @if ($left and $left-width) or ($right and $right-width) {
+  @if $left or $right {
     $content-padding-left: 0;
     $content-padding-right: 0;
 

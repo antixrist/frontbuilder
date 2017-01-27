@@ -1,12 +1,13 @@
+@include c(table-responsive) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
+}
+
 @include c(table) {
   border: none;
-
-  &.-responsive {
-    display: block;
-    min-width: 100%;
-    overflow-x: auto;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-  }
 
   td, th {
     padding: 0;
