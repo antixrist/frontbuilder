@@ -1,7 +1,7 @@
 $table-cell-padding: 0.5rem 1rem !default;
 $table-cell-padding-between: true !default;
 $table-cell-padding-around: false !default;
-$table-border-color: #edeef0 !default;
+$table-cell-border: 1ps solid #ccc !default;
 
 @include c(table) {
 //table {
@@ -16,8 +16,6 @@ $table-border-color: #edeef0 !default;
   }
 
   th, td { padding: 0; }
-
-  $table-cell-border: 1px solid #ccc;
 
   //@include table-cells-border(1px solid #ccc, around);
   //@include table-cells-border(1px dashed #ccc, between y);
@@ -65,7 +63,8 @@ $table-border-color: #edeef0 !default;
   //@include table-cells-padding($table-cell-padding, x y between-half);
   //@include table-cells-padding($table-cell-padding, around between x y);
   //@include table-cells-padding($table-cell-padding, around between between-half x y);
-  //@include table-cells-padding($table-cell-padding);
+  @include table-cells-padding($table-cell-padding, x between between-half);
+  @include table-cells-padding($table-cell-padding, y);
 
   th { @include font-type(bold); }
 
@@ -124,4 +123,36 @@ $table-border-color: #edeef0 !default;
       }
     }
   }
+}
+
+
+
+@include c(custom-table) {
+  border: none;
+
+  td, th {
+    @include font-type(regular);
+    text-align: left;
+    border: none;
+    vertical-align: top;
+    padding: 0;
+  }
+
+
+  $table-cell-padding: 0.5rem 1rem;
+  $table-cell-border: 1px dashed #ccc;
+
+  $padding-bounds: get-bounds-map($table-cell-padding);
+
+  thead {
+    background: #e7e8ec;
+  }
+  tbody {
+    @include table-cells-border($table-cell-border, between y nowrap);
+    //@include table-cells-border($table-cell-border, around bottom nowrap);
+  }
+
+  //@include table-cells-padding($table-cell-padding, x between-half);
+  //@include table-cells-padding($table-cell-padding, y);
+
 }
