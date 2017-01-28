@@ -37,7 +37,7 @@ $table-cell-border: 1ps solid #ccc !default;
   //@include table-cells-border($table-cell-border, around between);
   //@include table-cells-border($table-cell-border, x y);
   //@include table-cells-border($table-cell-border, around between x y);
-  @include table-cells-border($table-cell-border);
+  //@include table-cells-border($table-cell-border);
 
   //@include table-cells-padding($table-cell-padding, around y);
   //@include table-cells-padding($table-cell-padding, between y);
@@ -63,8 +63,8 @@ $table-cell-border: 1ps solid #ccc !default;
   //@include table-cells-padding($table-cell-padding, x y between-half);
   //@include table-cells-padding($table-cell-padding, around between x y);
   //@include table-cells-padding($table-cell-padding, around between between-half x y);
-  @include table-cells-padding($table-cell-padding, x between between-half);
-  @include table-cells-padding($table-cell-padding, y);
+  //@include table-cells-padding($table-cell-padding, x between between-half);
+  //@include table-cells-padding($table-cell-padding, y);
 
   th { @include font-type(bold); }
 
@@ -127,7 +127,7 @@ $table-cell-border: 1ps solid #ccc !default;
 
 
 
-@include c(custom-table) {
+@include c(table) {
   border: none;
 
   td, th {
@@ -148,11 +148,14 @@ $table-cell-border: 1ps solid #ccc !default;
     background: #e7e8ec;
   }
   tbody {
-    @include table-cells-border($table-cell-border, between y nowrap);
+    //@include table-cells-border($table-cell-border, between y nowrap);
     //@include table-cells-border($table-cell-border, around bottom nowrap);
   }
 
-  //@include table-cells-padding($table-cell-padding, x between-half);
-  //@include table-cells-padding($table-cell-padding, y);
+  tbody {
+    @include table-cells-padding($table-cell-padding, nowrap);
+  }
+
+  @include table-cells-border($table-cell-border);
 
 }

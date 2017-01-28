@@ -16,23 +16,41 @@
   $left: not not index($options, left);
   $right: not not index($options, right);
   $around: not not index($options, around);
-  $between: not not index($options, between);
-  $between-half: not not index($options, between-half);
   $nowrap: not not index($options, nowrap);
+  // aliases
+  $between: not not index($options, between);
+  $between: if(not $between, not not index($options, beetween), $between);
+  // aliases
+  $half-between: not not index($options, half-between);
+  $half-between: if(not $half-between, not not index($options, half-beetween), $half-between);
+  $half-between: if(not $half-between, not not index($options, between-half), $half-between);
+  $half-between: if(not $half-between, not not index($options, beetween-half), $half-between);
+
+  @if $x {
+    $left: true;
+    $right: true;
+  }
+
+  @if $y {
+    $top: true;
+    $bottom: true;
+  }
+
+  @if not $top and not $right and not $bottom and not $left {
+    $top: true;
+    $bottom: true;
+    $left: true;
+    $right: true;
+  }
 
   @if not $between and not $around {
     $between: true;
     $around: true;
   }
 
-  @if not $x and not $y {
-    $x: true;
-    $y: true;
-  }
-
   #{$cells} { @content; }
 
-  @if $x and $y and $around and $between and not $between-half {
+  @if $top and $bottom and $left and $right and $around and $between and not $half-between {
     #{$cells} { padding: $padding; }
   } @else {
     $bounds: get-bounds-map($padding);
@@ -44,119 +62,112 @@
       (nth($bounds-half, 4) /2)
     );
 
-    @if $x {
-      @if $between and $around and not $between-half {
+    @if $left or $right {
+      @if $between and $around and not $half-between {
         #{$cells} {
-          padding-left: map-get($bounds, left);
-          padding-right: map-get($bounds, right);
+          @if $left  { padding-left:  map-get($bounds, left); }
+          @if $right { padding-right: map-get($bounds, right); }
         }
       }
       @else {
         @if $between {
           #{$cells} {
-            $_bounds: if($between-half, $bounds-half, $bounds);
+            $_bounds: if($half-between, $bounds-half, $bounds);
 
-            &:first-child:not(:last-child) { padding-right: map-get($_bounds, right); }
-            &:last-child:not(:first-child) { padding-left: map-get($_bounds, left); }
+            @if $right { &:first-child:not(:last-child) { padding-right: map-get($_bounds, right); } }
+            @if $left  { &:last-child:not(:first-child) { padding-left:  map-get($_bounds, left); } }
+
             &:not(:last-child):not(:first-child) {
-              padding-left: map-get($_bounds, left);
-              padding-right: map-get($_bounds, right);
+              @if $left  { padding-left:  map-get($_bounds, left); }
+              @if $right { padding-right: map-get($_bounds, right); }
             }
           }
         }
 
         @if $around {
           #{$cells} {
-            &:first-child { padding-left: map-get($bounds, left); }
-            &:last-child { padding-right: map-get($bounds, right); }
+            @if $left  { &:first-child { padding-left:  map-get($bounds, left); } }
+            @if $right { &:last-child  { padding-right: map-get($bounds, right); } }
           }
         }
       }
     }
 
-    @if $y {
-      @if $between and $around and not $between-half {
+    @if $top or $bottom {
+      @if $between and $around and not $half-between {
         #{$cells} {
-          padding-top: map-get($bounds, top);
-          padding-bottom: map-get($bounds, bottom);
+          @if $top    { padding-top:    map-get($bounds, top); }
+          @if $bottom { padding-bottom: map-get($bounds, bottom); }
         }
       }
       @else {
         @if $around {
           @if $nowrap {
-            tr:first-child {
-              #{$cells} { padding-top: map-get($bounds, top); }
-            }
-
-            tr:last-child {
-              #{$cells} { padding-bottom: map-get($bounds, bottom); }
-            }
+            @if $top    { tr:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } }
+            @if $bottom { tr:last-child  { #{$cells} { padding-bottom: map-get($bounds, bottom); } } }
           }
           @else {
             thead, tbody, tfoot {
-              &:first-child tr:first-child {
-                #{$cells} { padding-top: map-get($bounds, top); }
-              }
-
-              &:last-child tr:last-child {
-                #{$cells} { padding-bottom: map-get($bounds, bottom); }
-              }
+              @if $top    { &:first-child tr:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } }
+              @if $bottom { &:last-child tr:last-child   { #{$cells} { padding-bottom: map-get($bounds, bottom); } } }
             }
           }
         }
 
         @if $between {
-          $bounds: if($between-half, $bounds-half, $bounds);
+          $bounds: if($half-between, $bounds-half, $bounds);
           @if $nowrap {
-            tr:first-child:not(:last-child) {
-              #{$cells} { padding-bottom: map-get($bounds, bottom); }
-            }
-
-            tr:last-child:not(:first-child) {
-              #{$cells} { padding-top: map-get($bounds, top); }
-            }
+            @if $bottom { tr:first-child:not(:last-child) { #{$cells} { padding-bottom: map-get($bounds, bottom); } } }
+            @if $top    { tr:last-child:not(:first-child) { #{$cells} { padding-top:    map-get($bounds, top); } } }
 
             tr:not(:first-child):not(:last-child) {
               #{$cells} {
-                padding-top: map-get($bounds, top);
-                padding-bottom: map-get($bounds, bottom);
+                @if $top    { padding-top:    map-get($bounds, top); }
+                @if $bottom { padding-bottom: map-get($bounds, bottom); }
               }
             }
           }
           @else {
             thead, tbody, tfoot {
               &:first-child:last-child {
-                tr:first-child:not(:last-child) {
-                  #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                @if $bottom {
+                  tr:first-child:not(:last-child) {
+                    #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                  }
                 }
-
-                tr:last-child:not(:first-child) {
-                  #{$cells} { padding-top: map-get($bounds, top); }
+                @if $top {
+                  tr:last-child:not(:first-child) {
+                    #{$cells} { padding-top: map-get($bounds, top); }
+                  }
                 }
 
                 tr:not(:first-child):not(:last-child) {
                   #{$cells} {
-                    padding-top: map-get($bounds, top);
-                    padding-bottom: map-get($bounds, bottom);
+                    @if $top    { padding-top:    map-get($bounds, top); }
+                    @if $bottom { padding-bottom: map-get($bounds, bottom); }
                   }
                 }
               }
 
-              &:first-child:not(:last-child),
-              &:last-child:not(:first-child) tr:not(:last-child) {
-                #{$cells} { padding-bottom: map-get($bounds, bottom); }
+              @if $bottom {
+                &:first-child:not(:last-child),
+                &:last-child:not(:first-child) tr:not(:last-child) {
+                  #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                }
               }
 
-              &:last-child:not(:first-child),
-              &:first-child:not(:last-child) tr:not(:first-child) {
-                #{$cells} { padding-top: map-get($bounds, top); }
+              @if $top {
+                &:last-child:not(:first-child),
+                &:first-child:not(:last-child) tr:not(:first-child) {
+                  #{$cells} { padding-top: map-get($bounds, top); }
+                }
               }
 
               &:not(:first-child):not(:last-child),
               &:not(:last-child):not(:first-child) {
                 #{$cells} {
-                  padding-top: map-get($bounds, top);
-                  padding-bottom: map-get($bounds, bottom);
+                  @if $top    { padding-top:    map-get($bounds, top); }
+                  @if $bottom { padding-bottom: map-get($bounds, bottom); }
                 }
               }
             }
@@ -176,8 +187,10 @@
   $left: not not index($options, left);
   $right: not not index($options, right);
   $around: not not index($options, around);
-  $between: not not index($options, between);
   $nowrap: not not index($options, nowrap);
+  // aliases
+  $between: not not index($options, between);
+  $between: if(not $between, not not index($options, beetween), $between);
 
   @if $x {
     $left: true;
@@ -209,23 +222,23 @@
     @if $left or $right {
       @if $between and $around {
         #{$cells} {
-          @if $left  { border-left: $border; }
+          @if $left  { border-left:  $border; }
           @if $right { border-right: $border; }
         }
       }
       @else {
         @if $around and not $between {
           #{$cells} {
-            @if $left  { &:first-child { border-left: $border; } }
+            @if $left  { &:first-child { border-left:  $border; } }
             @if $right { &:last-child  { border-right: $border; } }
           }
         }
         @elseif not $around and $between {
           #{$cells} {
             @if $right { &:first-child:not(:last-child) { border-right: $border; } }
-            @if $left  { &:last-child:not(:first-child) { border-left: $border; } }
+            @if $left  { &:last-child:not(:first-child) { border-left:  $border; } }
             &:not(:last-child):not(:first-child) {
-              @if $left  { border-left: $border; }
+              @if $left  { border-left:  $border; }
               @if $right { border-right: $border; }
             }
           }
@@ -236,19 +249,19 @@
     @if $top or $bottom {
       @if $between and $around {
         #{$cells} {
-          @if $top    { border-top: $border; }
+          @if $top    { border-top:    $border; }
           @if $bottom { border-bottom: $border; }
         }
       }
       @else {
         @if $around and not $between {
           @if $nowrap {
-            @if $top    { tr:first-child { #{$cells} { border-top: $border; } } }
+            @if $top    { tr:first-child { #{$cells} { border-top:    $border; } } }
             @if $bottom { tr:last-child  { #{$cells} { border-bottom: $border; } } }
           }
           @else {
             thead, tbody, tfoot {
-              @if $top    { &:first-child tr:first-child { #{$cells} { border-top: $border; } } }
+              @if $top    { &:first-child tr:first-child { #{$cells} { border-top:    $border; } } }
               @if $bottom { &:last-child  tr:last-child  { #{$cells} { border-bottom: $border; } } }
             }
           }
@@ -256,11 +269,11 @@
         @if not $around and $between {
           @if $nowrap {
             @if $bottom { tr:first-child:not(:last-child) { #{$cells} { border-bottom: $border; } } }
-            @if $top    { tr:last-child:not(:first-child) { #{$cells} { border-top: $border; } } }
+            @if $top    { tr:last-child:not(:first-child) { #{$cells} { border-top:    $border; } } }
 
             tr:not(:first-child):not(:last-child) {
               #{$cells} {
-                @if $top    { border-top: $border; }
+                @if $top    { border-top:    $border; }
                 @if $bottom { border-bottom: $border; }
               }
             }
@@ -281,7 +294,7 @@
 
               &:first-child:last-child tr:not(:first-child):not(:last-child) {
                 #{$cells} {
-                  @if $top    { border-top: $border; }
+                  @if $top    { border-top:    $border; }
                   @if $bottom { border-bottom: $border; }
                 }
               }
@@ -304,7 +317,7 @@
               &:not(:first-child):not(:last-child),
               &:not(:last-child):not(:first-child) {
                 #{$cells} {
-                  @if $top    { border-top: $border; }
+                  @if $top    { border-top:    $border; }
                   @if $bottom { border-bottom: $border; }
                 }
               }
