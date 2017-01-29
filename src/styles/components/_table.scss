@@ -4,6 +4,13 @@ $table-cell-padding-around: false !default;
 $table-cell-border: 1ps solid #ccc !default;
 
 @include c(table) {
+  @include md-shadow(2);
+  @include md-shadow-transition(.1s);
+
+  &:hover {
+    @include md-shadow(3);
+  }
+
 //table {
   border: none;
 
