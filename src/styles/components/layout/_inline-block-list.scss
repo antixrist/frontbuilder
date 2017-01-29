@@ -1,7 +1,7 @@
 .ib {
   @include ib();
 
-  &.-full-width {
+  &.-wide {
     @include ib($full-width: true);
   }
 

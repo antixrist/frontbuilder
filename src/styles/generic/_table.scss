@@ -1,6 +1,17 @@
-table { width: 100%; }
-thead th { vertical-align: bottom; }
+table {
+  border: none;
+  min-width: 100%;
+
+  td, th {
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+}
 table th { @include font-type(bold); }
+table td { @include font-type(regular); }
+table td { vertical-align: top; }
+thead th { vertical-align: bottom; }
 
 [colspan]     { text-align: center; }
 [colspan='1'] { text-align: left; }
