@@ -67,3 +67,9 @@
     }
   }
 }
+
+@mixin is-print-hidden {
+  @media print {
+    @include is-hidden(true);
+  }
+}

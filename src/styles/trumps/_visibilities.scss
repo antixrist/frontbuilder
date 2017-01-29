@@ -14,6 +14,10 @@
   @include is-hidden(true);
 }
 
+@include is(print-hidden) {
+  @include is-print-hidden;
+}
+
 @include is(invisible) {
   @include is-invisible(true);
 }

@@ -1,0 +1,181 @@
+$switch-map: ();
+
+@function get-switch-key () {
+  @return inspect(&);
+}
+
+@function get-switch-options ($key: null) {
+  $key: if($key != null, $key, get-switch-key($key));
+
+  @if (map-has-key($switch-map, $key)) {
+    @return map-get($switch-map, $key);
+  }
+
+  //@warn('[get-switch-options] Not existing key: "#{$key}"');
+  @return null;
+}
+
+@function set-switch-options ($key: null, $options: ()) {
+  $key: if($key != null, $key, get-switch-key($key));
+
+  $switch-options: get-switch-options($key);
+  $switch-options: if(not $switch-options, (), $switch-options);
+  $switch-options: map-merge($switch-options, $options);
+  $switch-map: map-merge($switch-map, (
+    $key: $switch-options
+  )) !global;
+
+  @return get-switch-options($key);
+}
+
+@function switch-checked-state() {
+  @return 'input[type=checkbox]:checked';
+}
+
+@function get-switch-control ($key: null, $checked: false) {
+  $key: if($key != null, $key, get-switch-key($key));
+
+  $options: get-switch-options($key);
+  $checked: if($checked, '#{switch-checked-state()} + ', '');
+  $selector: '#{$checked}#{map-get($options, helper)}:before';
+
+  @return $selector;
+}
+
+@function get-switch-track ($key: null, $checked: false) {
+  $key: if($key != null, $key, get-switch-key($key));
+
+  $options: get-switch-options($key);
+  $checked: if($checked, '#{switch-checked-state()} + ', '');
+  $selector: '#{$checked}#{map-get($options, helper)}';
+
+  @return $selector;
+}
+
+@mixin switch (
+  $height: 20px,
+  $helper: '.switch-helper',
+  $reverse: false,
+  $debug: false
+) {
+  $switch-key: get-switch-key();
+  $res: set-switch-options($switch-key, (
+    height: $height,
+    helper: $helper,
+    reverse: not not $reverse
+  ));
+
+  position: relative;
+
+  input[type=checkbox] {
+    position: absolute;
+    @if not $debug {
+      opacity: 0;
+      top: -9999px;
+      left: -9999px;
+    }
+    z-index: 2;
+  }
+
+  @content;
+
+  // $switch-map: map-remove($switch-map, $switch-key) !global;
+}
+
+@mixin switch-track () {
+  $switch-key: get-switch-key();
+  $switch-options: get-switch-options($switch-key);
+
+  $helper: map-get($switch-options, helper);
+  $height: map-get($switch-options, height);
+
+  #{get-switch-track($switch-key)} {
+    position: relative;
+    display: block;
+    height: $height;
+    border-radius: $height;
+
+    @content;
+  }
+}
+
+@mixin switch-checked-track (
+  $x-offset: 2px,
+  $width: null,
+  $height: null
+) {
+  $switch-key: get-switch-key();
+  $switch-options: get-switch-options($switch-key);
+
+  $helper: map-get($switch-options, helper);
+  $outer-height: map-get($switch-options, height);
+  $outer-width: map-get($switch-options, width);
+
+  $height: if($height != null, $height, $outer-height);
+  $width: if($width != null, $width, $height);
+
+  #{get-switch-track($switch-key, true)} {
+    @content;
+  }
+}
+
+@mixin switch-control (
+  $x-offset: 2px,
+  $width: null,
+  $height: null
+) {
+  $switch-key: get-switch-key();
+  $options: get-switch-options($switch-key);
+
+  $helper: map-get($options, helper);
+  $outer-height: map-get($options, height);
+  $reverse: map-get($options, reverse);
+  $direction: if($reverse, right, left);
+
+  $height: if($height != null, $height, $outer-height);
+  $width: if($width != null, $width, $height);
+
+  $res: set-switch-options($switch-key, (
+    control: (
+      x-offset: $x-offset,
+      width: $width,
+      height: $height
+    )
+  ));
+
+  #{get-switch-control($switch-key)} {
+    content: '';
+    display: block;
+    position: absolute;
+
+    width: $width;
+    height: $height;
+    top: 50%;
+    margin-top: -$height /2;
+    #{$direction}: 0;
+    margin-#{$direction}: $x-offset;
+
+    border-radius: $height /2;
+
+    @content;
+  }
+}
+
+@mixin switch-checked-control () {
+  $switch-key: get-switch-key();
+  $options: get-switch-options($switch-key);
+  $control-options: map-get($options, control);
+
+  $helper: map-get($options, helper);
+  $reverse: map-get($options, reverse);
+  $direction: if($reverse, right, left);
+  $width: map-get($control-options, width);
+  $x-offset: map-get($control-options, x-offset);
+
+  #{get-switch-control($switch-key, true)} {
+    #{$direction}: 100%;
+    margin-#{$direction}: -($x-offset + $width);
+
+    @content;
+  }
+}

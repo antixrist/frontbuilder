@@ -1,0 +1,71 @@
+@include c(switch) {
+  display: block;
+  margin-top: 10px;
+  width: 150px;
+  padding: 10px 20px;
+
+  $switch-height: 10px;
+  @include switch (
+    $height: $switch-height,
+    $helper: '.helper'
+  ) {
+    @include switch-track {
+      @include md-shadow();
+      border-radius: $switch-height /2;
+      background-color: #c2c8c8;
+      transition: background-color .1s ease-out, md-shadow-transition();
+    }
+
+    @include switch-checked-track () {
+      background: #287ba5;
+    }
+
+    @include switch-control (
+      $x-offset: -4px,
+      $height: $switch-height + 10
+    ) {
+      background-color: #fff;
+      transition: all .1s ease-out;
+      @include md-shadow;
+    }
+
+    @include switch-checked-control () {}
+  }
+
+  ///
+  /// advanced tricks
+  ///
+  $switch-key: get-switch-key();
+
+  &:hover  #{get-switch-track($switch-key)} { @include md-shadow(2); }
+  &:active #{get-switch-track($switch-key)} { @include md-shadow(1); }
+
+  &:active #{get-switch-control($switch-key)} {
+    box-shadow: inset 0 2px 1px rgba(0, 0, 0, .2), md-shadow();
+  }
+
+  ///
+  /// labels
+  ///
+  .switch-label {
+    opacity: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+
+    &.-checked {
+      opacity: 0;
+      left: auto;
+      right: 0;
+    }
+  }
+
+  #{switch-checked-state()} ~ .switch-label {
+    opacity: 0;
+
+    &.-checked {
+      opacity: 1;
+    }
+  }
+}
