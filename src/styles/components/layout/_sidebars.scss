@@ -1,0 +1,8 @@
+$sidebars-padding: 1rem !default;
+$sidebars-padding-options: x between half-between !default;
+$sidebars-center: '.center' !default;
+
+.sidebars {
+  @include sidebars($sidebars-padding, $sidebars-padding-options, $sidebars-center);
+  @include table-cells-border(1px solid #ccc, x between nowrap, '> *');
+}

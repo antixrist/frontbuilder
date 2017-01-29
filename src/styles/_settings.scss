@@ -27,6 +27,21 @@ $layout-max-width: 1400px !default;
 $layout-side-space-width: 20px !default;
 $layout-side-space-type: padding !default; // or "margin"
 
+$sidebars-padding: 1rem !default;
+$sidebars-padding-options: x between half-between !default;
+$sidebars-center: '.center' !default;
+
+$z-indexes: (
+  toast:     10000,
+  modal:     9000,
+  overlay:   8000,
+  dropdown:  7000,
+  dialog:    6000,
+  popup:     5000,
+  base:      1,
+  deepdive: -99999,
+) !default;
+
 //$font-path: '../fonts/' !default;
 $font-formats: 'ttf' 'otf' 'woff' 'woff2' 'svg' 'svgz' 'eot' !default;
 $fonts: (

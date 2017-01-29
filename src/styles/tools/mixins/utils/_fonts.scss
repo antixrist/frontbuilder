@@ -121,3 +121,46 @@ $font-types: map-merge($font-types, $font-types);
   font-family: font($names, $stack);
   @include font-type($type);
 }
+
+///
+/// Fool-proof @font-face
+/// Based on http://coding.smashingmagazine.com/2013/02/14/setting-weights-and-styles-at-font-face-declaration/
+/// See here: http://codepen.io/javasteve99/pen/hDxpn?editors=110
+@mixin font-faces ($font-family, $file-path, $font-weight: 400, $font-style: normal, $types: eot woff woff2 ttf otf svg) {
+  @if length($types) > 0 {
+    $eot: not not index($types, eot);
+    $ttf: not not index($types, ttf);
+    $otf: not not index($types, otf);
+    $svg: not not index($types, svg);
+    $svgz: not not index($types, svgz);
+    $woff: not not index($types, woff);
+    $woff2: not not index($types, woff2);
+
+    $src: ();
+    @if $eot   { $src: append($src, url('#{$file-path}.eot?#iefix') format('embedded-opentype'), comma); }
+    @if $woff  { $src: append($src, url('#{$file-path}.woff') format('woff'), comma); }
+    @if $woff2 { $src: append($src, url('#{$file-path}.woff2') format('woff2'), comma); }
+    @if $ttf   { $src: append($src, url('#{$file-path}.ttf') format('truetype'), comma); }
+    @if $otf   { $src: append($src, url('#{$file-path}.otf') format('opentype'), comma); }
+    @if $svg   { $src: append($src, url('#{$file-path}.svg##{$font-family}') format('svg'), comma); }
+    @if $svgz  { $src: append($src, url('#{$file-path}.svgz##{$font-family}') format('svgz'), comma); }
+
+    @font-face {
+      font-family: $font-family;
+      @if $eot { src: url('#{$file-path}.eot'); }
+      src: $src;
+      font-weight: $font-weight;
+      font-style: $font-style;
+    }
+    @if $svg or $svgz {
+      // Chrome for Windows rendering fix: http://www.adtrak.co.uk/blog/font-face-chrome-rendering/
+      @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        @font-face {
+          font-family: $font-family;
+          @if $svg  { src: url('#{$file-path}.svg##{$font-family}') format('svg'); }
+          @if $svgz { src: url('#{$file-path}.svgz##{$font-family}') format('svgz'); }
+        }
+      }
+    }
+  }
+}

@@ -4,6 +4,9 @@
 @include u(pull-right) {
   float: right !important;
 }
+@include u(pull-none) {
+  float: none !important;
+}
 
 @include u(text-left) {
   text-align: left !important;
