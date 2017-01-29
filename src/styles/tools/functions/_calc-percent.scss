@@ -8,6 +8,6 @@
 // }
 // =======================================================
 
-@function calc-percent ($target, $context) {
+@function percent ($target, $context) {
   @return $target / $context * 100%;
 }

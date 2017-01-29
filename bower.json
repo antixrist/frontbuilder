@@ -19,7 +19,6 @@
     "lazy-progressive-enhancement": "git://github.com/tvler/lazy-progressive-enhancement.git",
     "logerr": "*",
     "matches-selector": "^2.0.1",
-    "material-colors": "^1.1.1",
     "material-shadows": "git://github.com/antixrist/md-shadows-scss.git#^3.0.1",
     "open-color": "git://github.com/yeun/open-color.git#^1.4.0",
     "pixelperfectcss-scss": "^1.0.2",
