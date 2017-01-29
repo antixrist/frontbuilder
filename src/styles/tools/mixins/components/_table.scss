@@ -6,6 +6,61 @@
   -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
 }
 
+@mixin table-ears ($options: before left right, $cells: (td, th)) {
+  $options: if(type-of($options) != list, ($options,), $options);
+  $nowrap: not not index($options, nowrap);
+
+  $pseudo: if(index($options, before), before, after);
+  $pseudo: if(index($options, after), after, before);
+
+  $left:  not not index($options, left);
+  $right: not not index($options, right);
+
+  @if not $left and not $right {
+    $left:  true;
+    $right: true;
+  }
+
+  @include proxy (if($nowrap, null, thead)) {
+    #{$cells} {
+      @if $left {
+        &:first-child {
+          position: relative;
+
+          &:#{$pseudo} {
+            content: '\00a0';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            display: block;
+            right: 100%;
+            left: auto;
+
+            @content;
+          }
+        }
+      }
+      @if $right {
+        &:last-child {
+          position: relative;
+
+          &:#{$pseudo} {
+            content: '\00a0';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            display: block;
+            left: 100%;
+            right: auto;
+
+            @content;
+          }
+        }
+      }
+    }
+  }
+}
+
 @mixin table-cells-padding ($padding: 0, $options: between around x y, $cells: 'td, th') {
   $options: if(type-of($options) != list, ($options,), $options);
 

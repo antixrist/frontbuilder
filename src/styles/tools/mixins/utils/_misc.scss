@@ -6,12 +6,15 @@
   }
 }
 
-@mixin proxy ($target: null) {
+@mixin proxy ($target: null, $at-root: false) {
   @if $target == null {
     @content;
   } @else {
-    #{$target} {
-      @content;
+    @if $at-root {
+      @at-root { #{$target} { @content; } }
+    }
+    @else {
+      #{$target} { @content; }
     }
   }
 }

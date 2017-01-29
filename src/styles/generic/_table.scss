@@ -1,4 +1,6 @@
 table { width: 100%; }
+thead th { vertical-align: bottom; }
+table th { @include font-type(bold); }
 
 [colspan]     { text-align: center; }
 [colspan='1'] { text-align: left; }

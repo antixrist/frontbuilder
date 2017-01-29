@@ -5,7 +5,7 @@ $table-cell-border: 1ps solid #ccc !default;
 
 @include c(table) {
   @include md-shadow(2);
-  @include md-shadow-transition(.1s);
+  @include md-shadow-transition();
 
   &:hover {
     @include md-shadow(3);
@@ -13,6 +13,12 @@ $table-cell-border: 1ps solid #ccc !default;
 
 //table {
   border: none;
+
+  thead { background: #e7e8ec; }
+  @include table-ears () {
+    width: 100px;
+    background: #e7e8ec;
+  }
 
   td, th {
     @include font-type(regular);
@@ -73,14 +79,11 @@ $table-cell-border: 1ps solid #ccc !default;
   //@include table-cells-padding($table-cell-padding, x between between-half);
   //@include table-cells-padding($table-cell-padding, y);
 
-  th { @include font-type(bold); }
-
   thead {
     th, td {
       &:first-child { }
       &:last-child { }
     }
-    th { vertical-align: bottom; }
     td {  }
 
     tr {
@@ -151,9 +154,6 @@ $table-cell-border: 1ps solid #ccc !default;
 
   $padding-bounds: get-bounds-map($table-cell-padding);
 
-  thead {
-    background: #e7e8ec;
-  }
   tbody {
     //@include table-cells-border($table-cell-border, between y nowrap);
     //@include table-cells-border($table-cell-border, around bottom nowrap);
