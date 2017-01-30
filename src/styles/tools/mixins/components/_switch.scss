@@ -1,5 +1,10 @@
 $switch-map: ();
 
+//<label class="switch">
+//  <input type="checkbox">
+//  <i class="helper"></i>
+//</label>
+
 @function get-switch-key () {
   @return inspect(&);
 }
