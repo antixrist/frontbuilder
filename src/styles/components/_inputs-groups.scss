@@ -1,7 +1,7 @@
 $inputs-group-states: (default, success, danger) !default;
 $addons-variants: (
   default: (
-    color: $base-color-muted,
+    color: $base-color,
     bg-color: #fff,
     border-color: $borders-color,
   ),
@@ -87,11 +87,8 @@ $addons-variants: (
       .btn,
       .addon,
       .input {
-        vertical-align: middle;
-        display: inline-block;
-        //@extend &.-size-#{$size};
-
-        //@include control-size-preset($size);
+        //vertical-align: middle;
+        //display: inline-block;
       }
 
       .btn   { @include control-size-preset($size); }
@@ -99,12 +96,33 @@ $addons-variants: (
       .input { @include control-size-preset($size, false); }
     }
   }
-  
-  .btn {
 
+  display: flex;
+  min-width: 100%;
+
+  @extend .stack.-x;
+
+  .btn,
+  .btn-addon,
+  .addon,
+  .input {
+    @extend .stacked;
   }
-  .addon-btn {
 
+  .addon,
+  .addon-btn {
+    &:first-child {
+      border-top-left-radius: $base-radius;
+      border-bottom-left-radius: $base-radius;
+    }
+    &:last-child {
+      border-top-right-radius: $base-radius;
+      border-bottom-right-radius: $base-radius;
+    }
+  }
+
+  .input {
+    flex: 1;
   }
 
   // fallback

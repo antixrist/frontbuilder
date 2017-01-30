@@ -1,8 +1,8 @@
 %stack,
 .stack {
 
-  &.-x { @include stack(x, $items: '.stacked, .input, .btn'); }
-  &.-y { @include stack(y, $items: '.stacked, .input, .btn'); }
+  &.-x { @include stack(x, $items: '.stacked, .input, .addon, .addon-btn, .btn'); }
+  &.-y { @include stack(y, $items: '.stacked, .input, .addon, .addon-btn, .btn'); }
 
   .btn,
   .stacked {
