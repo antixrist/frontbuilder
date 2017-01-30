@@ -1,5 +1,24 @@
 /** todo: пересмотреть и переписать */
 
+@mixin stack ($direction: x y, $overlap: 1px) {
+  $x: not not index($direction, x);
+  $y: not not index($direction, y);
+
+  @if not $x and not $y {
+    $x: true;
+    $y: true;
+  }
+
+  @if $x {
+    > * {
+      margin-left: $overlap * -1;
+    }
+    > *:first-child {
+      margin-left: 0;
+    }
+  }
+}
+
 @mixin x-stack ($overlap: 1px) {
   > * {
     margin-left: $overlap * -1;

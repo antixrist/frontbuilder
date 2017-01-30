@@ -1,0 +1,19 @@
+$md-shadows: () !default;
+$md-shadows-count: length(map-keys($md-shadows));
+
+@if $md-shadows-count > 0 {
+  @for $dp from 1 through $md-shadows-count {
+    %md-shadow-breath-#{$dp}dp,
+    .md-shadow-breath-#{$dp}dp {
+      @include md-shadow($dp);
+      @include md-shadow-transition;
+
+      $hover-dp:  if($dp < $md-shadows-count, $dp + 1, $dp);
+      $active-dp: if(($dp - 1) > 0, $dp - 1, $dp);
+
+      &:hover,
+      &:focus  { @include md-shadow($hover-dp); }
+      //&:active { @include md-shadow($active-dp); }
+    }
+  }
+}
