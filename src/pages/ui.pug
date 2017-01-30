@@ -20,23 +20,22 @@ block right
 block content
   #ui-auto-size
     h1 Это юай!
-    .test-block.stack.-y.md-shadow
-      p.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-      p.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-      p.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-      p.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-      p.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-
-    .test-block-2.stack.-x.md-shadow
-      p
-        span.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-        span.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-        span.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-        span.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-        span.stacked Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
-
-    p
-      button.btn.-special.-size-xxs: span.btn-inner Это кнопочка
+    .test-block.md-shadow
+      p.btn-group.-size-xs.-primary
+        button.btn Это кнопочка
+        button.btn.-default Это кнопочка
+        button.btn.-primary Это кнопочка
+        button.btn.-secondary Это кнопочка
+        button.btn.-success Это кнопочка
+        button.btn.-danger.-size-lg Это кнопочка
+      //p.input-group
+      p.stack.-y
+        input.input(placeholder="Это инпут")
+        input.input.-default(placeholder="Это инпут")
+        input.input.-primary(placeholder="Это инпут")
+        input.input.-secondary(placeholder="Это инпут")
+        input.input.-success(placeholder="Это инпут")
+        input.input.-danger(placeholder="Это инпут")
     p
       label.c-switch
         input(type="checkbox")

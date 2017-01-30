@@ -1,66 +1,40 @@
 .input-group {
-  @extend .x-stack;
-  @extend .x-stack--rounded;
-
-  @include m (squared) {
-    @extend .x-stack--squared;
-  }
-
   display: flex;
 
-  @include e (addon, control) {
+  .btn,
+  .addon,
+  .input {
     vertical-align: middle;
     display: inline-block;
   }
 
-  @include e (addon) {
+  .addon {
     white-space: nowrap;
+    // todo цвета радуги
   }
 
-  @include e (control) {
-    @include stack-item-on-top(2);
+  .btn,
+  .input {
+    @include stack-item-upward(2);
+
     flex: 1;
     min-width: 1px;
-  }
 
-  .btn {
-    &:hover,
-    &:focus,
-    &:active {
-      @include stack-item-on-top(3);
+    &:hover, &:focus, &:active {
+      @include stack-item-upward(3);
     }
-  }
 
-  @include e (on-top) {
-    @include stack-item-on-top(4);
+    &.-upward {
+      @include stack-item-upward(4);
+    }
   }
 
   // fallback
   .no-flexbox & {
-    .input-group__addon,
-    .input-group__control {
+    .btn,
+    .addon,
+    .input {
       margin: 0;
-    }
-  }
-}
-
-.y-input-group {
-  @extend .y-stack;
-  @extend .y-stack--rounded;
-
-  @include m (squared) {
-    @extend .y-stack--squared;
-  }
-
-  @include e(on-top) {
-    @extend .y-stack__on-top--x3;
-  }
-
-  .input {
-    @extend .input--wide;
-
-    @include state-is(hover, focus, active) {
-      @extend .y-stack__on-top--x2;
     }
   }
 }

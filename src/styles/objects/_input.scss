@@ -1,0 +1,76 @@
+//todo
+
+$input-variants: (
+ default: (
+   color-normal: $base-color,
+   color-hover: $base-color,
+   color-focus: $base-color,
+
+   bg-color-normal: #fff,
+   bg-color-hover: #fff,
+   bg-color-focus: #fff,
+
+   border-color-normal: $borders-color,
+   border-color-focus: $color-primary,
+
+   shadow-normal: none,
+   shadow-focus: none
+ ),
+ success: (
+   color-normal: $color-success,
+   color-hover: $color-success,
+   color-focus: $base-color,
+
+   bg-color-normal: #fff,
+   bg-color-hover: #fff,
+   bg-color-focus: #fff,
+
+   border-color-normal: $color-success,
+   border-color-focus: $color-primary,
+
+   shadow-normal: none,
+   shadow-focus: none
+ ),
+ danger: (
+   color-normal: $color-danger,
+   color-hover: $color-danger,
+   color-focus: $base-color,
+
+   bg-color-normal: #fff,
+   bg-color-hover: #fff,
+   bg-color-focus: #fff,
+
+   border-color-normal: $color-danger,
+   border-color-focus: $color-primary,
+
+   shadow-normal: none,
+   shadow-focus: none
+ )
+) !default;
+
+
+.input {
+  @include input;
+
+  @each $size, $data in $control-sizes {
+    $selector: if($size == default, '&', '&.-size-#{$size}');
+    #{$selector} { @include control-size-preset($size); }
+  }
+
+  @each $variant, $data in $input-variants {
+    $selector: if($variant == default, '&', '&.-#{$variant}');
+    #{$selector} {
+      $args: map-get($input-variants, $variant);
+      @include input-variant($args...);
+    }
+  }
+
+  border-radius: $base-radius;
+  &.-square {
+    border-radius: 0;
+  }
+
+  &.-wide {
+    @include input-block;
+  }
+}

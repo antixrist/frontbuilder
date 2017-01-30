@@ -1,106 +1,75 @@
-/** todo btn */
+$btn-variants: (
+  default: (
+    color-normal: $color-primary,
+    color-hover: #fff,
+    color-focus: $color-primary,
+    color-active: #fff,
 
-$base-font-size: 16px !default;
-$base-radius: 3px !default;
+    bg-color-normal: #fff,
+    bg-color-hover: $color-primary,
+    bg-color-focus: #fff,
+    bg-color-active: $color-primary,
+  ),
+  primary: (
+    color-normal: #fff,
+    color-hover: #fff,
+    color-active: #fff,
 
-$btn-bg-color-normal: #fff !default;
-$btn-border-color-normal: #ccc !default;
+    bg-color-normal: $color-primary,
+    bg-color-hover: darken($color-primary, 10%),
+    bg-color-active: darken($color-primary, 10%),
+  ),
+  success: (
+    color-normal: #fff,
+    color-hover: #fff,
+    color-active: #fff,
+
+    bg-color-normal: $color-success,
+    bg-color-hover: darken($color-success, 10%),
+    bg-color-active: darken($color-success, 10%)
+  ),
+  danger: (
+    color-normal: #fff,
+    color-hover: #fff,
+    color-active: #fff,
+
+    bg-color-normal: $color-danger,
+    bg-color-hover: darken($color-danger, 10%),
+    bg-color-active: darken($color-danger, 10%)
+  ),
+  secondary: (
+    color-normal: $color-primary,
+    color-hover: $color-primary,
+    color-active: $color-primary,
+
+    bg-color-normal: $borders-color,
+    bg-color-hover: darken($borders-color, 10%),
+    bg-color-active: darken($borders-color, 10%)
+  )
+) !default;
 
 .btn {
   @include btn;
-  @include control-size-preset(default, true);
-  @include btn-variant(
-    $color-normal: #373a3c,
-
-    $bg-color-normal: #fff,
-    $bg-color-hover: #e6e6e6,
-    $bg-color-active: #d4d4d4,
-
-    $border-color-normal: #ccc,
-    $border-color-hover: #adadad,
-    $border-color-active: #8c8c8c
-  );
 
   @each $size, $data in $control-sizes {
-    &.-size-#{$size} {
-      @include control-size-preset($size);
+    $selector: if($size == default, '&', '&.-size-#{$size}');
+    #{$selector} { @include control-size-preset($size); }
+  }
+
+  @each $variant, $data in $btn-variants {
+    $selector: if($variant == default, '&', '&.-#{$variant}');
+    #{$selector} {
+      $args: map-get($btn-variants, $variant);
+      @include btn-variant($args...);
     }
   }
 
-  &.-rounded {
-    border-radius: $base-radius;
+  border-radius: $base-radius;
+  &.-square {
+    border-radius: 0;
   }
 
   &.-wide {
     @include btn-wide;
-  }
-
-  &.-primary {
-    @include btn-variant(
-      $color-normal: #fff,
-
-      $bg-color-normal: #0275d8,
-      $bg-color-hover: #025aa5,
-      $bg-color-active: #014682,
-
-      $border-color-normal: #0275d8,
-      $border-color-hover: #01549b,
-      $border-color-active: #01315a
-    );
-  }
-
-  &.-success {
-    @include btn-variant(
-      $color-normal: #fff,
-
-      $bg-color-normal: #5cb85c,
-      $bg-color-hover: #449d44,
-      $bg-color-active: #398439,
-
-      $border-color-normal: #5cb85c,
-      $border-color-hover: #419641,
-      $border-color-active: #2d672d
-    );
-  }
-
-  &.-info {
-    @include btn-variant(
-      $color-normal: #fff,
-
-      $bg-color-normal: #5bc0de,
-      $bg-color-hover: #31b0d5,
-      $bg-color-active: #269abc,
-
-      $border-color-normal: #5bc0de,
-      $border-color-hover: #2aabd2,
-      $border-color-active: #1f7e9a
-    );
-  }
-
-  &.-warning {
-    @include btn-variant(
-      $color-normal: #fff,
-
-      $bg-color-normal: #f0ad4e,
-      $bg-color-hover: #ec971f,
-      $bg-color-active: #d58512,
-
-      $border-color-normal: #f0ad4e,
-      $border-color-hover: #eb9316,
-      $border-color-active: #b06d0f
-    );
-  }
-
-  &.-danger {
-    @include btn-variant(
-      $color-normal: #fff,
-      $bg-color-normal: #d9534f,
-      $bg-color-hover: #c9302c,
-      $bg-color-active: #ac2925,
-
-      $border-color-normal: #d9534f,
-      $border-color-hover: #ac2925,
-      $border-color-active: #761c19
-    );
   }
 }

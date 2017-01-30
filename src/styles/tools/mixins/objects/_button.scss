@@ -167,6 +167,11 @@ $base-font-size: 16px !default;
   $transition-focus:  $transition-hover,
   $transition-active: $transition-hover,
 
+  $css-normal: (),
+  $css-hover: (),
+  $css-focus: (),
+  $css-active: (),
+
   $proxy: null
 ) {
   &, &:visited {
@@ -177,6 +182,7 @@ $base-font-size: 16px !default;
       transition: $transition-normal;
       box-shadow: $shadow-normal;
 
+      @include apply-styles($css-normal);
       @content;
     }
   }
@@ -187,6 +193,18 @@ $base-font-size: 16px !default;
     background-color: $bg-color-hover;
     transition: $transition-hover;
     box-shadow: $shadow-hover;
+
+    @include apply-styles($css-hover);
+
+    @include btn-focus ($proxy) {
+      color: $color-hover;
+      border-color: $border-color-hover;
+      background-color: $bg-color-hover;
+      transition: $transition-hover;
+      box-shadow: $shadow-hover;
+
+      @include apply-styles($css-hover);
+    }
   }
 
   @include btn-focus ($proxy) {
@@ -195,6 +213,8 @@ $base-font-size: 16px !default;
     background-color: $bg-color-focus;
     transition: $transition-focus;
     box-shadow: $shadow-focus;
+
+    @include apply-styles($css-focus);
   }
 
   @include btn-active ($proxy) {
@@ -203,5 +223,7 @@ $base-font-size: 16px !default;
     background-color: $bg-color-active;
     transition: $transition-active;
     box-shadow: $shadow-active;
+
+    @include apply-styles($css-active);
   }
 };

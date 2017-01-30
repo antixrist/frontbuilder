@@ -1,43 +1,16 @@
 .btn-group {
-  @extend .x-stack;
-  @extend .x-stack--rounded;
-
-  @include m (squared) {
-    @extend .x-stack--squared;
-  }
-
-  @include e(on-top) {
-    @extend .x-stack__on-top;
-  }
-
-  .btn {
-    @include state-is(hover, focus, active) {
-      @extend .x-stack__on-top;
+  @each $size, $data in $control-sizes {
+    $selector: if($size == default, '&', '&.-size-#{$size}');
+    #{$selector} {
+      .btn { @include control-size-preset($size); }
     }
   }
 
-  @include m (rounded) {
-    @extend .x-stack--rounded;
-  }
-}
-
-.y-btn-group {
-  @extend .y-stack;
-  @extend .y-stack--rounded;
-
-  @include m (squared) {
-    @extend .y-stack--squared;
-  }
-
-  @include e(on-top) {
-    @extend .y-stack__on-top--x2;
-  }
-
-  .btn {
-    @extend .btn--wide;
-
-    @include state-is(hover, focus, active) {
-      @extend .y-stack__on-top;
+  @each $variant, $data in $btn-variants {
+    $selector: if($variant == default, '&', '&.-#{$variant}');
+    #{$selector} {
+      $args: map-get($btn-variants, $variant);
+      .btn { @include btn-variant($args...); }
     }
   }
 }

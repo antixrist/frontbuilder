@@ -1,47 +1,72 @@
 %stack,
 .stack {
 
-  &.-x { @include stack(x, $items: '.stacked'); }
-  &.-y { @include stack(y, $items: '.stacked'); }
+  &.-x { @include stack(x, $items: '.stacked, .input, .btn'); }
+  &.-y { @include stack(y, $items: '.stacked, .input, .btn'); }
 
+  .btn,
   .stacked {
     &:hover,
     &:focus,
     &.-upward {
       @include stack-item-upward();
     }
+  }
 
-    @for $idx from 3 through 6 {
-      &.-x#{$idx - 1},
-      &.-x#{$idx - 1} { @include stack-item-upward($idx); }
+  .input {
+    &:focus,
+    &.-upward {
+      @include stack-item-upward();
     }
   }
 
-  &.-x .stacked {
-    &:not(:first-child) {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-    &:not(:last-child) {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    &:not(:first-child):not(:last-child) {
-      border-radius: 0;
+  .btn,
+  .input,
+  .stacked {
+    &.-upward {
+      @for $idx from 3 through 6 {
+        &.-x#{$idx - 1},
+        &.-x#{$idx - 1} { @include stack-item-upward($idx); }
+      }
     }
   }
 
-  &.-y .stacked {
-    &:not(:first-child) {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
+  &.-x {
+    .btn,
+    .input,
+    .stacked {
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      &:not(:first-child):not(:last-child) {
+        border-radius: 0;
+      }
     }
-    &:not(:last-child) {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    &:not(:first-child):not(:last-child) {
-      border-radius: 0;
+  }
+
+  &.-y {
+    .btn   { @extend .btn.-wide; }
+    .input { @extend .input.-wide; }
+
+    .btn,
+    .input,
+    .stacked {
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+      &:not(:last-child) {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      &:not(:first-child):not(:last-child) {
+        border-radius: 0;
+      }
     }
   }
 }

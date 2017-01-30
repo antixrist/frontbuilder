@@ -21,12 +21,12 @@
     @include switch-track {
       @include md-shadow();
       border-radius: $switch-height /2;
-      background-color: #c2c8c8;
+      background-color: $borders-color;
       transition: background-color .1s ease-out, md-shadow-transition();
     }
 
     @include switch-checked-track () {
-      background: #287ba5;
+      background: $color-primary;
     }
 
     @include switch-control (
