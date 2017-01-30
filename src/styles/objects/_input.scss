@@ -1,53 +1,52 @@
 //todo
 
 $input-variants: (
- default: (
-   color-normal: $base-color,
-   color-hover: $base-color,
-   color-focus: $base-color,
+  default: (
+    color-normal: $base-color,
+    color-hover: $base-color,
+    color-focus: $base-color,
 
-   bg-color-normal: #fff,
-   bg-color-hover: #fff,
-   bg-color-focus: #fff,
+    bg-color-normal: #fff,
+    bg-color-hover: #fff,
+    bg-color-focus: #fff,
 
-   border-color-normal: $borders-color,
-   border-color-focus: $color-primary,
+    border-color-normal: $borders-color,
+    border-color-focus: $color-primary,
 
-   shadow-normal: none,
-   shadow-focus: none
- ),
- success: (
-   color-normal: $color-success,
-   color-hover: $color-success,
-   color-focus: $base-color,
+    shadow-normal: none,
+    shadow-focus: none
+  ),
+  success: (
+    color-normal: darken($color-success, 10%),
+    color-hover: darken($color-success, 10%),
+    color-focus: $base-color,
 
-   bg-color-normal: #fff,
-   bg-color-hover: #fff,
-   bg-color-focus: #fff,
+    bg-color-normal: #fff,
+    bg-color-hover: #fff,
+    bg-color-focus: #fff,
 
-   border-color-normal: $color-success,
-   border-color-focus: $color-primary,
+    border-color-normal: $color-success,
+    border-color-focus: $color-primary,
 
-   shadow-normal: none,
-   shadow-focus: none
- ),
- danger: (
-   color-normal: $color-danger,
-   color-hover: $color-danger,
-   color-focus: $base-color,
+    shadow-normal: none,
+    shadow-focus: none
+  ),
+  danger: (
+    color-normal: darken($color-danger, 10%),
+    color-hover: darken($color-danger, 10%),
+    color-focus: $base-color,
 
-   bg-color-normal: #fff,
-   bg-color-hover: #fff,
-   bg-color-focus: #fff,
+    bg-color-normal: #fff,
+    bg-color-hover: #fff,
+    bg-color-focus: #fff,
 
-   border-color-normal: $color-danger,
-   border-color-focus: $color-primary,
+    border-color-normal: $color-danger,
+    border-color-focus: $color-primary,
 
-   shadow-normal: none,
-   shadow-focus: none
- )
+    shadow-normal: none,
+    shadow-focus: none
+  )
 ) !default;
-
 
 .input {
   @include input;
