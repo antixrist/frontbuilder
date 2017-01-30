@@ -6,11 +6,11 @@
     }
   }
 
-  //@each $variant, $data in $btn-variants {
-  //  $selector: if($variant == default, '&', '&.-#{$variant}');
-  //  #{$selector} {
-  //    $args: map-get($btn-variants, $variant);
-  //    .btn { @include btn-variant($args...); }
-  //  }
-  //}
+  @each $variant, $data in $btn-variants {
+    $selector: if($variant == default, '&', '&.-#{$variant}');
+    #{$selector} {
+      $args: map-get($btn-variants, $variant);
+      .btn { @include btn-variant($args...); }
+    }
+  }
 }

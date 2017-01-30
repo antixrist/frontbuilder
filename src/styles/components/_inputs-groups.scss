@@ -1,78 +1,42 @@
-$inputs-groups-addons-variants: (
+$inputs-group-states: (default, success, danger) !default;
+$addons-variants: (
   default: (
-    color-normal: $base-color,
-    color-hover: $base-color,
-    color-focus: $base-color,
-
-    bg-color-normal: #fff,
-    bg-color-hover: #fff,
-    bg-color-focus: #fff,
-
-    border-color-normal: $borders-color,
-    border-color-focus: $color-primary,
-
-    shadow-normal: none,
-    shadow-focus: none
+    color: $base-color-muted,
+    bg-color: #fff,
+    border-color: $borders-color,
   ),
   success: (
-    color-normal: darken($color-success, 10%),
-    color-hover: darken($color-success, 10%),
-    color-focus: $base-color,
-
-    bg-color-normal: #fff,
-    bg-color-hover: #fff,
-    bg-color-focus: #fff,
-
-    border-color-normal: $color-success,
-    border-color-focus: $color-primary,
-
-    shadow-normal: none,
-    shadow-focus: none
+    color: $color-success-accent,
+    bg-color: rgba($color-success-accent, .05),
+    border-color: $color-success-accent,
   ),
   danger: (
-    color-normal: darken($color-danger, 10%),
-    color-hover: darken($color-danger, 10%),
-    color-focus: $base-color,
-
-    bg-color-normal: #fff,
-    bg-color-hover: #fff,
-    bg-color-focus: #fff,
-
-    border-color-normal: $color-danger,
-    border-color-focus: $color-primary,
-
-    shadow-normal: none,
-    shadow-focus: none
+    color: $color-danger-accent,
+    bg-color: rgba($color-danger-accent, .05),
+    border-color: $color-danger-accent,
   )
 ) !default;
 
-
-.input-group {
+.inputs-group {
   //display: flex;
 
-  @include ib($full-width: true);
-
-  .btn,
-  .addon,
-  .input {
-    @include ib-item();
-
-    //vertical-align: middle;
-    //display: inline-block;
-  }
-
-  .btn,
   .addon {
-    white-space: nowrap;
-    // todo цвета радуги
+    @each $variant, $data in $addons-variants {
+      $selector: if($variant == default, '&', '&.-#{$variant}');
+      #{$selector} {
+        $args: map-get($addons-variants, $variant);
+        @include input-addon-variant($args...);
+      }
+    }
   }
+
+  > .btn,
+  > .addon,
+  > .addon-btn { white-space: nowrap; }
 
   .btn,
   .input {
     @include stack-item-upward(2);
-
-    //flex: 1;
-    //min-width: 1px;
 
     &:hover,
     &:focus,
@@ -85,12 +49,35 @@ $inputs-groups-addons-variants: (
     }
   }
 
-  // fallback
-  .no-flexbox & {
-    .btn,
-    .addon,
-    .input {
-      margin: 0;
+  @each $variant in $inputs-group-states {
+    $selector: if($variant == default, '&', '&.-has-#{$variant}');
+
+    #{$selector} {
+      @if map-has-key($addons-variants, $variant) {
+        $args: map-get($addons-variants, $variant);
+        .addon { @include input-addon-variant($args...); }
+      }
+
+      @if map-has-key($input-variants, $variant) {
+        $args: map-get($input-variants, $variant);
+        .input {
+          @include input-variant($args...);
+        }
+
+        @if $variant != default {
+          @include stack-item-upward(3);
+
+          &:hover,
+          &:focus,
+          &:active {
+            @include stack-item-upward(4);
+          }
+
+          &.-upward {
+            @include stack-item-upward(5);
+          }
+        }
+      }
     }
   }
 
@@ -99,8 +86,33 @@ $inputs-groups-addons-variants: (
     #{$selector} {
       .btn,
       .addon,
-      .input { @include control-size-preset($size); }
+      .input {
+        vertical-align: middle;
+        display: inline-block;
+        //@extend &.-size-#{$size};
+
+        //@include control-size-preset($size);
+      }
+
+      .btn   { @include control-size-preset($size); }
+      .addon { @include control-size-preset($size, false); }
+      .input { @include control-size-preset($size, false); }
     }
   }
+  
+  .btn {
 
+  }
+  .addon-btn {
+
+  }
+
+  // fallback
+  .no-flexbox & {
+    .btn,
+    .addon,
+    .input {
+      margin: 0;
+    }
+  }
 }

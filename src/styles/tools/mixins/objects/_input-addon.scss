@@ -1,0 +1,31 @@
+@mixin input-addon-variant (
+  $color: inherit,
+  $bg-color: if(type_of($color) == color, invert($color), $color),
+  $border-color: $color,
+
+  $css-normal: (),
+  $css-hover:  (),
+  $css-focus:  (),
+
+  $proxy: null
+) {
+  @include proxy($proxy) {
+    color: $color;
+    border: 1px solid $border-color;
+    background-color: $bg-color;
+
+    @include apply-styles($css-normal);
+  }
+
+  &:hover {
+    @include proxy ($proxy) {
+      @include apply-styles($css-hover);
+    }
+  }
+
+  @include input-focus ($proxy) {
+    @include proxy ($proxy) {
+      @include apply-styles($css-focus);
+    }
+  }
+};

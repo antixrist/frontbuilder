@@ -10,6 +10,9 @@ $color-primary: #287ba4;
 $color-success: #1bac00;
 $color-danger: #ef1c40;
 
+$link-color: $color-primary !default;
+$link-color-hover: lighten($link-color, 20%) !default;
+
 $base-color-muted: #979c9c;
 $color-primary-muted: rgba($color-primary, .8);
 $color-success-muted: rgba($color-success, .8);
@@ -20,19 +23,17 @@ $color-primary-muted-x2: rgba($color-primary, .6);
 $color-success-muted-x2: rgba($color-success, .6);
 $color-danger-muted-x2: rgba($color-danger, .6);
 
+$base-color-accent: darken($base-color, 10%);
+$color-primary-accent: darken($color-primary, 10%);
+$color-success-accent: darken($color-success, 10%);
+$color-danger-accent: darken($color-danger, 10%);
+
+$base-color-accent-x2: darken($base-color-accent, 20%);
+$color-primary-accent-x2: darken($color-primary, 20%);
+$color-success-accent-x2: darken($color-success, 20%);
+$color-danger-accent-x2: darken($color-danger, 20%);
+
 $borders-color: #e7e8ec;
-
-$link-color: $color-primary !default;
-$link-color-hover: lighten($link-color, 20%) !default;
-
-$input-border-color: $borders-color;
-$input-border-color-focus: $color-primary;
-
-$input-border-color-success: $color-success;
-$input-border-color-success-focus: $color-primary;
-
-$input-border-color-danger: $color-danger;
-$input-border-color-danger-focus: $color-primary;
 
 $bg-color-item-hover: #f2ebc7;
 

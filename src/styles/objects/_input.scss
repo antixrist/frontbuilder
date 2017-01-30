@@ -1,50 +1,48 @@
-//todo
-
 $input-variants: (
   default: (
     color-normal: $base-color,
-    color-hover: $base-color,
-    color-focus: $base-color,
+    color-hover:  $base-color,
+    color-focus:  $base-color,
 
     bg-color-normal: #fff,
-    bg-color-hover: #fff,
-    bg-color-focus: #fff,
+    bg-color-hover:  #fff,
+    bg-color-focus:  #fff,
 
     border-color-normal: $borders-color,
-    border-color-focus: $color-primary,
+    border-color-focus:  $color-primary,
 
     shadow-normal: none,
-    shadow-focus: none
+    shadow-focus:  none
   ),
   success: (
-    color-normal: darken($color-success, 10%),
-    color-hover: darken($color-success, 10%),
-    color-focus: $base-color,
+    color-normal: $color-success-accent,
+    color-hover:  $color-success-accent,
+    color-focus:  $base-color,
 
     bg-color-normal: #fff,
-    bg-color-hover: #fff,
-    bg-color-focus: #fff,
+    bg-color-hover:  #fff,
+    bg-color-focus:  #fff,
 
-    border-color-normal: $color-success,
-    border-color-focus: $color-primary,
+    border-color-normal: $color-success-accent,
+    border-color-focus:  $color-primary,
 
     shadow-normal: none,
-    shadow-focus: none
+    shadow-focus:  none
   ),
   danger: (
-    color-normal: darken($color-danger, 10%),
-    color-hover: darken($color-danger, 10%),
-    color-focus: $base-color,
+    color-normal: $color-danger-accent,
+    color-hover:  $color-danger-accent,
+    color-focus:  $base-color,
 
     bg-color-normal: #fff,
-    bg-color-hover: #fff,
-    bg-color-focus: #fff,
+    bg-color-hover:  #fff,
+    bg-color-focus:  #fff,
 
     border-color-normal: $color-danger,
-    border-color-focus: $color-primary,
+    border-color-focus:  $color-primary,
 
     shadow-normal: none,
-    shadow-focus: none
+    shadow-focus:  none
   )
 ) !default;
 
