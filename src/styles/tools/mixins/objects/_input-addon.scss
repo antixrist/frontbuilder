@@ -15,6 +15,11 @@
     background-color: $bg-color;
 
     @include apply-styles($css-normal);
+
+    input[type="radio"],
+    input[type="checkbox"] {
+      margin-top: 0;
+    }
   }
 
   &:hover {
