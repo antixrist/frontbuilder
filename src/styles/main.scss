@@ -7,3 +7,16 @@
 @import 'trumps';
 
 //@import 'main/index';
+
+
+.test-block {
+  p {
+    &:nth-of-type(even) {
+      border-color: red;
+    }
+  }
+
+  @include box(1rem);
+  @include table-cells-padding(1rem, y half-between nowrap, $cells: p);
+  @include table-cells-border(1px solid #ccc, y nowrap, $cells: p);
+}

@@ -1,0 +1,19 @@
+%stack,
+.stack {
+
+  &.-x { @include stack(x, $items: '.stacked'); }
+  &.-y { @include stack(y, $items: '.stacked'); }
+
+  .stacked {
+    &:hover,
+    &:focus,
+    &.-upward {
+      @include stack-item-upward();
+    }
+
+    @for $idx from 3 through 6 {
+      &.-x#{$idx - 1},
+      &.-x#{$idx - 1} { @include stack-item-upward($idx); }
+    }
+  }
+}
