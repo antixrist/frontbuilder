@@ -1,9 +1,9 @@
 @function get-triangle-real-size ($size, $direction) {
-  $size: get-bounds-map($size);
-  $width: map-get($size, y); // так надо
-  $height: map-get($size, x); // так надо
+  $size:   get-sizes-map($size);
+  $width:  map-get($size, width);
+  $height: map-get($size, height);
 
-  @if (($direction == up or $direction == top) or
+  @if (($direction == up   or $direction == top) or
        ($direction == down or $direction == bottom)
   ) {
     @return get-sizes-map($width $height);
@@ -14,17 +14,17 @@
 }
 
 @mixin caret-reset () {
-  width: auto;
-  height: auto;
-  border-top: none;
-  border-right: none;
+  width:         auto;
+  height:        auto;
+  border-top:    none;
+  border-right:  none;
   border-bottom: none;
-  border-left: none;
+  border-left:   none;
 }
 
 @mixin triangle ($size, $direction, $color: currentColor) {
-  $size: get-bounds-map($size);
-  $width: map-get($size, y); // так надо
+  $size:   get-bounds-map($size);
+  $width:  map-get($size, y); // так надо
   $height: map-get($size, x); // так надо
 
   $width: $width/2;
@@ -38,22 +38,22 @@
 
   @if $direction == up or $direction == top {
     border-bottom: $color-border-style;
-    border-left: $transparent-border-style;
-    border-right: $transparent-border-style;
+    border-left:   $transparent-border-style;
+    border-right:  $transparent-border-style;
   }
   @elseif $direction == right {
-    border-left: $color-border-style;
-    border-top: $transparent-border-style;
+    border-left:   $color-border-style;
+    border-top:    $transparent-border-style;
     border-bottom: $transparent-border-style;
   }
   @elseif $direction == down or $direction == bottom {
-    border-top: $color-border-style;
-    border-left: $transparent-border-style;
+    border-top:   $color-border-style;
+    border-left:  $transparent-border-style;
     border-right: $transparent-border-style;
   }
   @elseif $direction == left {
-    border-right: $color-border-style;
-    border-top: $transparent-border-style;
+    border-right:  $color-border-style;
+    border-top:    $transparent-border-style;
     border-bottom: $transparent-border-style;
   }
 
@@ -62,8 +62,8 @@
 
 /// @link http://lugolabs.com/caret
 @mixin caret ($size, $border-width, $direction, $color, $border-color) {
-  $size: get-bounds-map($size);
-  $width: map-get($size, y); // так надо
+  $size:   get-bounds-map($size);
+  $width:  map-get($size, y); // так надо
   $height: map-get($size, x); // так надо
 
   $back-colored-border-style: $height solid $border-color;
@@ -90,56 +90,56 @@
   @if $direction == up or $direction == top {
     &:before {
       border-bottom: $back-colored-border-style;
-      border-left: $back-transparent-border-style;
-      border-right: $back-transparent-border-style;
+      border-left:   $back-transparent-border-style;
+      border-right:  $back-transparent-border-style;
     }
     &:after {
-      left: $border-width;
-      top: $border-width;
+      top:           $border-width;
+      left:          $border-width;
       border-bottom: $front-colored-border-style;
-      border-left: $front-transparent-border-style;
-      border-right: $front-transparent-border-style;
+      border-left:   $front-transparent-border-style;
+      border-right:  $front-transparent-border-style;
     }
   }
   @elseif $direction == right {
     &:before {
-      border-left: $back-colored-border-style;
-      border-top: $back-transparent-border-style;
+      border-left:   $back-colored-border-style;
+      border-top:    $back-transparent-border-style;
       border-bottom: $back-transparent-border-style;
     }
     &:after {
-      top: $border-width;
-      left: 0;
-      border-left: $front-colored-border-style;
-      border-top: $front-transparent-border-style;
+      top:           $border-width;
+      left:          0;
+      border-left:   $front-colored-border-style;
+      border-top:    $front-transparent-border-style;
       border-bottom: $front-transparent-border-style;
     }
   }
   @elseif $direction == down or $direction == bottom {
     &:before {
-      border-top: $back-colored-border-style;
-      border-left: $back-transparent-border-style;
+      border-top:   $back-colored-border-style;
+      border-left:  $back-transparent-border-style;
       border-right: $back-transparent-border-style;
     }
     &:after {
-      top: 0;
-      left: $border-width;
-      border-top: $front-colored-border-style;
-      border-left: $front-transparent-border-style;
+      top:          0;
+      left:         $border-width;
+      border-top:   $front-colored-border-style;
+      border-left:  $front-transparent-border-style;
       border-right: $front-transparent-border-style;
     }
   }
   @elseif $direction == left {
     &:before {
-      border-right: $back-colored-border-style;
-      border-top: $back-transparent-border-style;
+      border-right:  $back-colored-border-style;
+      border-top:    $back-transparent-border-style;
       border-bottom: $back-transparent-border-style;
     }
     &:after {
-      top: $border-width;
-      left: $border-width;
-      border-right: $front-colored-border-style;
-      border-top: $front-transparent-border-style;
+      top:           $border-width;
+      left:          $border-width;
+      border-right:  $front-colored-border-style;
+      border-top:    $front-transparent-border-style;
       border-bottom: $front-transparent-border-style;
     }
   }
