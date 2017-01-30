@@ -4,29 +4,139 @@
   margin-right: auto;
 }
 
+@mixin center ($direction: x y, $size: null) {
+  position: absolute;
+  $x: not not index($direction, x);
+  $y: not not index($direction, y);
+
+  @if not $x and not $y {
+    $x: true;
+    $y: true;
+  }
+
+  @if $size {
+    $size: get-sizes-map($size);
+
+    @if $x {
+      left: 50%;
+      margin-left: map-get($size, width) /2 * -1;
+    }
+
+    @if $y {
+      top: 50%;
+      margin-top: map-get($size, height) /2 * -1;
+    }
+  }
+  @else {
+    @if $x and $y {
+      top: 50%;
+      left: 50%;
+      transform: translate3d(-50%, -50%, 0);
+    }
+    @elseif $x {
+      left: 50%;
+      transform: translate3d(-50%, 0, 0);
+    }
+    @elseif $y {
+      top: 50%;
+      transform: translate3d(0, -50%, 0);
+    }
+  }
+}
+
+@mixin outside-position ($position, $size: null) {
+  $position: if(type-of($position) != list, ($position,), $position);
+
+  @if length($position) == 0 {
+    $position: center center;
+  }
+  @elseif length($position) == 1 {
+    $position: append($position, center);
+  }
+
+  $left: nth($position, 1);
+  $right: nth($position, 2);
+
+  @if $left == center and $right == center {
+    @include center($size: $size);
+  }
+  @else {
+    @if $left == top {
+      top: auto;
+      bottom: 100%;
+
+      @if $right == left {
+        left: 0;
+        right: auto;
+      }
+      @if $right == right {
+        left: auto;
+        right: 0;
+      }
+      @if $right == center {
+        @include center(x, $size: $size);
+      }
+    }
+    @if $left == right {
+      left: 100%;
+      right: auto;
+
+      @if $right == top {
+        top: 0;
+        bottom: auto;
+      }
+      @if $right == bottom {
+        top: auto;
+        bottom: 0;
+      }
+      @if $right == center {
+        @include center(y, $size: $size);
+      }
+    }
+    @if $left == bottom {
+      top: 100%;
+      bottom: auto;
+
+      @if $right == left {
+        left: 0;
+        right: auto;
+      }
+      @if $right == right {
+        left: auto;
+        right: 0;
+      }
+      @if $right == center {
+        @include center(x, $size: $size);
+      }
+    }
+    @if $left == left {
+      left: auto;
+      right: 100%;
+
+      @if $right == top {
+        top: 0;
+        bottom: auto;
+      }
+      @if $right == bottom {
+        top: auto;
+        bottom: 0;
+      }
+      @if $right == center {
+        @include center(y, $size: $size);
+      }
+    }
+  }
+}
+
+/**
+ * todo: дальше втирается какая-то дичь. разобраться
+ */
 @mixin center-inner {
   text-align: center;
 
   > * {
     display: inline-block;
     text-align: left;
-  }
-}
-
-@mixin center-translate($direction: both) {
-  position: absolute;
-  @if $direction == both {
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -50%, 0);
-  }
-  @else if $direction == horizontal {
-    left: 50%;
-    transform: translate3d(-50%, 0, 0);
-  }
-  @else if $direction == vertical {
-    top: 50%;
-    transform: translate3d(0, -50%, 0);
   }
 }
 

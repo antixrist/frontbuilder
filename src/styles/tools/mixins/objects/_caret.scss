@@ -1,3 +1,27 @@
+@function get-triangle-real-size ($size, $direction) {
+  $size: get-bounds-map($size);
+  $width: map-get($size, y); // так надо
+  $height: map-get($size, x); // так надо
+
+  @if (($direction == up or $direction == top) or
+       ($direction == down or $direction == bottom)
+  ) {
+    @return get-sizes-map($width $height);
+  }
+  @elseif $direction == right or $direction == left {
+    @return get-sizes-map($height $width);
+  }
+}
+
+@mixin caret-reset () {
+  width: auto;
+  height: auto;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+}
+
 @mixin triangle ($size, $direction, $color: currentColor) {
   $size: get-bounds-map($size);
   $width: map-get($size, y); // так надо

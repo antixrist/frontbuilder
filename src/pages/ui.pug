@@ -18,7 +18,7 @@ block right
   p Право
 
 block content
-  #ui
+  #ui-auto-size
     h1 Это юай!
     p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
     p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, voluptatum.
@@ -30,6 +30,8 @@ block content
       label.c-switch
         input(type="checkbox")
         i.helper
+    p.has-tooltip.-auto-size(style="margin: 0 200px;") Текст для тултипчика! #[span.tooltip А это #[i тултипчик]!]
+    p(data-title-left="И это тултипчик!", style="margin: 0 200px;") Хавер он ме!
 
     .sidebars
       .side

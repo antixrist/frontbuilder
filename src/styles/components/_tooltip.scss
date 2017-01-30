@@ -1,0 +1,89 @@
+$tooltip-color: #f2ebc7 !default;
+$tooltip-font-size: 0.75rem !default;
+$tooltip-padding: 0.5em 1em !default;
+$tooltip-background: rgba(#343642, .9) !default;
+$tooltip-triangle-size: 10px 5px !default;
+
+%tooltip {
+  color: $tooltip-color;
+  background: $tooltip-background;
+  font-size: $tooltip-font-size;
+  padding: $tooltip-padding;
+  transition: all .1s ease-out;
+
+  @include md-shadow;
+}
+
+@mixin tooltip-triangle ($direction, $position: bottom center) {
+  &:after {
+    color: $tooltip-background;
+    @include tooltip-caret ($tooltip-triangle-size, $direction, $position) { @content; }
+  }
+}
+
+.has-tooltip {
+  @include has-tooltip('.tooltip') {
+    @extend %tooltip;
+
+    @include tooltip-triangle(bottom, bottom center);
+    &.-caret-left  { @include tooltip-triangle(bottom, bottom left); }
+    &.-caret-right { @include tooltip-triangle(bottom, bottom right); }
+  };
+
+  @include has-tooltip('.tooltip', $position: top);
+
+  &.-bottom {
+    @include has-tooltip('.tooltip', $position: bottom) {
+      @include tooltip-triangle(top, top center);
+      &.-caret-left  { @include tooltip-triangle(top, top left); }
+      &.-caret-right { @include tooltip-triangle(top, top right); }
+    }
+  }
+
+  &.-left {
+    @include has-tooltip('.tooltip', $position: left) {
+      @include tooltip-triangle(right, right center);
+      &.-caret-top    { @include tooltip-triangle(right, right top); }
+      &.-caret-bottom { @include tooltip-triangle(right, right bottom); }
+    }
+  }
+
+  &.-right {
+    @include has-tooltip('.tooltip', $position: right) {
+      @include tooltip-triangle(left, left center);
+      &.-caret-top    { @include tooltip-triangle(left, left top); }
+      &.-caret-bottom { @include tooltip-triangle(left, left bottom); }
+    }
+  }
+
+  &.-auto-size {
+    @include has-tooltip('.tooltip', $size: auto);
+  }
+
+  &.-fit-size {
+    @include has-tooltip('.tooltip', $size: fit);
+  }
+}
+
+[data-title] {
+  @include tooltip($attr: 'data-title') { @extend %tooltip; };
+  @include tooltip($attr: 'data-title', $position: top);
+}
+[data-title-top] {
+  @include tooltip($attr: 'data-title-top') { @extend %tooltip; };
+  @include tooltip($attr: 'data-title-top', $position: top);
+}
+[data-title-bottom] {
+  @include tooltip($attr: 'data-title-bottom') { @extend %tooltip; };
+  @include tooltip($attr: 'data-title-bottom', $position: bottom);
+}
+
+[data-title-left] {
+  @include tooltip($attr: 'data-title-left') { @extend %tooltip; };
+  @include tooltip($attr: 'data-title-left', $position: left);
+}
+
+[data-title-right] {
+  @include tooltip($attr: 'data-title-right') { @extend %tooltip; };
+  @include tooltip($attr: 'data-title-right', $position: right);
+}

@@ -1,0 +1,186 @@
+///
+/// Inspired by:
+/// https://github.com/tiaanduplessis/wenk
+///
+
+@mixin tooltip (
+  $position: null,
+  $size: null,
+  $offset: 10px,
+  $attr: 'data-title',
+  $selector: null
+) {
+  $attr: if(not $attr and not $selector, 'data-title', $attr);
+  @if $attr {
+    $attr: if(str-index($attr, '[') == 1, str-slice($attr, 2), $attr);
+    $attr: if(str-index($attr, ']') == str-length($attr), str-slice($attr, 1, str-length($attr) - 1), $attr);
+  }
+  $selector: if($attr, '&:after', $selector);
+  $selector: if(not $selector and not $attr, '&:after', $selector);
+
+  @if not $position and not $size {
+    ///
+    /// Tooltip boilerplate
+    ///
+    position: relative;
+
+    #{$selector} {
+      position: absolute;
+      text-align: left;
+      z-index: -1;
+      pointer-events: none;
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+
+      @if $attr {
+        content: attr(#{$attr});
+      }
+    }
+    &:hover,
+    &:focus {
+      overflow: visible;
+      #{$selector} {
+        z-index: 1;
+        display: block;
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+    @if $attr {
+      [#{$attr}=""] {
+        #{$selector} { // forced `&:after`
+          visibility: hidden !important;
+        }
+      }
+    }
+  }
+
+  ///
+  /// Top (default)
+  ///
+  @if $position == top {
+    #{$selector} {
+      bottom: 100%;
+      left: 50%;
+      transform: translate(-50%, $offset);
+    }
+    &:hover,
+    &:focus {
+      #{$selector} {
+        transform: translate(-50%, $offset * -1);
+      }
+    }
+  }
+  ///
+  /// Bottom
+  ///
+  @elseif $position == bottom {
+    #{$selector} {
+      bottom: auto;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%, -$offset);
+    }
+    &:hover,
+    &:focus {
+      #{$selector} {
+        transform: translate(-50%, $offset);
+      }
+    }
+  }
+  ///
+  /// Left
+  ///
+  @elseif $position == left {
+    #{$selector} {
+      bottom: auto;
+      left: auto;
+      top: 50%;
+      right: 100%;
+      transform: translate($offset, -50%);
+    }
+    &:hover,
+    &:focus {
+      #{$selector} {
+        transform: translate(-$offset, -50%);
+      }
+    }
+  }
+  ///
+  /// Right
+  ///
+  @elseif $position == right {
+    #{$selector} {
+      bottom: auto;
+      top: 50%;
+      left: 100%;
+      transform: translate(-$offset, -50%);
+    }
+    &:hover,
+    &:focus {
+      #{$selector} {
+        transform: translate($offset, -50%);
+      }
+    }
+  }
+
+  ///
+  /// Custom size
+  ///
+  @if not $size {
+    #{$selector} {
+      white-space: normal;
+    }
+  }
+  ///
+  /// Auto size
+  ///
+  @elseif $size == auto {
+    #{$selector} {
+      white-space: pre;
+      width: auto;
+    }
+  }
+  ///
+  /// Fit size
+  ///
+  @elseif $size == fit {
+    #{$selector} {
+      white-space: normal;
+      width: 100%;
+    }
+  }
+
+  #{$selector} {
+    @content;
+  }
+}
+
+@mixin has-tooltip (
+  $selector: null,
+  $position: null,
+  $size: null,
+  $offset: 10px
+) {
+  @include tooltip ($position: $position, $size: $size, $offset: $offset, $selector: $selector, $attr: null) {
+    @content;
+  }
+}
+
+@mixin tooltip-caret ($size, $direction: bottom, $position: bottom center) {
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  margin: auto;
+
+  @include caret-reset;
+  @include triangle ($size, $direction) {
+    position: absolute;
+
+    $size: get-triangle-real-size($size, $direction);
+    @include outside-position($position, $size);
+    @content;
+  }
+}
