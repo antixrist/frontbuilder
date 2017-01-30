@@ -52,16 +52,16 @@
 
   @each $size, $data in $control-sizes {
     &.-size-#{$size} > .btn {
-      @include control-size($size, true);
+      @include control-size($size);
     }
     &.-size-#{$size} > .input {
-      @include control-size($size);
+      @include control-size($size, false);
     }
     &.-size-#{$size} > .addon {
-      @include control-size($size);
+      @include control-size($size, false);
     }
     > .addon.-size-#{$size} {
-      @include control-size($size);
+      @include control-size($size, false);
     }
   }
 }
