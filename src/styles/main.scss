@@ -11,12 +11,29 @@
 
 .test-block {
   p {
-    &:nth-of-type(even) {
-      border-color: red;
-    }
+    border: 1px solid red;
+    border-radius: 4px;
+
+    //&:nth-of-type(even) {
+    //  border-color: red;
+    //}
   }
 
   @include box(1rem);
   @include table-cells-padding(1rem, y half-between nowrap, $cells: p);
-  @include table-cells-border(1px solid #ccc, y nowrap, $cells: p);
+  //@include table-cells-border(1px solid #ccc, y nowrap, $cells: p);
+}
+
+.test-block-2 {
+  span {
+    border: 1px solid red;
+    border-radius: 4px;
+    &:nth-of-type(even) {
+      border-color: green;
+    }
+  }
+
+  @include box(1rem);
+  @include table-cells-padding(1rem, y half-between nowrap, $cells: span);
+  //@include table-cells-border(1px solid #ccc, y nowrap, $cells: p);
 }

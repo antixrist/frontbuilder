@@ -80,6 +80,9 @@ $switch-map: ();
       left: -9999px;
     }
     z-index: 2;
+
+    &:focus + #{get-switch-track($switch-key)} { @include focus-outline; }
+    &:hover:focus + #{get-switch-track($switch-key)} { @include focus-outline-reset; }
   }
 
   @content;

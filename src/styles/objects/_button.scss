@@ -8,7 +8,7 @@ $btn-border-color-normal: #ccc !default;
 
 .btn {
   @include btn;
-  @include control-size(default, true);
+  @include control-size-preset(default, true);
   @include btn-variant(
     $color-normal: #373a3c,
 
@@ -21,88 +21,86 @@ $btn-border-color-normal: #ccc !default;
     $border-color-active: #8c8c8c
   );
 
-  border-radius: $base-radius;
-
-  option {
-    text-align: left;
+  @each $size, $data in $control-sizes {
+    &.-size-#{$size} {
+      @include control-size-preset($size);
+    }
   }
-}
 
-@each $size, $data in $control-sizes {
-  .btn--size-#{$size} {
-    @include control-size($size, true);
+  &.-rounded {
+    border-radius: $base-radius;
   }
-}
 
-.btn--wide {
-  @include btn-block;
-}
+  &.-wide {
+    @include btn-wide;
+  }
 
-.btn--type-primary {
-  @include btn-variant(
-    $color-normal: #fff,
+  &.-primary {
+    @include btn-variant(
+      $color-normal: #fff,
 
-    $bg-color-normal: #0275d8,
-    $bg-color-hover: #025aa5,
-    $bg-color-active: #014682,
+      $bg-color-normal: #0275d8,
+      $bg-color-hover: #025aa5,
+      $bg-color-active: #014682,
 
-    $border-color-normal: #0275d8,
-    $border-color-hover: #01549b,
-    $border-color-active: #01315a
-  );
-}
+      $border-color-normal: #0275d8,
+      $border-color-hover: #01549b,
+      $border-color-active: #01315a
+    );
+  }
 
-.btn--type-success {
-  @include btn-variant(
-    $color-normal: #fff,
+  &.-success {
+    @include btn-variant(
+      $color-normal: #fff,
 
-    $bg-color-normal: #5cb85c,
-    $bg-color-hover: #449d44,
-    $bg-color-active: #398439,
+      $bg-color-normal: #5cb85c,
+      $bg-color-hover: #449d44,
+      $bg-color-active: #398439,
 
-    $border-color-normal: #5cb85c,
-    $border-color-hover: #419641,
-    $border-color-active: #2d672d
-  );
-}
+      $border-color-normal: #5cb85c,
+      $border-color-hover: #419641,
+      $border-color-active: #2d672d
+    );
+  }
 
-.btn--type-info {
-  @include btn-variant(
-    $color-normal: #fff,
+  &.-info {
+    @include btn-variant(
+      $color-normal: #fff,
 
-    $bg-color-normal: #5bc0de,
-    $bg-color-hover: #31b0d5,
-    $bg-color-active: #269abc,
+      $bg-color-normal: #5bc0de,
+      $bg-color-hover: #31b0d5,
+      $bg-color-active: #269abc,
 
-    $border-color-normal: #5bc0de,
-    $border-color-hover: #2aabd2,
-    $border-color-active: #1f7e9a
-  );
-}
+      $border-color-normal: #5bc0de,
+      $border-color-hover: #2aabd2,
+      $border-color-active: #1f7e9a
+    );
+  }
 
-.btn--type-warning {
-  @include btn-variant(
-    $color-normal: #fff,
+  &.-warning {
+    @include btn-variant(
+      $color-normal: #fff,
 
-    $bg-color-normal: #f0ad4e,
-    $bg-color-hover: #ec971f,
-    $bg-color-active: #d58512,
+      $bg-color-normal: #f0ad4e,
+      $bg-color-hover: #ec971f,
+      $bg-color-active: #d58512,
 
-    $border-color-normal: #f0ad4e,
-    $border-color-hover: #eb9316,
-    $border-color-active: #b06d0f
-  );
-}
+      $border-color-normal: #f0ad4e,
+      $border-color-hover: #eb9316,
+      $border-color-active: #b06d0f
+    );
+  }
 
-.btn--type-danger {
-  @include btn-variant(
-    $color-normal: #fff,
-    $bg-color-normal: #d9534f,
-    $bg-color-hover: #c9302c,
-    $bg-color-active: #ac2925,
+  &.-danger {
+    @include btn-variant(
+      $color-normal: #fff,
+      $bg-color-normal: #d9534f,
+      $bg-color-hover: #c9302c,
+      $bg-color-active: #ac2925,
 
-    $border-color-normal: #d9534f,
-    $border-color-hover: #ac2925,
-    $border-color-active: #761c19
-  );
+      $border-color-normal: #d9534f,
+      $border-color-hover: #ac2925,
+      $border-color-active: #761c19
+    );
+  }
 }

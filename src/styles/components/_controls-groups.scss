@@ -43,7 +43,7 @@
     display: block;
 
     > .btn {
-      @include btn-block;
+      @include btn-wide;
     }
     > .input {
       @include input-block;

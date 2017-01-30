@@ -1,38 +1,118 @@
 $base-font-size: 16px !default;
 $control-sizes: (
-  xxs: (font-size: 10px, height: 26px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
-  xs: (font-size: 12px, height: 31px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
-  sm: (font-size: 14px, height: 36px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
-  default: (font-size: 16px, height: 40px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
-  md: (font-size: 18px, height: 45px, active-offset: 1px, padding: .5em 1em, line-height: 1.42857143),
-  lg: (font-size: 20px, height: 50px, active-offset: 2px, padding: .5em 1em, line-height: 1.42857143),
-  xl: (font-size: 22px, height: 55px, active-offset: 2px, padding: .5em 1em, line-height: 1.42857143)
+  xxs: (font-size: 10px, height: 26px, active-offset: 1px, padding: .5em 1em),
+  xs: (font-size: 12px, height: 31px, active-offset: 1px, padding: .5em 1em),
+  sm: (font-size: 14px, height: 36px, active-offset: 1px, padding: .5em 1em),
+  default: (font-size: 16px, height: 40px, active-offset: 1px, padding: .5em 1em),
+  md: (font-size: 18px, height: 45px, active-offset: 1px, padding: .5em 1em),
+  lg: (font-size: 20px, height: 50px, active-offset: 2px, padding: .5em 1em),
+  xl: (font-size: 22px, height: 55px, active-offset: 2px, padding: .5em 1em)
 ) !default;
 
-@mixin control-size ($size: default, $include-offset: false) {
+
+@mixin control-size-preset (
+  $size: default,
+  $include-offset: true,
+  $font-size: $base-font-size,
+  $proxy: null
+) {
   @if map-has-key($control-sizes, $size) {
     $styles: map-get($control-sizes, $size);
     $offset: map-get($styles, active-offset);
     $styles: map-remove($styles, active-offset);
+    $fs: map-get($styles, active-offset);
+    $font-size: if($fs != null, $fs, $font-size);
 
-    @include apply-styles($styles);
+    @include proxy($proxy) {
+      @include apply-styles($styles);
+    }
 
     @if $include-offset and $offset != null {
       &:active {
-        @if map-has-key($styles, padding) {
-          $padding: get-bounds-map(map-get($styles, padding));
-          $padding-top: map-get($padding, top);
-          $padding-bottom: map-get($padding, bottom);
+        $bounds: get-bounds-map(map-get($styles, padding));
 
-          $font-size: if(map-has-key($styles, font-size), map-get($styles, font-size), $base-font-size);
+        @include proxy($proxy) {
+          @if map-has-key($styles, padding) {
+            $padding-top-converted: unit-convertor(
+              map-get($bounds, top),
+              unit($offset),
+              $pixels-in-em:  $font-size,
+              $pixels-in-rem: $font-size
+            );
 
-          padding-top: em(px($padding-top, $font-size) + $offset, $font-size);
-          padding-bottom: em(px($padding-bottom, $font-size) - $offset, $font-size);
-        } @elseif map-has-key($styles, active-offset) {
-          position: relative;
-          top: px(map-get($styles, active-offset));
+            $padding-bottom-converted: unit-convertor(
+              map-get($bounds, bottom),
+              unit($offset),
+              $pixels-in-em:  $font-size,
+              $pixels-in-rem: $font-size
+            );
+
+            padding-top: unit-convertor(
+              $padding-top-converted + $offset,
+              unit(map-get($bounds, top)),
+              $pixels-in-em:  $font-size,
+              $pixels-in-rem: $font-size
+            );
+            padding-bottom: unit-convertor(
+              $padding-bottom-converted - $offset,
+              unit(map-get($bounds, bottom)),
+              $pixels-in-em:  $font-size,
+              $pixels-in-rem: $font-size
+            );
+          }
+          @elseif map-has-key($styles, active-offset) {
+            position: relative;
+            top: map-get($styles, active-offset);
+          }
         }
       }
     }
+  }
+}
+
+@mixin control-size (
+  $bounds,
+  $active-offset: 1px,
+  $font-size: $base-font-size,
+  $proxy: null
+) {
+  $bounds: get-bounds-map($bounds);
+  $bounds-list: get-bounds-list($bounds);
+
+  @include proxy($proxy) {
+    padding: $bounds-list;
+  }
+
+  &:active {
+    @include proxy($proxy) {
+      $padding-top-converted: unit-convertor(
+        map-get($bounds, top),
+        unit($active-offset),
+        $pixels-in-em:  $font-size,
+        $pixels-in-rem: $font-size
+      );
+
+      $padding-bottom-converted: unit-convertor(
+        map-get($bounds, bottom),
+        unit($active-offset),
+        $pixels-in-em:  $font-size,
+        $pixels-in-rem: $font-size
+      );
+
+      padding-top: unit-convertor(
+        $padding-top-converted + $active-offset,
+        unit(map-get($bounds, top)),
+        $pixels-in-em:  $font-size,
+        $pixels-in-rem: $font-size
+      );
+      padding-bottom: unit-convertor(
+        $padding-bottom-converted - $active-offset,
+        unit(map-get($bounds, bottom)),
+        $pixels-in-em:  $font-size,
+        $pixels-in-rem: $font-size
+      );
+    }
+
+    @content;
   }
 }

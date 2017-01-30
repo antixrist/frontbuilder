@@ -2,6 +2,33 @@
 
 $base-font-size: 16px !default;
 
+@mixin btn-hover ($proxy: null) {
+  &:hover,
+  &:hover:visited {
+    @include proxy($proxy) {
+      @content;
+    }
+  }
+}
+
+@mixin btn-focus ($proxy: null) {
+  &:focus,
+  &:focus:visited {
+    @include proxy($proxy) {
+      @content;
+    }
+  }
+}
+
+@mixin btn-active ($proxy: null) {
+  &:active,
+  &:active:visited {
+    @include proxy($proxy) {
+      @content;
+    }
+  }
+}
+
 @mixin btn-reset () {
   @include is-unfocusable;
 
@@ -10,7 +37,7 @@ $base-font-size: 16px !default;
   padding:          0;
   vertical-align:   middle;
   //touch-action:     none;
-  background-image: none;
+  background:       none;
   border:           none;
   position:         static;
   overflow:         visible;
@@ -20,65 +47,79 @@ $base-font-size: 16px !default;
   text-decoration:  inherit;
   cursor:           inherit;
   white-space:      inherit;
+  box-shadow:       none;
   line-height:      1.2;
 }
 
-@mixin btn () {
-  @include btn-reset;
-  @include is-unselectable;
+@mixin btn ($proxy: null) {
+  @include proxy($proxy) {
+    @include btn-reset;
+    @include is-unselectable;
 
-  font-size:        1rem;
-  line-height:      1.2;
-  display:          inline-block;
-  margin:           0;
-  padding:          0;
-  text-align:       center;
-  vertical-align:   middle;
-  text-decoration:  none;
-  touch-action:     manipulation;
-  cursor:           pointer;
-  background-image: none;
-  white-space:      nowrap;
-  position:         relative;
-  //overflow:         hidden;
-  outline:          0 none;
+    font-size:        1rem;
+    line-height:      1.42857143;
+    display:          inline-block;
+    margin:           0;
+    padding:          0;
+    text-align:       center;
+    vertical-align:   middle;
+    text-decoration:  none;
+    touch-action:     manipulation;
+    cursor:           pointer;
+    background-image: none;
+    white-space:      nowrap;
+    position:         relative;
+    //overflow:         hidden;
+    outline:          0 none;
 
-  @include state-is (hover) {
-    @include state-is (focus) {
+    option { text-align: left; }
+  }
+
+  &:hover:focus {
+    @include proxy($proxy) {
       @include focus-outline-reset;
     }
   }
 
-  @include state-is (focus) {
-    @include focus-outline;
+  &:focus {
+    @include proxy($proxy) {
+      @include focus-outline;
+    }
   }
 
-  @include state-is (active) {
-    @include focus-outline-reset;
+  &:active {
+    @include proxy($proxy) {
+      @include focus-outline-reset;
+    }
   }
 
-  // todo: :-(
-  &[disabled], fieldset[disabled] &,
-  #{&}.is-disabled, fieldset.is-disabled & {
-    @include is-unactionable;
+  &[disabled], fieldset[disabled] & {
+    @include proxy($proxy) {
+      @include is-unactionable;
+      @include is-unselectable;
 
-    cursor: default;
-    opacity: .65;
-    box-shadow: none;
+      cursor: default;
+      opacity: .65;
+      box-shadow: none;
+    }
   }
 
-  @include e (inner) {
-    vertical-align: middle;
+  @include proxy($proxy) {
+    > .inner {
+      vertical-align: middle;
+    }
   }
+
+  @content;
 }
 
-@mixin btn-block {
+@mixin btn-wide {
   display: block;
   min-width: 100%;
   white-space: normal;
 }
 
-@mixin btn-file {
+@mixin btn-file-wrapper {
   position: relative;
 
   input[type=file] {
@@ -93,101 +134,74 @@ $base-font-size: 16px !default;
     padding: 0;
     border: none;
     z-index: 2;
-    width: 100%;
-    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+
+    @content;
   }
 }
 
 @mixin btn-variant (
   $color-normal: inherit,
-  $color-hover: $color-normal,
-  $color-focus: $color-normal,
+  $color-hover:  $color-normal,
+  $color-focus:  $color-normal,
   $color-active: $color-normal,
 
   $bg-color-normal: if(type_of($color-normal) == color, invert($color-normal), $color-normal),
-  $bg-color-hover: if(type_of($bg-color-normal) == color, lighten($bg-color-normal, 20%), $bg-color-normal),
-  $bg-color-focus: $bg-color-hover,
+  $bg-color-hover:  if(type_of($bg-color-normal) == color, lighten($bg-color-normal, 20%), $bg-color-normal),
+  $bg-color-focus:  $bg-color-hover,
   $bg-color-active: if(type_of($bg-color-normal) == color, lighten($bg-color-normal, 20%), $bg-color-normal),
 
   $border-color-normal: $bg-color-normal,
-  $border-color-hover: $bg-color-hover,
-  $border-color-focus: $border-color-hover,
+  $border-color-hover:  $bg-color-hover,
+  $border-color-focus:  $border-color-hover,
   $border-color-active: $bg-color-active,
 
   $shadow-normal: none,
-  $shadow-hover: $shadow-normal,
-  $shadow-focus: $shadow-hover,
+  $shadow-hover:  $shadow-normal,
+  $shadow-focus:  $shadow-hover,
   $shadow-active: inset 0 3px 5px rgba(0, 0, 0, .125),
 
   $transition-normal: all .1s ease-out,
-  $transition-hover: $transition-normal,
-  $transition-focus: $transition-hover,
+  $transition-hover:  $transition-normal,
+  $transition-focus:  $transition-hover,
   $transition-active: $transition-hover,
 
-  $normal: (),
-  $hover: (),
-  $focus: (),
-  $active: ()
+  $proxy: null
 ) {
   &, &:visited {
-    border: 1px solid transparent;
+    @include proxy($proxy) {
+      color: $color-normal;
+      border: 1px solid $border-color-normal;
+      background-color: $bg-color-normal;
+      transition: $transition-normal;
+      box-shadow: $shadow-normal;
 
-    color: $color-normal;
-    border-color: $border-color-normal;
-    background-color: $bg-color-normal;
-    transition: $transition-normal;
-    box-shadow: $shadow-normal;
-
-    @include apply-styles($normal);
-  }
-
-  @include state-is (hover) {
-    &, &:visited {
-      color: $color-hover;
-      border-color: $border-color-hover;
-      background-color: $bg-color-hover;
-      transition: $transition-hover;
-      box-shadow: $shadow-hover;
-
-      @include apply-styles($hover);
+      @content;
     }
   }
 
-  @include state-is (focus) {
-    &, &:visited {
-      color: $color-focus;
-      border-color: $border-color-focus;
-      background-color: $bg-color-focus;
-      transition: $transition-focus;
-      box-shadow: $shadow-focus;
-    }
+  @include btn-hover ($proxy) {
+    color: $color-hover;
+    border-color: $border-color-hover;
+    background-color: $bg-color-hover;
+    transition: $transition-hover;
+    box-shadow: $shadow-hover;
   }
 
-  @include state-is (active) {
-    &, &:visited {
-      color: $color-active;
-      border-color: $border-color-active;
-      background-color: $bg-color-active;
-      transition: $transition-active;
-      box-shadow: $shadow-active;
+  @include btn-focus ($proxy) {
+    color: $color-focus;
+    border-color: $border-color-focus;
+    background-color: $bg-color-focus;
+    transition: $transition-focus;
+    box-shadow: $shadow-focus;
+  }
 
-      @include apply-styles($active);
-    }
+  @include btn-active ($proxy) {
+    color: $color-active;
+    border-color: $border-color-active;
+    background-color: $bg-color-active;
+    transition: $transition-active;
+    box-shadow: $shadow-active;
   }
 };
-
-@mixin btn-size (
-  $font-size: $base-font-size,
-  $active-offset: 1px,
-  $base-font-size: $base-font-size
-) {
-  $fs: $font-size;
-
-  font-size: rem($fs, $base-font-size);
-  padding: .5em 1em;
-
-  @include state-is (active) {
-    padding-top: em(px(.5em, $fs) + $active-offset, $fs);
-    padding-bottom: em(px(.5em, $fs) - $active-offset, $fs);
-  }
-}
