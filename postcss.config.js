@@ -8,7 +8,12 @@ const {isDevelopment, browsers} = require('./tools/config');
 module.exports = function (ctx) {
   const plugins = [
     require('postcss-assets')({
-      relative: true
+      relative: true,
+      customizeUrl (decl) {
+        decl = /^\s*url\s*\(/.test(decl) ? decl.match(/\s*url\s*\(\s*(.+)\s*\)/)[1] : decl;
+
+        return decl;
+      }
     }),
     // require('postcss-pseudo-content-insert')(),
     // require('postcss-focus'),

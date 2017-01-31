@@ -5517,9 +5517,9 @@ posix@^4.1.1:
   dependencies:
     nan "2.4.x"
 
-postcss-assets@^4.1.0:
+"postcss-assets@github:antixrist/postcss-assets":
   version "4.1.0"
-  resolved "https://registry.yarnpkg.com/postcss-assets/-/postcss-assets-4.1.0.tgz#341f30d6ac0fbb314d82a28cc1ea753a986ffed7"
+  resolved "https://codeload.github.com/antixrist/postcss-assets/tar.gz/5e739f6defb035a5089699e40dfae45e8091c00f"
   dependencies:
     assets "^2.0.0"
     postcss "^5.0.12"
