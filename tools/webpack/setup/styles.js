@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import LoaderOptionsPlugin from 'webpack/lib/LoaderOptionsPlugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import assetFunctions from 'node-sass-asset-functions';
 import { isDevelopment, EXTRACT_STYLES, pathes, sass as sassConfig, vueLoaders } from '../../config';
 import { extractFromConfigSafely } from '../utils';
 
@@ -29,7 +28,7 @@ export default function (webpackConfig) {
        * Sass не умеет резолвить и переписывать пути ассетов внутри подключаемых файлов.
        * `resolve-url-loader` это исправляет.
        */
-      { loader: 'resolve-url-loader' },
+      { loader: 'resolve-url-loader', query: { sourceMap: true, keepQuery: true } },
       { loader: 'sass-loader', query: {
         ...sassConfig,
         sourceMap: true,
@@ -39,87 +38,84 @@ export default function (webpackConfig) {
   };
 
   /** https://blog.shakacode.com/migration-to-webpack-2-c9803871b931 */
+  // plugins.push(
+  //   new LoaderOptionsPlugin({
+  //     options: {
+  //       context: webpackConfig.context,
+  //       output: webpackConfig.output,
+  //       resolveUrlLoader: {
+  //         sourceMap: true,
+  //         keepQuery: true,
+  //         ...(() => {
+  //           let fnCall = null;
+  //
+  //           return {
+  //             beforeResolve (url, filePath) {
+  //               let retVal = url;
+  //
+  //               let matchedFnCall = url.match(/^\s*([a-z_-]+)\s*\((.+)\)\s*(;?)\s*$/);
+  //               if (matchedFnCall) {
+  //                 fnCall = {
+  //                   name: matchedFnCall[1],
+  //                   args: matchedFnCall[2].split(',').map(arg => arg.trim()),
+  //                   semicolon: matchedFnCall[3]
+  //                 };
+  //
+  //                 // console.log('matchedFnCall', matchedFnCall);
+  //
+  //                 switch (fnCall.name) {
+  //                   case 'size':
+  //                   case 'width':
+  //                   case 'height':
+  //                     retVal = fnCall.args[0];
+  //                     break;
+  //                 }
+  //
+  //                 console.log('prepareSource url', url);
+  //                 console.log('prepareSource retVal', retVal);
+  //               }
+  //
+  //               return retVal;
+  //             },
+  //             afterResolve (url, filePath) {
+  //               let retVal = url;
+  //
+  //               if (fnCall) {
+  //                 switch (fnCall.name) {
+  //                   case 'size':
+  //                   case 'width':
+  //                   case 'height':
+  //                     fnCall.args[0] = url;
+  //                     break;
+  //                 }
+  //                 retVal = `${ fnCall.name }(${ fnCall.args.join(', ') })${ fnCall.semicolon }`;
+  //
+  //                 fnCall = null;
+  //
+  //                 console.log('prepareResult url', url);
+  //                 console.log('prepareResult retVal', retVal);
+  //               }
+  //
+  //               return retVal;
+  //             }
+  //           };
+  //         })()
+  //       }
+  //     },
+  //   })
+  // );
+
   plugins.push(
     new LoaderOptionsPlugin({
+      test: /\.(scss|sass)$/,
       options: {
-        context: webpackConfig.context,
-        output: webpackConfig.output,
-        resolveUrlLoader: {
-          sourceMap: true,
-          keepQuery: true,
-          ...(() => {
-            let fnCall = null;
-
-            return {
-              beforeResolve (url, filePath) {
-                let retVal = url;
-
-                let matchedFnCall = url.match(/^\s*([a-z_-]+)\s*\((.+)\)\s*(;?)\s*$/);
-                if (matchedFnCall) {
-                  fnCall = {
-                    name: matchedFnCall[1],
-                    args: matchedFnCall[2].split(',').map(arg => arg.trim()),
-                    semicolon: matchedFnCall[3]
-                  };
-
-                  // console.log('matchedFnCall', matchedFnCall);
-
-                  switch (fnCall.name) {
-                    case 'size':
-                    case 'width':
-                    case 'height':
-                      retVal = fnCall.args[0];
-                      break;
-                  }
-
-                  console.log('prepareSource url', url);
-                  console.log('prepareSource retVal', retVal);
-                }
-
-                return retVal;
-              },
-              afterResolve (url, filePath) {
-                let retVal = url;
-
-                if (fnCall) {
-                  switch (fnCall.name) {
-                    case 'size':
-                    case 'width':
-                    case 'height':
-                      fnCall.args[0] = url;
-                      break;
-                  }
-                  retVal = `${ fnCall.name }(${ fnCall.args.join(', ') })${ fnCall.semicolon }`;
-
-                  fnCall = null;
-
-                  console.log('prepareResult url', url);
-                  console.log('prepareResult retVal', retVal);
-                }
-
-                return retVal;
-              }
-            };
-          })()
-        }
-      },
-    })
-  );
-
-  plugins.push(
-    new LoaderOptionsPlugin({
-      // test: /\.(scss|sass)$/,
-      options: {
+        // /** это пиздец */
         context: webpackConfig.context,
         output: webpackConfig.output,
         sassLoader: {
           ...sassConfig,
           sourceMap: true,
           sourceMapContents: true,
-          functions: assetFunctions({
-            images_path: webpackConfig.context,
-            http_images_path: './'
-          }),
           /** импортёр ваще косячный */
           // importer: sassImportOnce,
           // importer (uri, prev, done) {
@@ -133,7 +129,6 @@ export default function (webpackConfig) {
           //   bower: false
           // }
         },
-        // /** это пиздец */
       },
     }),
   );
