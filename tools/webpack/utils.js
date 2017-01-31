@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { inspect } from 'util';
 import prettyTime from 'pretty-hrtime';
 import config from './';
 import formatError from 'gulp-cli/lib/versioned/^4.0.0/formatError';
@@ -10,7 +11,8 @@ const { cyan, magenta, red } = colors;
  * todo: написать это дерьмо нормально
  *
  * @param webpackConfig
- * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array, externals: {}}}
+ * @returns {{output: {}, module: {}, resolve: {}, stats: {}, extensions: Array, rules: Array, plugins: Array,
+ *   externals: {}}}
  */
 export function extractFromConfigSafely (webpackConfig) {
   const resolve = _.get(webpackConfig, 'resolve') || {};
@@ -46,9 +48,14 @@ export function compilerCallback ({ done = () => {}, breakOnError = false, name 
     const hrBuildTime = [0, statsJson.time * 1000000];
     const hrBuildTimePretty = prettyTime(hrBuildTime);
 
+    if (err) { console.log('asdqweasdqwe'); throw err; }
+
+    // console.log(inspect(statsJson.errors, { colors: true }));
+
     err = err || statsJson.errors[0] || null;
 
     if (err && breakOnError) {
+      // console.error(err);
       return done(new PluginError(name, err));
     } else
     if (err && !breakOnError) {

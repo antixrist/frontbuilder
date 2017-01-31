@@ -1,0 +1,87 @@
+.v-checkbox {
+  .icon-checkbox {
+    transition: opacity .1s ease-out;
+    opacity: .5;
+  }
+
+  &:hover .icon-checkbox,
+  &:focus .icon-checkbox {
+    opacity: .8;
+  }
+  &:active .icon-checkbox {
+    opacity: .4;
+  }
+
+  &.is-checked {
+    .icon-checkbox {
+      opacity: 1;
+    }
+
+    &:active .icon-checkbox {
+      opacity: .4;
+    }
+  }
+}
+
+
+.i {
+  @include hide-text;
+  @include icon-base;
+
+  &.-megafon,
+  &.-megaphone {
+    width: img-width('../../img/icons/megafon.png?qwe123');
+    //width: image-width('img/icons/megafon.png?qwe123');
+
+    //@include icon('../../img/icons/megafon.png?qwe123');
+
+    //width: 11px;
+    height: 11px;
+  }
+
+  &.-mts {
+    //background-image: url('../../img/icons/mts.png');
+    //@include icon('../../img/icons/mts.png');
+  }
+
+  //&.-beeline {
+  //  @include icon('../../img/icons/beeline.png');
+  //}
+  //
+  //&.-tele2 {
+  //  @include icon('../../img/icons/tele2.png');
+  //}
+  //
+  //&.-google {
+  //  @include icon('../../img/icons/google.png');
+  //}
+  //
+  //&.-yandex {
+  //  @include icon('../../img/icons/yandex.png');
+  //}
+  //
+  //&.-double-eagle {
+  //  @include icon('../../img/icons/double-eagle.png');
+  //}
+
+  //&.-polygon-new {
+  //  //@include icon('./fontello/2.svg');
+  //  background-image: url('./fontello/2.svg');
+  //  width: 25px;
+  //  height: 25px;
+  //}
+  //
+  //&.-task-new {
+  //  //@include icon('./fontello/2.svg');
+  //  background-image: url('./fontello/3.svg');
+  //  width: 25px;
+  //  height: 25px;
+  //}
+  //
+  //&.-project-new {
+  //  //@include icon('./fontello/2.svg');
+  //  background-image: url('./fontello/4.svg');
+  //  width: 25px;
+  //  height: 25px;
+  //}
+}

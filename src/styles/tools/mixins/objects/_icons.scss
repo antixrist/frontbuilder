@@ -18,8 +18,8 @@
 @mixin icon ($url, $factor: 1) {
 
   background-image: url('#{$url}');
-  width: width($url, $factor);
-  height: height($url, $factor);
+  width: img-width($url, $factor);
+  height: img-height($url, $factor);
 
   @content;
 }

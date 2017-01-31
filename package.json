@@ -13,6 +13,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "cross-env": "cross-env",
     "dev": "gulp dev",
     "dev:simple": "cross-env DISABLE_HMR=true EXTRACT_STYLES=true gulp dev",
     "build": "cross-env NODE_ENV=production gulp build",
@@ -50,6 +51,7 @@
     "material-colors": "^1.2.5",
     "modernizr": "^3.3.1",
     "modernizr-mixin": "^3.0.7",
+    "node-sass-asset-functions": "^0.0.9",
     "normalize.css": "^5.0.0",
     "nprogress": "^0.2.0",
     "once": "^1.4.0",
@@ -132,7 +134,6 @@
     "json5-loader": "^0.6.0",
     "lodash-webpack-plugin": "^0.11.0",
     "node-sass": "^4.4.0",
-    "node-sass-import-once": "^1.2.0",
     "node-sass-importer-builder": "^0.0.2",
     "path-exists": "^3.0.0",
     "pixrem": "^3.0.2",
