@@ -245,6 +245,7 @@
   $nowrap: not not index($options, nowrap);
   // aliases
   $between: not not index($options, between);
+  $between: if(not $between, not not index($options, betwen), $between);
   $between: if(not $between, not not index($options, beetween), $between);
 
   @if $x {

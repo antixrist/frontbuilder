@@ -5,9 +5,3 @@
 @import 'objects';
 @import 'components';
 @import 'trumps';
-
-//@import 'main/index';
-
-.qweqweqwe {
-  @include table-cells-border(1px solid #ccc, x between, $cells: '.addon-btn');
-}

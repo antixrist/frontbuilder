@@ -13,7 +13,7 @@
   width: 150px;
   padding: 10px 20px;
 
-  $switch-height: 10px;
+  $switch-height: 20px;
   @include switch (
     $height: $switch-height,
     $helper: '.helper'
@@ -30,8 +30,8 @@
     }
 
     @include switch-control (
-      $x-offset: -4px,
-      $height: $switch-height + 10
+      $x-offset: 1px,
+      $height: $switch-height - 2
     ) {
       background-color: #fff;
       transition: all .1s ease-out;
@@ -40,6 +40,8 @@
 
     @include switch-checked-control () {}
   }
+
+
 
   ///
   /// advanced tricks

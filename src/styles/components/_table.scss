@@ -1,0 +1,14 @@
+.c-table {
+  $bg: #ccc;
+
+  @include table-cells-padding(0.5em 1em, x between around);
+  @include table-cells-border(1px dashed $bg, y between bottom);
+  @include table-cells-border(1px solid $bg, x around bottom);
+
+  thead tr { background: $bg;}
+
+  @include table-ears() {
+    background: $bg;
+    width: 100px;
+  }
+}
