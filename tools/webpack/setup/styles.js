@@ -10,7 +10,7 @@ const STYLES_TARGET = _.get(pathes, 'styles.target') || '.';
 
 export default function (webpackConfig) {
   const { rules, plugins } = extractFromConfigSafely(webpackConfig);
-  
+
   let cssLoader = {
     fallbackLoader: 'style-loader',
     loader: [
@@ -25,7 +25,7 @@ export default function (webpackConfig) {
       { loader: 'css-loader', query: { sourceMap: true, minimize: false, importLoaders: 3 } },
       { loader: 'postcss-loader', query: { sourceMap: 'inline' } },
       /**
-       * Sass не умеет резолвить и переписывать пути ассетов внутри подключаемых файлов.
+       * Sass не умеет резолвить и переписывать пути ассетов у подключаемых файлов.
        * `resolve-url-loader` это исправляет.
        */
       { loader: 'resolve-url-loader', query: { sourceMap: true, keepQuery: true } },
@@ -38,104 +38,46 @@ export default function (webpackConfig) {
   };
 
   /** https://blog.shakacode.com/migration-to-webpack-2-c9803871b931 */
-  // plugins.push(
-  //   new LoaderOptionsPlugin({
-  //     options: {
-  //       context: webpackConfig.context,
-  //       output: webpackConfig.output,
-  //       resolveUrlLoader: {
-  //         sourceMap: true,
-  //         keepQuery: true,
-  //         ...(() => {
-  //           let fnCall = null;
-  //
-  //           return {
-  //             beforeResolve (url, filePath) {
-  //               let retVal = url;
-  //
-  //               let matchedFnCall = url.match(/^\s*([a-z_-]+)\s*\((.+)\)\s*(;?)\s*$/);
-  //               if (matchedFnCall) {
-  //                 fnCall = {
-  //                   name: matchedFnCall[1],
-  //                   args: matchedFnCall[2].split(',').map(arg => arg.trim()),
-  //                   semicolon: matchedFnCall[3]
-  //                 };
-  //
-  //                 // console.log('matchedFnCall', matchedFnCall);
-  //
-  //                 switch (fnCall.name) {
-  //                   case 'size':
-  //                   case 'width':
-  //                   case 'height':
-  //                     retVal = fnCall.args[0];
-  //                     break;
-  //                 }
-  //
-  //                 console.log('prepareSource url', url);
-  //                 console.log('prepareSource retVal', retVal);
-  //               }
-  //
-  //               return retVal;
-  //             },
-  //             afterResolve (url, filePath) {
-  //               let retVal = url;
-  //
-  //               if (fnCall) {
-  //                 switch (fnCall.name) {
-  //                   case 'size':
-  //                   case 'width':
-  //                   case 'height':
-  //                     fnCall.args[0] = url;
-  //                     break;
-  //                 }
-  //                 retVal = `${ fnCall.name }(${ fnCall.args.join(', ') })${ fnCall.semicolon }`;
-  //
-  //                 fnCall = null;
-  //
-  //                 console.log('prepareResult url', url);
-  //                 console.log('prepareResult retVal', retVal);
-  //               }
-  //
-  //               return retVal;
-  //             }
-  //           };
-  //         })()
-  //       }
-  //     },
-  //   })
-  // );
-
   plugins.push(
     new LoaderOptionsPlugin({
-      test: /\.(scss|sass)$/,
       options: {
-        // /** это пиздец */
         context: webpackConfig.context,
-        output: webpackConfig.output,
-        sassLoader: {
-          ...sassConfig,
-          sourceMap: true,
-          sourceMapContents: true,
-          /** импортёр ваще косячный */
-          // importer: sassImportOnce,
-          // importer (uri, prev, done) {
-          //   console.log('sassImportOnce', uri, prev);
-          //   /** всё остальное отдаём на откуп sassImportOnce'у */
-          //   return sassImportOnce.call(this, uri, prev, done);
-          // },
-          // importOnce: {
-          //   css: true,
-          //   index: true,
-          //   bower: false
-          // }
-        },
-      },
-    }),
+        output: webpackConfig.output
+      }
+    })
   );
-  
+
+  // plugins.push(
+  //   new LoaderOptionsPlugin({
+  //     test: /\.(scss|sass)$/,
+  //     options: {
+  //       sassLoader: {
+  //         ...sassConfig,
+  //         sourceMap: true,
+  //         sourceMapContents: true,
+  //         /** импортёр ваще косячный */
+  //         // importer: sassImportOnce,
+  //         // importer (uri, prev, done) {
+  //         //   console.log('sassImportOnce', uri, prev);
+  //         //   /** всё остальное отдаём на откуп sassImportOnce'у */
+  //         //   return sassImportOnce.call(this, uri, prev, done);
+  //         // },
+  //         // importOnce: {
+  //         //   css: true,
+  //         //   index: true,
+  //         //   bower: false
+  //         // }
+  //       },
+  //       /** это пиздец */
+  //       context: webpackConfig.context,
+  //       output: webpackConfig.output,
+  //     },
+  //   }),
+  // );
+
   /**
    * Здесь прикол в том, что ExtractTextPlugin в режиме разработки нам не нужен.
-   * Поэтому подменяем вызов плагина, если находимся в режиме разработки на свою заглушку.
+   * Поэтому подменяем вызов плагина, если находимся в режиме разработки.
    */
   let loadersWrapper;
   if (isDevelopment && !EXTRACT_STYLES) {
@@ -152,11 +94,11 @@ export default function (webpackConfig) {
       })
     );
   }
-  
+
   vueLoaders.css  = loadersWrapper({...cssLoader,  fallbackLoader: 'vue-style-loader'});
   vueLoaders.scss = loadersWrapper({...sassLoader, fallbackLoader: 'vue-style-loader'});
   vueLoaders.sass = loadersWrapper({...sassLoader, fallbackLoader: 'vue-style-loader'});
-  
+
   rules.push(
     {
       test: /\.css$/,
@@ -191,9 +133,9 @@ function fakeExtractTextPluginExtract (options) {
       if (_.isString(loader)) { return loader; }
       if (!loader.query) { return loader.loader; }
       const query = _.isString(loader.query) ? loader.query : JSON.stringify(loader.query);
-      
+
       return loader.loader + '?' + query;
     })
     .join('!')
-  ;
+    ;
 }

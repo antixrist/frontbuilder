@@ -30,13 +30,7 @@
 
   &.-megafon,
   &.-megaphone {
-    width: img-width('../../img/icons/megafon.png?qwe123');
-    //width: image-width('img/icons/megafon.png?qwe123');
-
-    //@include icon('../../img/icons/megafon.png?qwe123');
-
-    //width: 11px;
-    height: 11px;
+    @include icon('../../img/icons/megafon.png');
   }
 
   &.-mts {
