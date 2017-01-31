@@ -10,11 +10,7 @@ module.exports = function (ctx) {
     require('postcss-assets')({
       relative: true,
       customizeUrl (decl) {
-        console.log('1 decl', decl);
-        decl = /^\s*url\s*\(/.test(decl) ? decl.match(/\s*url\s*\(\s*(.+)\s*\)/)[1] : decl;
-        console.log('2 decl', decl);
-
-        return decl;
+        return /^\s*url\s*\(/.test(decl) ? decl.match(/\s*url\s*\(\s*(.+)\s*\)/)[1] : decl;
       }
     }),
     // require('postcss-pseudo-content-insert')(),
