@@ -81,13 +81,13 @@ $font-stacks-defaults: (
 $font-types-defaults: (
   regular: (weight: 400, style: normal),
   bold: (weight: 700, style: normal),
+  medium: (weight: 500, style: normal),
   italic: (weight: 400, style: italic),
   bold-italic: (weight: 700, style: italic)
 );
 
 $font-stacks: map-merge($font-stacks-defaults, $font-stacks);
-$font-types: map-merge($font-types, $font-types);
-
+$font-types: map-merge($font-types-defaults, $font-types);
 
 @function font-stack ($name) {
   $stack: map-get($font-stacks, $name);
@@ -109,7 +109,7 @@ $font-types: map-merge($font-types, $font-types);
 }
 
 @mixin font-type ($type: regular) {
-  @if (map-get($font-types, $type) != null) {
+  @if map-has-key($font-types, $type) {
     $font-type: map-get($font-types, $type);
 
     font-weight: map-get($font-type, weight);

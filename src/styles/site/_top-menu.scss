@@ -1,0 +1,68 @@
+.top-menu {
+
+  &-link {
+    @include link (
+      $color-normal: $base-color-muted,
+      $color-hover: $base-color,
+      $color-active: $base-color,
+
+      $border-color-normal: transparent,
+      $border-color-hover: transparent,
+      $border-color-focus: transparent,
+      $border-color-active: transparent,
+      $border-color-visited: transparent,
+
+      $transition-normal: (color .2s ease-out, background .2s ease-out),
+      $transition-active: (color .1s ease-out, background .1s ease-out),
+      $transition-visited: (color .2s ease-out, background .2s ease-out),
+
+      $css-normal: (background: $borders-color),
+      $css-visited: (),
+      $css-hover: (),
+      $css-focus: (),
+      $css-active: (background: #fff)
+    );
+
+    &.is-active {
+      @include link (
+        $color-normal: $base-color,
+        $color-hover: $base-color-accent-x2,
+        $color-active: $base-color-muted,
+
+        $border-color-normal: transparent,
+        $border-color-hover: transparent,
+        $border-color-focus: transparent,
+        $border-color-active: transparent,
+        $border-color-visited: transparent,
+
+        $transition-normal: (color .2s ease-out, background .2s ease-out),
+        $transition-active: (color .1s ease-out, background .1s ease-out),
+        $transition-visited: (color .2s ease-out, background .2s ease-out),
+
+        $css-normal: (background: #fff),
+        $css-visited: (),
+        $css-hover: (),
+        $css-focus: (),
+        $css-active: ()
+      );
+    }
+
+    @include font-type(bold);
+    @include box(14px 30px);
+
+    white-space: nowrap;
+    display: block;
+
+    &.sidebar-toggle {
+      @include box(14px 15px);
+
+      .top-menu-item-icon:before {
+        line-height: 1.4em;
+      }
+    }
+  }
+
+  &-item-icon {
+    color: $color-primary;
+  }
+}

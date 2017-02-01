@@ -1,0 +1,6 @@
+$panel-box: .5rem 1rem !default;
+
+.panel {
+  @include box($panel-box);
+  @include md-shadow;
+}

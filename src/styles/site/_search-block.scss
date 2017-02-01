@@ -1,0 +1,14 @@
+.search-block {
+  $y-space: map-get(get-bounds-map($panel-box), y);
+
+  &,
+  [layout] {
+    > * {
+      padding-left: $y-space;
+
+      &:first-child {
+        padding-left: 0;
+      }
+    }
+  }
+}

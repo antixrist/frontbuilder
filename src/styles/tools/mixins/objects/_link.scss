@@ -23,6 +23,11 @@
   $css-focus: (),
   $css-active: (),
 
+  $visited: '&:visited',
+  $hover:   '&:hover',
+  $focus:   '&:focus',
+  $active:  '&:active',
+
   $proxy: null
 ) {
   @include proxy ($proxy) {
@@ -38,7 +43,7 @@
     @include apply-styles($css-normal);
   }
 
-  &:visited {
+  #{$visited} {
     @include proxy ($proxy) {
       color: $color-visited;
       border-color: $border-color-visited;
@@ -49,7 +54,7 @@
     }
   }
 
-  &:hover {
+  #{$hover} {
     @include proxy ($proxy) {
       color: $color-hover;
       border-color: $border-color-hover;
@@ -60,7 +65,7 @@
     }
   }
 
-  &:focus {
+  #{$focus} {
     @include proxy ($proxy) {
       color: $color-focus;
       border-color: $border-color-focus;
@@ -79,7 +84,7 @@
     }
   }
 
-  &:active {
+  #{$active} {
     @include proxy ($proxy) {
       color: $color-active;
       border-color: $border-color-active;

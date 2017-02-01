@@ -172,6 +172,11 @@ $base-font-size: 16px !default;
   $css-focus: (),
   $css-active: (),
 
+  $visited: '&:visited',
+  $hover:   '&:hover',
+  $focus:   '&:focus',
+  $active:  '&:active',
+
   $proxy: null
 ) {
   &, &:visited {

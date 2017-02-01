@@ -51,7 +51,7 @@ $input-variants: (
 
   @each $size, $data in $control-sizes {
     $selector: if($size == default, '&', '&.-size-#{$size}');
-    #{$selector} { @include control-size-preset($size); }
+    #{$selector} { @include control-size-preset($size, false); }
   }
 
   @each $variant, $data in $input-variants {
@@ -69,5 +69,21 @@ $input-variants: (
 
   &.-wide {
     @include input-block;
+  }
+
+  @debug(inspect(select#{&}));
+
+  select#{&} {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+
+    &:after {
+      $size: 6px 3px;
+      @include triangle($size, bottom);
+      @include center(y, get-triangle-real-size($size, bottom));
+      margin-right: 5px;
+    }
   }
 }

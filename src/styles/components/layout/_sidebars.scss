@@ -5,3 +5,7 @@ $sidebars-center: '.center' !default;
 .sidebars {
   @include sidebars($sidebars-padding, $sidebars-padding-options, $sidebars-center);
 }
+
+.sidebars-0 {
+  @include sidebars(0);
+}

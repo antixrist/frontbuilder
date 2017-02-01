@@ -24,6 +24,10 @@
 }
 
 @import '../../img/icons/fontello/css/fontello';
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  margin-left: 0;
+  margin-right: 0;
+}
 
 .i {
   @include hide-text;

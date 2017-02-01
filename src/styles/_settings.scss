@@ -28,7 +28,7 @@ $color-primary-accent: darken($color-primary, 10%);
 $color-success-accent: darken($color-success, 10%);
 $color-danger-accent: darken($color-danger, 10%);
 
-$base-color-accent-x2: darken($base-color-accent, 20%);
+$base-color-accent-x2: darken($base-color-accent, 30%);
 $color-primary-accent-x2: darken($color-primary, 20%);
 $color-success-accent-x2: darken($color-success, 20%);
 $color-danger-accent-x2: darken($color-danger, 20%);
@@ -36,6 +36,9 @@ $color-danger-accent-x2: darken($color-danger, 20%);
 $borders-color: #e7e8ec;
 
 $bg-color-item-hover: #f2ebc7;
+
+$panel-box: 10px 15px !default;
+$sidebars-padding: 15px !default;
 
 $layout: '.layout' !default;
 $layout-main: '.layout-main' !default;
@@ -53,9 +56,9 @@ $layout-right-width: false !default;
 $layout-left-gutter: 20px !default;
 $layout-right-gutter: 20px !default;
 
-$layout-min-width: 0 !default;
-$layout-max-width: 1400px !default;
-$layout-side-space-width: 20px !default;
+$layout-min-width: 600px !default;
+$layout-max-width: false !default;
+$layout-side-space-width: false !default;
 $layout-side-space-type: padding !default; // or "margin"
 
 $z-indexes: (
