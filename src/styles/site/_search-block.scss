@@ -1,6 +1,8 @@
 $panel-box-bounds: get-bounds-map($panel-box) !default;
 
 .search-form {
+  @include box($panel-box);
+
   &,
   [layout] {
     > * {
@@ -14,16 +16,28 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 }
 
 .search-results {
-  @include unboxing($panel-box, x);
-  @include box($panel-box);
+  border-top: 1px solid $borders-color;
+  @include box($panel-box, right bottom left);
 
+  .search-results-title {
+    margin: 0;
+    @include box($panel-box);
+    @include unboxing($panel-box, x);
+  }
+  .search-results-closer {
+    @include unboxing($panel-box);
+    @include box($panel-box);
+    @include opacity-states();
+  }
+
+  $table-cells-box: 5px 15px;
   &-table {
-    font-size: 14px;
     min-width: 100%;
 
-    $box: 5px 15px;
-    @include table-cells-padding($box, x between half-between);
-    @include table-cells-padding($box, y between around);
+    td, th { font-size: 12px; }
+
+    @include table-cells-padding($table-cells-box, x between half-between);
+    @include table-cells-padding($table-cells-box, y);
 
     @include table-ears () {
       background: $borders-color;
@@ -33,28 +47,60 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     thead {
       color: $base-color-muted;
       background: $borders-color;
+
+      th { vertical-align: middle; }
     }
 
-    tbody { @include table-cells-border(1px dashed $borders-color, between y bottom nowrap); }
-  }
+    > tbody {
+      @include table-cells-border(1px dashed $borders-color, between top nowrap);
+    }
 
-  .station {
-    //&:hover { background: $bg-color-item-hover; }
+    .station {
+      &-sources-list {
+        white-space: nowrap;
 
-    &-sources-list {
+        .station-source {
+          padding-left: 12px;
+          &:first-child { padding-left: 0; }
+        }
 
-      .station-source {
-        padding-left: 12px;
-        &:first-child { padding-left: 0; }
-      }
-
-      &:hover .station-source {
-        @include opacity-states($normal: .5, $active: 1);
+        &:hover .station-source {
+          @include opacity-states($normal: .5, $active: 1);
+        }
       }
     }
-  }
 
-  .station-details {
+    .station-details {
+      &-table {
+        @include table-cells-padding($table-cells-box, x around between half-between);
+        @include table-cells-padding($table-cells-box, y);
 
+        @include table-cells-border(1px solid $borders-color, around left right bottom);
+        tbody {
+          @include table-cells-border(1px dashed $borders-color, y between nowrap);
+        }
+      }
+
+      .th-icon-checkbox {
+        @include opacity-states();
+      }
+      .target-icon,
+      .th-icon-checkbox {
+        @include unboxing(5px 10px);
+        @include box(5px 10px);
+      }
+    }
+
+    .station-details { display: none; }
+    .station.is-expanded {
+      & + .station-details {
+        display: table-row;
+        > td, > th { border-top: none !important; }
+
+        & + .station {
+          > td, > th { border-top: none !important; }
+        }
+      }
+    }
   }
 }

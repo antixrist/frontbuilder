@@ -71,8 +71,6 @@ $input-variants: (
     @include input-block;
   }
 
-  @debug(inspect(select#{&}));
-
   select#{&} {
     cursor: pointer;
 

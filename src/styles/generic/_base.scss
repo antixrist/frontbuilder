@@ -23,7 +23,8 @@ button,
 input,
 optgroup,
 select,
-textarea {
+textarea,
+table {
   @include font-family(base);
   @include font-type(regular);
   font-size: $base-font-size;

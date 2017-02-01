@@ -6,7 +6,7 @@
   -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
 }
 
-@mixin table-ears ($options: before left right, $cells: (td, th)) {
+@mixin table-ears ($options: before left right, $wrap: '> thead tr', $cells: '> td, > th') {
   $options: if(type-of($options) != list, ($options,), $options);
   $nowrap: not not index($options, nowrap);
 
@@ -21,7 +21,7 @@
     $right: true;
   }
 
-  @include proxy (if($nowrap, null, thead)) {
+  @include proxy(if($nowrap, null, $wrap)) {
     #{$cells} {
       @if $left {
         &:first-child {
@@ -61,7 +61,13 @@
   }
 }
 
-@mixin table-cells-padding ($padding: 0, $options: between around x y, $cells: 'td, th') {
+@mixin table-cells-padding (
+  $padding: 0,
+  $options: between around x y,
+  $blocks: '> thead, > tbody, > tfoot',
+  $rows: '> tr',
+  $cells: '> td, > th'
+) {
   $options: if(type-of($options) != list, ($options,), $options);
 
   $x: not not index($options, x);
@@ -103,8 +109,6 @@
     $around: true;
   }
 
-  #{$cells} { @content; }
-
   @if $top and $bottom and $left and $right and $around and $between and not $half-between {
     #{$cells} { padding: $padding; }
   } @else {
@@ -119,30 +123,42 @@
 
     @if $left or $right {
       @if $between and $around and not $half-between {
-        #{$cells} {
-          @if $left  { padding-left:  map-get($bounds, left); }
-          @if $right { padding-right: map-get($bounds, right); }
+        #{$blocks} {
+          #{$rows} {
+            #{$cells} {
+              @if $left  { padding-left:  map-get($bounds, left); }
+              @if $right { padding-right: map-get($bounds, right); }
+            }
+          }
         }
       }
       @else {
         @if $between {
-          #{$cells} {
-            $_bounds: if($half-between, $bounds-half, $bounds);
+          #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                $_bounds: if($half-between, $bounds-half, $bounds);
 
-            @if $right { &:first-child:not(:last-child) { padding-right: map-get($_bounds, right); } }
-            @if $left  { &:last-child:not(:first-child) { padding-left:  map-get($_bounds, left); } }
+                @if $right { &:first-child:not(:last-child) { padding-right: map-get($_bounds, right); } }
+                @if $left  { &:last-child:not(:first-child) { padding-left:  map-get($_bounds, left); } }
 
-            &:not(:last-child):not(:first-child) {
-              @if $left  { padding-left:  map-get($_bounds, left); }
-              @if $right { padding-right: map-get($_bounds, right); }
+                &:not(:last-child):not(:first-child) {
+                  @if $left  { padding-left:  map-get($_bounds, left); }
+                  @if $right { padding-right: map-get($_bounds, right); }
+                }
+              }
             }
           }
         }
 
         @if $around {
-          #{$cells} {
-            @if $left  { &:first-child { padding-left:  map-get($bounds, left); } }
-            @if $right { &:last-child  { padding-right: map-get($bounds, right); } }
+          #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $left  { &:first-child { padding-left:  map-get($bounds, left); } }
+                @if $right { &:last-child  { padding-right: map-get($bounds, right); } }
+              }
+            }
           }
         }
       }
@@ -150,21 +166,25 @@
 
     @if $top or $bottom {
       @if $between and $around and not $half-between {
-        #{$cells} {
-          @if $top    { padding-top:    map-get($bounds, top); }
-          @if $bottom { padding-bottom: map-get($bounds, bottom); }
+        #{$blocks} {
+          #{$rows} {
+            #{$cells} {
+              @if $top    { padding-top:    map-get($bounds, top); }
+              @if $bottom { padding-bottom: map-get($bounds, bottom); }
+            }
+          }
         }
       }
       @else {
         @if $around {
           @if $nowrap {
-            @if $top    { tr:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } }
-            @if $bottom { tr:last-child  { #{$cells} { padding-bottom: map-get($bounds, bottom); } } }
+            @if $top    { #{$rows} { &:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } } }
+            @if $bottom { #{$rows} { &:last-child  { #{$cells} { padding-bottom: map-get($bounds, bottom); } } } }
           }
           @else {
-            thead, tbody, tfoot {
-              @if $top    { &:first-child tr:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } }
-              @if $bottom { &:last-child tr:last-child   { #{$cells} { padding-bottom: map-get($bounds, bottom); } } }
+            #{$blocks} {
+              @if $top    { &:first-child #{$rows} { &:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } } }
+              @if $bottom { &:last-child #{$rows} { &:last-child   { #{$cells} { padding-bottom: map-get($bounds, bottom); } } } }
             }
           }
         }
@@ -172,57 +192,76 @@
         @if $between {
           $bounds: if($half-between, $bounds-half, $bounds);
           @if $nowrap {
-            @if $bottom { tr:first-child:not(:last-child) { #{$cells} { padding-bottom: map-get($bounds, bottom); } } }
-            @if $top    { tr:last-child:not(:first-child) { #{$cells} { padding-top:    map-get($bounds, top); } } }
+            @if $bottom { #{$rows} { &:first-child:not(:last-child) { #{$cells} { padding-bottom: map-get($bounds, bottom); } } } }
+            @if $top    { #{$rows} { &:last-child:not(:first-child) { #{$cells} { padding-top:    map-get($bounds, top); } } } }
 
-            tr:not(:first-child):not(:last-child) {
-              #{$cells} {
-                @if $top    { padding-top:    map-get($bounds, top); }
-                @if $bottom { padding-bottom: map-get($bounds, bottom); }
+            #{$rows} {
+              &:not(:first-child):not(:last-child) {
+                #{$cells} {
+                  @if $top    { padding-top:    map-get($bounds, top); }
+                  @if $bottom { padding-bottom: map-get($bounds, bottom); }
+                }
               }
             }
           }
           @else {
-            thead, tbody, tfoot {
+            #{$blocks} {
               &:first-child:last-child {
                 @if $bottom {
-                  tr:first-child:not(:last-child) {
-                    #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                  #{$rows} {
+                    &:first-child:not(:last-child) {
+                      #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                    }
                   }
                 }
                 @if $top {
-                  tr:last-child:not(:first-child) {
-                    #{$cells} { padding-top: map-get($bounds, top); }
+                  #{$rows} {
+                    &:last-child:not(:first-child) {
+                      #{$cells} { padding-top: map-get($bounds, top); }
+                    }
                   }
                 }
 
-                tr:not(:first-child):not(:last-child) {
-                  #{$cells} {
-                    @if $top    { padding-top:    map-get($bounds, top); }
-                    @if $bottom { padding-bottom: map-get($bounds, bottom); }
+                #{$rows} {
+                  &:not(:first-child):not(:last-child) {
+                    #{$cells} {
+                      @if $top    { padding-top:    map-get($bounds, top); }
+                      @if $bottom { padding-bottom: map-get($bounds, bottom); }
+                    }
                   }
                 }
               }
 
               @if $bottom {
                 &:first-child:not(:last-child),
-                &:last-child:not(:first-child) tr:not(:last-child) {
-                  #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                &:last-child:not(:first-child) {
+                  #{$rows} {
+                    &,
+                    &:not(:last-child) {
+                      #{$cells} { padding-bottom: map-get($bounds, bottom); }
+                    }
+                  }
                 }
               }
 
               @if $top {
                 &:last-child:not(:first-child),
-                &:first-child:not(:last-child) tr:not(:first-child) {
-                  #{$cells} { padding-top: map-get($bounds, top); }
+                &:first-child:not(:last-child) {
+                  #{$rows} {
+                    &:not(:first-child) {
+                      #{$cells} { padding-top: map-get($bounds, top); }
+                    }
+                  }
                 }
               }
 
               &:not(:first-child):not(:last-child),
               &:not(:last-child):not(:first-child) {
-                #{$cells} {
-                  @if $top    { padding-top:    map-get($bounds, top); }
-                  @if $bottom { padding-bottom: map-get($bounds, bottom); }
+                #{$rows} {
+                  #{$cells} {
+                    @if $top    { padding-top:    map-get($bounds, top); }
+                    @if $bottom { padding-bottom: map-get($bounds, bottom); }
+                  }
                 }
               }
             }
@@ -233,7 +272,13 @@
   }
 }
 
-@mixin table-cells-border ($border: 1px solid black, $options: between around x y, $cells: 'td, th') {
+@mixin table-cells-border (
+  $border: 1px solid black,
+  $options: between around x y,
+  $blocks: '> thead, > tbody, > tfoot',
+  $rows: '> tr',
+  $cells: '> td, > th'
+) {
   $options: if(type-of($options) != list, ($options,), $options);
   $x: not not index($options, x);
   $y: not not index($options, y);
@@ -270,32 +315,46 @@
     $around: true;
   }
 
-  #{$cells} { @content; }
-
   @if $top and $bottom and $left and $right and $between and $around {
-    #{$cells} { border: $border; }
+    #{$blocks} {
+      #{$rows} {
+        #{$cells} { border: $border; }
+      }
+    }
   } @else {
     @if $left or $right {
       @if $between and $around {
-        #{$cells} {
-          @if $left  { border-left:  $border; }
-          @if $right { border-right: $border; }
+        #{$blocks} {
+          #{$rows} {
+            #{$cells} {
+              @if $left  { border-left:  $border; }
+              @if $right { border-right: $border; }
+            }
+          }
         }
       }
       @else {
         @if $around and not $between {
-          #{$cells} {
-            @if $left  { &:first-child { border-left:  $border; } }
-            @if $right { &:last-child  { border-right: $border; } }
+          #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $left  { &:first-child { border-left:  $border; } }
+                @if $right { &:last-child  { border-right: $border; } }
+              }
+            }
           }
         }
         @elseif not $around and $between {
-          #{$cells} {
-            @if $right { &:first-child:not(:last-child) { border-right: $border; } }
-            @if $left  { &:last-child:not(:first-child) { border-left:  $border; } }
-            &:not(:last-child):not(:first-child) {
-              @if $left  { border-left:  $border; }
-              @if $right { border-right: $border; }
+          #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $right { &:first-child:not(:last-child) { border-right: $border; } }
+                @if $left  { &:last-child:not(:first-child) { border-left:  $border; } }
+                &:not(:last-child):not(:first-child) {
+                  @if $left  { border-left:  $border; }
+                  @if $right { border-right: $border; }
+                }
+              }
             }
           }
         }
@@ -304,77 +363,103 @@
 
     @if $top or $bottom {
       @if $between and $around {
-        #{$cells} {
-          @if $top    { border-top:    $border; }
-          @if $bottom { border-bottom: $border; }
+        #{$blocks} {
+          #{$rows} {
+            #{$cells} {
+              @if $top    { border-top:    $border; }
+              @if $bottom { border-bottom: $border; }
+            }
+          }
         }
       }
       @else {
         @if $around and not $between {
           @if $nowrap {
-            @if $top    { tr:first-child { #{$cells} { border-top:    $border; } } }
-            @if $bottom { tr:last-child  { #{$cells} { border-bottom: $border; } } }
+            @if $top    { #{$rows} { &:first-child { #{$cells} { border-top:    $border; } } } }
+            @if $bottom { #{$rows} { &:last-child  { #{$cells} { border-bottom: $border; } } } }
           }
           @else {
-            thead, tbody, tfoot {
-              @if $top    { &:first-child tr:first-child { #{$cells} { border-top:    $border; } } }
-              @if $bottom { &:last-child  tr:last-child  { #{$cells} { border-bottom: $border; } } }
+            #{$blocks} {
+              @if $top    { &:first-child { #{$rows} { &:first-child { #{$cells} { border-top:    $border; } } } } }
+              @if $bottom { &:last-child  { #{$rows} { &:last-child  { #{$cells} { border-bottom: $border; } } } } }
             }
           }
         }
         @if not $around and $between {
           @if $nowrap {
-            @if $bottom { tr:first-child:not(:last-child) { #{$cells} { border-bottom: $border; } } }
-            @if $top    { tr:last-child:not(:first-child) { #{$cells} { border-top:    $border; } } }
+            @if $bottom { #{$rows} { &:first-child:not(:last-child) { #{$cells} { border-bottom: $border; } } } }
+            @if $top    { #{$rows} { &:last-child:not(:first-child) { #{$cells} { border-top:    $border; } } } }
 
-            tr:not(:first-child):not(:last-child) {
-              #{$cells} {
-                @if $top    { border-top:    $border; }
-                @if $bottom { border-bottom: $border; }
+            #{$rows} {
+              &:not(:first-child):not(:last-child) {
+                #{$cells} {
+                  @if $top    { border-top:    $border; }
+                  @if $bottom { border-bottom: $border; }
+                }
               }
             }
           }
           @else {
-            thead, tbody, tfoot {
+            #{$blocks} {
               @if $bottom {
-                &:first-child:last-child tr:first-child:not(:last-child) {
-                  #{$cells} { border-bottom: $border; }
+                &:first-child:last-child {
+                  #{$rows} {
+                    &:first-child:not(:last-child) {
+                      #{$cells} { border-bottom: $border; }
+                    }
+                  }
                 }
               }
 
               @if $top {
-                &:last-child:first-child tr:last-child:not(:first-child) {
-                  #{$cells} { border-top: $border; }
+                &:last-child:first-child {
+                  #{$rows} {
+                    &:last-child:not(:first-child) {
+                      #{$cells} { border-top: $border; }
+                    }
+                  }
                 }
               }
 
-              &:first-child:last-child tr:not(:first-child):not(:last-child) {
-                #{$cells} {
-                  @if $top    { border-top:    $border; }
-                  @if $bottom { border-bottom: $border; }
+              &:first-child:last-child {
+                #{$rows} {
+                  &:not(:first-child):not(:last-child) {
+                    #{$cells} {
+                      @if $top    { border-top:    $border; }
+                      @if $bottom { border-bottom: $border; }
+                    }
+                  }
                 }
               }
 
 
               @if $bottom {
                 &:first-child:not(:last-child),
-                &:last-child:not(:first-child) tr:not(:last-child) {
-                  #{$cells} { border-bottom: $border; }
+                &:last-child:not(:first-child) {
+                  #{$rows} {
+                    &,
+                    &:not(:last-child) { #{$cells} { border-bottom: $border; } }
+                  }
                 }
               }
 
               @if $top {
                 &:last-child:not(:first-child),
-                &:first-child:not(:last-child) tr:not(:first-child) {
-                  #{$cells} { border-top: $border; }
+                &:first-child:not(:last-child) {
+                  #{$rows} {
+                    &,
+                    &:not(:first-child) { #{$cells} { border-top: $border; } }
+                  }
                 }
               }
 
               &:not(:first-child):not(:last-child),
               &:not(:last-child):not(:first-child) {
-                #{$cells} {
-                  @if $top    { border-top:    $border; }
-                  @if $bottom { border-bottom: $border; }
+                #{$rows} {
+                  #{$cells} {
+                    @if $top    { border-top:    $border; }
+                    @if $bottom { border-bottom: $border; }
+                  }
                 }
               }
             }
