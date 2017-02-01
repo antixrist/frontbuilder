@@ -3,7 +3,7 @@
  * а для `vue-loader`а - придётся подключать его вручную.
  */
 
-const {isDevelopment, browsers} = require('./tools/config');
+const { isDevelopment, browsers } = require('./tools/config');
 
 module.exports = function (ctx) {
   const plugins = [
@@ -28,7 +28,8 @@ module.exports = function (ctx) {
       ? []
       : [
         require('postcss-color-rgba-fallback')({
-          properties:      [
+          oldie: true,
+          properties: [
             'background-color',
             'background',
             'color',
@@ -37,7 +38,6 @@ module.exports = function (ctx) {
             'outline',
             'outline-color'
           ],
-          oldie:           true,
           backgroundColor: [255, 255, 255]
         }),
         require('postcss-gradient-transparency-fix'),
@@ -75,5 +75,5 @@ module.exports = function (ctx) {
     })
   ];
     
-  return {plugins};
+  return { plugins };
 };
