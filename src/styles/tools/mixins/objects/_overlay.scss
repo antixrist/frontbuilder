@@ -28,7 +28,7 @@
     @include pseudo;
     @include stretch;
     @include icon-base;
-    @include icon($image, $factor);
+    @include img-icon($image, $factor);
     @include bg-size($image, $factor);
 
     width: auto;
@@ -51,7 +51,7 @@
     @include pseudo;
     @include stretch;
     @include icon-base;
-    @include icon($image, $factor);
+    @include img-icon($image, $factor);
     @include bg-size($image, $factor);
 
     width: auto;

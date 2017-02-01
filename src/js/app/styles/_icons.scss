@@ -3,31 +3,31 @@
   @include icon-base;
 
   &.i--megafon {
-    @include icon('../../img/icons/megafon.png');
+    @include img-icon('../../img/icons/megafon.png');
   }
 
   &.i--mts {
-    @include icon('../../img/icons/mts.png');
+    @include img-icon('../../img/icons/mts.png');
   }
 
   &.i--beeline {
-    @include icon('../../img/icons/beeline.png');
+    @include img-icon('../../img/icons/beeline.png');
   }
 
   &.i--tele2 {
-    @include icon('../../img/icons/tele2.png');
+    @include img-icon('../../img/icons/tele2.png');
   }
 
   &.i--google {
-    @include icon('../../img/icons/google.png');
+    @include img-icon('../../img/icons/google.png');
   }
 
   &.i--yandex {
-    @include icon('../../img/icons/yandex.png');
+    @include img-icon('../../img/icons/yandex.png');
   }
 
   &.i--double-eagle {
-    @include icon('../../img/icons/double-eagle.png');
+    @include img-icon('../../img/icons/double-eagle.png');
   }
 
   &.i--polygon-new {

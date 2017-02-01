@@ -16,7 +16,7 @@
   @include bg-size(100% 100%);
 }
 
-@mixin icon ($url, $factor: 1, $ratio: false) {
+@mixin img-icon ($url, $factor: 1, $ratio: false) {
   @if not $ratio {
     background-image: url('#{$url}');
     width: img-width($url, $factor);
