@@ -1,15 +1,18 @@
-label {
-  cursor: pointer;
-}
+label { cursor: pointer; }
 
-//fieldset {
-//
-//}
+//fieldset {  }
 
 input,
 textarea,
 select {
   /** todo monospaced fonts */
+}
+
+input {
+  &[type=radio],
+  &[type=checkbox] {
+    cursor: pointer;
+  }
 }
 
 ::placeholder {

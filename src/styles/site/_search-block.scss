@@ -1,14 +1,60 @@
-.search-block {
-  $y-space: map-get(get-bounds-map($panel-box), y);
+$panel-box-bounds: get-bounds-map($panel-box) !default;
 
+.search-form {
   &,
   [layout] {
     > * {
-      padding-left: $y-space;
+      padding-left: map-get($panel-box-bounds, y);
 
       &:first-child {
         padding-left: 0;
       }
     }
+  }
+}
+
+.search-results {
+  @include unboxing($panel-box, x);
+  @include box($panel-box);
+
+  &-table {
+    font-size: 14px;
+    min-width: 100%;
+
+    $box: 5px 15px;
+    @include table-cells-padding($box, x between half-between);
+    @include table-cells-padding($box, y between around);
+
+    @include table-ears () {
+      background: $borders-color;
+      width: map-get($panel-box-bounds, x);
+    }
+
+    thead {
+      color: $base-color-muted;
+      background: $borders-color;
+    }
+
+    tbody { @include table-cells-border(1px dashed $borders-color, between y bottom nowrap); }
+  }
+
+  .station {
+    //&:hover { background: $bg-color-item-hover; }
+
+    &-sources-list {
+
+      .station-source {
+        padding-left: 12px;
+        &:first-child { padding-left: 0; }
+      }
+
+      &:hover .station-source {
+        @include opacity-states($normal: .5, $active: 1);
+      }
+    }
+  }
+
+  .station-details {
+
   }
 }
