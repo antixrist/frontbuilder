@@ -13,3 +13,7 @@
 @function img-height ($url, $factor: 1) {
   @return unquote('height(url(#{$url}), #{$factor})');
 }
+
+@function img-ratio ($url, $factor: 1) {
+  @return unquote('ratio(url(#{$url}), #{$factor})');
+}

@@ -30,33 +30,32 @@
 
   &.-megafon,
   &.-megaphone {
-    @include icon('../../img/icons/megafon.png');
+    @include icon('../../img/icons/megafon.png', $ratio: 1);
   }
 
   &.-mts {
-    //background-image: url('../../img/icons/mts.png');
-    //@include icon('../../img/icons/mts.png');
+    @include icon('../../img/icons/mts.png');
   }
 
-  //&.-beeline {
-  //  @include icon('../../img/icons/beeline.png');
-  //}
-  //
-  //&.-tele2 {
-  //  @include icon('../../img/icons/tele2.png');
-  //}
-  //
-  //&.-google {
-  //  @include icon('../../img/icons/google.png');
-  //}
-  //
-  //&.-yandex {
-  //  @include icon('../../img/icons/yandex.png');
-  //}
-  //
-  //&.-double-eagle {
-  //  @include icon('../../img/icons/double-eagle.png');
-  //}
+  &.-beeline {
+    @include icon('../../img/icons/beeline.png');
+  }
+
+  &.-tele2 {
+    @include icon('../../img/icons/tele2.png');
+  }
+
+  &.-google {
+    @include icon('../../img/icons/google.png');
+  }
+
+  &.-yandex {
+    @include icon('../../img/icons/yandex.png');
+  }
+
+  &.-double-eagle {
+    @include icon('../../img/icons/double-eagle.png');
+  }
 
   //&.-polygon-new {
   //  //@include icon('./fontello/2.svg');

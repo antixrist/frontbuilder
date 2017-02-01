@@ -7,6 +7,8 @@
   @include is-centered-block;
 }
 
+//@mixin
+
 $background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
 @mixin bg-size ($size, $factor: 1) {
   @if type_of($size) == string {
@@ -32,7 +34,7 @@ $background-size-behavior: '/js/vendor/backgroundsize.min.htc' !default;
 }
 
 @mixin bg-size-image ($url, $factor: 1) {
-  @include bg-size(width($url, $factor) height($url, $factor));
+  @include bg-size(img-size($url, $factor));
 }
 
 //--------------

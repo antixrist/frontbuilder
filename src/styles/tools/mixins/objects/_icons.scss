@@ -11,15 +11,29 @@
   font-style: normal;
   font-weight: normal;
   text-align: center;
+  max-width: 100%;
 
   @include bg-size(100% 100%);
 }
 
-@mixin icon ($url, $factor: 1) {
+@mixin icon ($url, $factor: 1, $ratio: false) {
+  @if not $ratio {
+    background-image: url('#{$url}');
+    width: img-width($url, $factor);
+    height: img-height($url, $factor);
+  }
+  @else {
+    width: img-width($url, $factor);
+    background-image: url('#{$url}');
 
-  background-image: url('#{$url}');
-  width: img-width($url, $factor);
-  height: img-height($url, $factor);
+    &:before {
+      content: '';
+      display: block;
+
+      height: 0;
+      padding-bottom: img-ratio($url, $factor);
+    }
+  }
 
   @content;
 }
