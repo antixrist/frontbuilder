@@ -30,7 +30,7 @@
 
   &.-megafon,
   &.-megaphone {
-    @include img-icon('../../img/icons/megafon.png', $ratio: 1);
+    @include img-icon('../../img/icons/megafon.png');
   }
 
   &.-mts {
