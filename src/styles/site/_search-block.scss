@@ -86,8 +86,8 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       }
       .target-icon,
       .th-icon-checkbox {
-        @include unboxing(5px 10px);
-        @include box(5px 10px);
+        @include unboxing(5px 7px);
+        @include box(5px 7px);
       }
     }
 
