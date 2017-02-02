@@ -32,6 +32,19 @@
   color: $color-danger !important;
 }
 
+@include u(text-bold) {
+  @include font-type(bold);
+}
+@include u(text-medium) {
+  @include font-type(medium);
+}
+@include u(text-italic) {
+  @include font-type(italic);
+}
+@include u(text-bold-italic) {
+  @include font-type(bold-italic);
+}
+
 @include u(text-muted) {
   color: $base-color-muted !important;
 }
