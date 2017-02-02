@@ -7,10 +7,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
   [layout] {
     > * {
       padding-left: map-get($panel-box-bounds, y);
-
-      &:first-child {
-        padding-left: 0;
-      }
+      &:first-child { padding-left: 0; }
     }
   }
 }
@@ -38,6 +35,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
     @include table-cells-padding($table-cells-box, x between half-between);
     @include table-cells-padding($table-cells-box, y);
+    > tbody { @include table-cells-border(1px dashed $borders-color, between top, $blocks: false); }
 
     @include table-ears () {
       background: $borders-color;
@@ -49,10 +47,6 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       background: $borders-color;
 
       th { vertical-align: middle; }
-    }
-
-    > tbody {
-      @include table-cells-border(1px dashed $borders-color, between top nowrap);
     }
 
     .station {
@@ -76,16 +70,13 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
         @include table-cells-padding($table-cells-box, y);
 
         @include table-cells-border(1px solid $borders-color, around left right bottom);
-        tbody {
-          @include table-cells-border(1px dashed $borders-color, y between nowrap);
-        }
+        > tbody { @include table-cells-border(1px dashed $borders-color, y between, $blocks: false); }
       }
 
       .th-icon-checkbox {
         @include opacity-states();
       }
-      .target-icon,
-      .th-icon-checkbox {
+      .wide-checkbox {
         @include unboxing(5px 7px);
         @include box(5px 7px);
       }

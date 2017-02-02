@@ -87,6 +87,13 @@
   $half-between: if(not $half-between, not not index($options, between-half), $half-between);
   $half-between: if(not $half-between, not not index($options, beetween-half), $half-between);
 
+  $blocks: if(type-of($blocks) == '', null, $blocks);
+  $rows:   if(type-of($rows)   == '', null, $rows);
+  $cells:  if(type-of($cells)  == '', null, $cells);
+
+  $rows:  if($rows,  $rows,  '> tr');
+  $cells: if($cells, $cells, '> th, > td');
+
   @if $x {
     $left: true;
     $right: true;
@@ -293,6 +300,13 @@
   $between: if(not $between, not not index($options, betwen), $between);
   $between: if(not $between, not not index($options, beetween), $between);
 
+  $blocks: if(type-of($blocks) == '', null, $blocks);
+  $rows:   if(type-of($rows)   == '', null, $rows);
+  $cells:  if(type-of($cells)  == '', null, $cells);
+
+  $rows:  if($rows,  $rows,  '> tr');
+  $cells: if($cells, $cells, '> th, > td');
+
   @if $x {
     $left: true;
     $right: true;
@@ -316,36 +330,53 @@
   }
 
   @if $top and $bottom and $left and $right and $between and $around {
-    #{$blocks} {
-      #{$rows} {
-        #{$cells} { border: $border; }
-      }
+    @if not $blocks {
+      #{$rows} { #{$cells} { border: $border; } }
+    } @else {
+      #{$blocks} { #{$rows} { #{$cells} { border: $border; } } }
     }
   } @else {
     @if $left or $right {
       @if $between and $around {
-        #{$blocks} {
+        @if not $blocks {
           #{$rows} {
             #{$cells} {
               @if $left  { border-left:  $border; }
               @if $right { border-right: $border; }
             }
           }
-        }
-      }
-      @else {
-        @if $around and not $between {
+        } @else {
           #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $left  { border-left:  $border; }
+                @if $right { border-right: $border; }
+              }
+            }
+          }
+        }
+      } @else {
+        @if $around and not $between {
+          @if not $blocks {
             #{$rows} {
               #{$cells} {
                 @if $left  { &:first-child { border-left:  $border; } }
                 @if $right { &:last-child  { border-right: $border; } }
               }
             }
+          } @else {
+            #{$blocks} {
+              #{$rows} {
+                #{$cells} {
+                  @if $left  { &:first-child { border-left:  $border; } }
+                  @if $right { &:last-child  { border-right: $border; } }
+                }
+              }
+            }
           }
         }
         @elseif not $around and $between {
-          #{$blocks} {
+          @if not $blocks {
             #{$rows} {
               #{$cells} {
                 @if $right { &:first-child:not(:last-child) { border-right: $border; } }
@@ -356,6 +387,19 @@
                 }
               }
             }
+          } @else {
+            #{$blocks} {
+              #{$rows} {
+                #{$cells} {
+                  @if $right { &:first-child:not(:last-child) { border-right: $border; } }
+                  @if $left  { &:last-child:not(:first-child) { border-left:  $border; } }
+                  &:not(:last-child):not(:first-child) {
+                    @if $left  { border-left:  $border; }
+                    @if $right { border-right: $border; }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -363,22 +407,29 @@
 
     @if $top or $bottom {
       @if $between and $around {
-        #{$blocks} {
+        @if not $blocks {
           #{$rows} {
             #{$cells} {
               @if $top    { border-top:    $border; }
               @if $bottom { border-bottom: $border; }
             }
           }
+        } @else {
+          #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $top    { border-top:    $border; }
+                @if $bottom { border-bottom: $border; }
+              }
+            }
+          }
         }
-      }
-      @else {
+      } @else {
         @if $around and not $between {
-          @if $nowrap {
+          @if not $blocks {
             @if $top    { #{$rows} { &:first-child { #{$cells} { border-top:    $border; } } } }
             @if $bottom { #{$rows} { &:last-child  { #{$cells} { border-bottom: $border; } } } }
-          }
-          @else {
+          } @else {
             #{$blocks} {
               @if $top    { &:first-child { #{$rows} { &:first-child { #{$cells} { border-top:    $border; } } } } }
               @if $bottom { &:last-child  { #{$rows} { &:last-child  { #{$cells} { border-bottom: $border; } } } } }
@@ -386,7 +437,7 @@
           }
         }
         @if not $around and $between {
-          @if $nowrap {
+          @if not $blocks {
             @if $bottom { #{$rows} { &:first-child:not(:last-child) { #{$cells} { border-bottom: $border; } } } }
             @if $top    { #{$rows} { &:last-child:not(:first-child) { #{$cells} { border-top:    $border; } } } }
 
@@ -398,8 +449,7 @@
                 }
               }
             }
-          }
-          @else {
+          } @else {
             #{$blocks} {
               @if $bottom {
                 &:first-child:last-child {
@@ -431,7 +481,6 @@
                   }
                 }
               }
-
 
               @if $bottom {
                 &:first-child:not(:last-child),
