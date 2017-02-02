@@ -1,6 +1,7 @@
 .form-group {
   label,
   .label {
+    cursor: default;
     color: $base-color-muted;
     margin-bottom: 3px;
     display: block;

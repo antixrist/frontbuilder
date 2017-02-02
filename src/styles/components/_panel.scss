@@ -4,7 +4,7 @@ $panel-box-bounds: get-bounds-map($panel-box); // without !default
 .panel {
   @include md-shadow(2);
 
-  overflow: auto;
+  //overflow: auto;
 
   &-header {
     @include font-type(bold);
@@ -19,6 +19,8 @@ $panel-box-bounds: get-bounds-map($panel-box); // without !default
     max-width: 100%;
     overflow: auto;
   }
+
+  &-box { @include box($panel-box); }
 
   &-x-sections {
     margin-left: map-get($panel-box-bounds, y) * -1;

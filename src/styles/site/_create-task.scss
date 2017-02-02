@@ -17,7 +17,6 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     display: block;
   }
 
-  .actions,
   .properties,
   .notifications {
     @include box($panel-box);
@@ -28,22 +27,22 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
   .actions,
   .properties { border-top: 1px solid $borders-color; }
 
-  .schedule-time-add,
-  .schedule-time-remove,
+  .schedule-time-creator,
+  .schedule-time-remover,
   .additional-properties-switcher {
     @include box(.5em 1em);
   }
 
-  .schedule-time-remove {
-    @include link(
-      $color-normal: #ff0000,
-      $color-hover:  lighten(#ff0000, 20%),
-      $color-active: $link-color,
-      $proxy: '.text'
-    );
-
-    .text { border: none !important; }
-  }
+  //.schedule-time-remove {
+  //  @include link(
+  //    $color-normal: $link-color-active,
+  //    $color-hover:  lighten($link-color-active, 20%),
+  //    $color-active: $link-color,
+  //    $proxy: '.text'
+  //  );
+  //
+  //  .text { border: none !important; }
+  //}
 
   .additional-properties-switcher {
     @include link($color-normal: $link-color, $color-hover: lighten($link-color, 20%));

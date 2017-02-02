@@ -1,0 +1,29 @@
+$panel-box-bounds: get-bounds-map($panel-box) !default;
+
+.create-contact {
+
+  &-header {
+    @include box($panel-box);
+    border-bottom: 1px solid $borders-color;
+
+    .closer {
+      @include unboxing($panel-box, top right bottom);
+      @include box($panel-box);
+      @include opacity-states();
+    }
+  }
+
+  .actions {
+    @include box(map-get($panel-box-bounds, x));
+    border-top: 1px solid $borders-color;
+  }
+
+  .number-creator,
+  .number-remover {
+    font-size: 16px;
+
+    $box: 6px 10px 5px;
+    @include box($box);
+    @include unboxing($box, right);
+  }
+}

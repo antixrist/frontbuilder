@@ -201,15 +201,15 @@ $base-font-size: 16px !default;
 
     @include apply-styles($css-hover);
 
-    @include btn-focus ($proxy) {
-      color: $color-hover;
-      border-color: $border-color-hover;
-      background-color: $bg-color-hover;
-      transition: $transition-hover;
-      box-shadow: $shadow-hover;
-
-      @include apply-styles($css-hover);
-    }
+    //@include btn-focus ($proxy) {
+    //  color: $color-hover;
+    //  border-color: $border-color-hover;
+    //  background-color: $bg-color-hover;
+    //  transition: $transition-hover;
+    //  box-shadow: $shadow-hover;
+    //
+    //  @include apply-styles($css-hover);
+    //}
   }
 
   @include btn-focus ($proxy) {
