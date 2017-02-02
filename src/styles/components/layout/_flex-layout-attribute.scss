@@ -9,3 +9,9 @@ $SELF   : "self";
 /* Optional additional features — (un)comment to include/exclude */
 @import '~flex-layout-attribute/sass/flex-layout-attribute/_layout-responsive';
 @import '~flex-layout-attribute/sass/flex-layout-attribute/_self-responsive';
+
+// custom overrides
+[layout*="row"], [layout*="column"] {
+  width: auto;
+  max-width: none;
+}

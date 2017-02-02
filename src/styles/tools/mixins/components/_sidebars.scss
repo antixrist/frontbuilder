@@ -1,6 +1,6 @@
 @mixin sidebars (
-  $gutter: 1rem,
-  $gutter-options: between half-between,
+  //$gutter: 1rem,
+  //$gutter-options: between half-between,
   $center: '.center'
 ) {
   $items: ('> #{$center}', '> :not(#{$center})');
@@ -24,6 +24,5 @@
     #{$items} { vertical-align: bottom; }
   }
 
-  $gutter-options: append($gutter-options, nowrap);
-  @include table-cells-padding($gutter, $gutter-options, $items);
+  //$gutter-options: append($gutter-options, nowrap);
 }

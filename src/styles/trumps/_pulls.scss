@@ -7,13 +7,3 @@
 @include u(pull-none) {
   float: none !important;
 }
-
-@include u(text-left) {
-  text-align: left !important;
-}
-@include u(text-center) {
-  text-align: center !important;
-}
-@include u(text-right) {
-  text-align: right !important;
-}

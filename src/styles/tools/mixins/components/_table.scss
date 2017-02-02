@@ -6,7 +6,7 @@
   -ms-overflow-style: -ms-autohiding-scrollbar; // See https://github.com/twbs/bootstrap/pull/10057
 }
 
-@mixin table-ears ($options: before left right, $wrap: '> thead tr', $cells: '> td, > th') {
+@mixin table-ears ($options: before left right, $wrap: '> thead > tr', $cells: '> td, > th') {
   $options: if(type-of($options) != list, ($options,), $options);
   $nowrap: not not index($options, nowrap);
 

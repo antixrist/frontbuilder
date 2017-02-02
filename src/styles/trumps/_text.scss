@@ -1,0 +1,72 @@
+@include u(text-left) {
+  text-align: left !important;
+}
+@include u(text-center) {
+  text-align: center !important;
+}
+@include u(text-right) {
+  text-align: right !important;
+}
+
+@include u(text-primary) {
+  color: $color-primary !important;
+}
+@include u(text-success) {
+  color: $color-success !important;
+}
+@include u(text-danger) {
+  color: $color-danger !important;
+}
+
+@include u(text-muted) {
+  color: $base-color-muted !important;
+}
+@include u(text-primary-muted) {
+  color: $color-primary-muted !important;
+}
+@include u(text-success-muted) {
+  color: $color-success-muted !important;
+}
+@include u(text-danger-muted) {
+  color: $color-danger-muted !important;
+}
+
+@include u(text-muted-x2) {
+  color: $base-color-muted-x2 !important;
+}
+@include u(text-primary-muted-x2) {
+  color: $color-primary-muted-x2 !important;
+}
+@include u(text-success-muted-x2) {
+  color: $color-success-muted-x2 !important;
+}
+@include u(text-danger-muted-x2) {
+  color: $color-danger-muted-x2 !important;
+}
+
+@include u(text-accent) {
+  color: $base-color-accent !important;
+}
+@include u(text-primary-accent) {
+  color: $color-primary-accent !important;
+}
+@include u(text-success-accent) {
+  color: $color-success-accent !important;
+}
+@include u(text-danger-accent) {
+  color: $color-danger-accent !important;
+}
+
+@include u(text-accent-x2) {
+  color: $base-color-accent-x2 !important;
+}
+@include u(text-primary-accent-x2) {
+  color: $color-primary-accent-x2 !important;
+}
+@include u(text-success-accent-x2) {
+  color: $color-success-accent-x2 !important;
+}
+@include u(text-danger-accent-x2) {
+  color: $color-danger-accent-x2 !important;
+}
+

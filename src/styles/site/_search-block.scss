@@ -21,14 +21,14 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     @include box($panel-box);
     @include unboxing($panel-box, x);
   }
-  .search-results-closer {
+  .closer {
     @include unboxing($panel-box);
     @include box($panel-box);
     @include opacity-states();
   }
 
-  $table-cells-box: 5px 15px;
   &-table {
+    $table-cells-box: 5px 15px;
     min-width: 100%;
 
     td, th { font-size: 12px; }
@@ -40,6 +40,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     @include table-ears () {
       background: $borders-color;
       width: map-get($panel-box-bounds, x);
+      z-index: -1;
     }
 
     thead {
@@ -47,6 +48,21 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       background: $borders-color;
 
       th { vertical-align: middle; }
+      a {
+        @include link(
+          $color-normal: $base-color-muted,
+          $color-hover: $base-color,
+
+          $border-color-normal: transparent,
+          $border-color-hover: transparent,
+          $border-color-focus: transparent,
+          $border-color-active: transparent,
+          $border-color-visited: transparent,
+
+          $transition-normal: (color .2s ease-out),
+          $transition-active: (color .1s ease-out)
+        );
+      }
     }
 
     .cell-unboxing {
@@ -79,8 +95,22 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
         > tbody { @include table-cells-border(1px dashed $borders-color, y between, $blocks: false); }
       }
 
-      .th-icon-checkbox {
+      .icon-checkbox {
+        @extend %link;
         @include opacity-states();
+        //@include link(
+        //  $color-normal: $base-color-muted,
+        //  $color-hover: $base-color,
+        //
+        //  $border-color-normal: transparent,
+        //  $border-color-hover: transparent,
+        //  $border-color-focus: transparent,
+        //  $border-color-active: transparent,
+        //  $border-color-visited: transparent,
+        //
+        //  $transition-normal: (color .2s ease-out),
+        //  $transition-active: (color .1s ease-out)
+        //);
       }
     }
 
