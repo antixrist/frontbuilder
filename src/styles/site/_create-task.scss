@@ -1,0 +1,27 @@
+$panel-box-bounds: get-bounds-map($panel-box) !default;
+
+.create-task {
+
+  &-header {
+    @include box($panel-box);
+
+    .closer {
+      @include unboxing($panel-box, top right bottom);
+      @include box($panel-box);
+      @include opacity-states();
+    }
+  }
+
+  .task-name-control {
+    @include box($panel-box, left);
+    display: block;
+  }
+
+  .filters-form,
+  .description,
+  .pagination {
+    border-top: 1px solid $borders-color;
+  }
+
+
+}

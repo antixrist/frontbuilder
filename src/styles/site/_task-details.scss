@@ -25,13 +25,10 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       $border-color-normal: transparent,
       $border-color-hover: transparent,
       $border-color-active: transparent,
-
       $proxy: '.icon'
     );
     @include link(
       $color-normal: $link-color,
-      //$color-hover: lighten($link-color, 20%),
-
       $proxy: '.text'
     );
     .text {
@@ -48,14 +45,6 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   .filters-form {
     @include box($panel-box);
-
-    &,
-    [layout] {
-      > * {
-        padding-left: map-get($panel-box-bounds, y);
-        &:first-child { padding-left: 0; }
-      }
-    }
   }
 
   $table-cells-box: 5px 15px;

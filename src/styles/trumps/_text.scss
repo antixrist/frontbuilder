@@ -1,3 +1,7 @@
+@include u(nowrap) {
+  white-space: nowrap !important;
+}
+
 @include u(text-left) {
   text-align: left !important;
 }

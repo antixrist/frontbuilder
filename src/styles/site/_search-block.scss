@@ -3,12 +3,9 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 .search-form {
   @include box($panel-box);
 
-  &,
-  [layout] {
-    > * {
-      padding-left: map-get($panel-box-bounds, y);
-      &:first-child { padding-left: 0; }
-    }
+  .search-btn {
+    @include unboxing($panel-box, top right bottom);
+    @include box($panel-box);
   }
 }
 

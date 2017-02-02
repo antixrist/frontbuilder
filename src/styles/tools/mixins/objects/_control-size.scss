@@ -1,12 +1,12 @@
 $base-font-size: 16px !default;
 $control-sizes: (
-  xxs: (font-size: 10px, height: 26px, active-offset: 1px, padding: .5em 1em),
-  xs: (font-size: 12px, height: 31px, active-offset: 1px, padding: 3px 8px),
-  sm: (font-size: 14px, height: 36px, active-offset: 1px, padding: .5em 1em),
-  default: (font-size: 16px, height: 40px, active-offset: 1px, padding: .5em 1em),
-  md: (font-size: 18px, height: 45px, active-offset: 1px, padding: .5em 1em),
-  lg: (font-size: 20px, height: 50px, active-offset: 2px, padding: .5em 1em),
-  xl: (font-size: 22px, height: 55px, active-offset: 2px, padding: .5em 1em)
+  xxs: (font-size: 12px, height: 26px, padding: 0.5em .7em, active-offset: 1px),
+  xs: (font-size: 12px, height: 31px, padding: 3px 8px, active-offset: 1px),
+  sm: (font-size: 14px, height: 36px, padding: .5em 1em, active-offset: 1px),
+  default: (font-size: 16px, height: 40px, padding: .5em 1em, active-offset: 1px),
+  md: (font-size: 18px, height: 45px, padding: .5em 1em, active-offset: 1px),
+  lg: (font-size: 20px, height: 50px, padding: .5em 1em, active-offset: 2px),
+  xl: (font-size: 22px, height: 55px, padding: .5em 1em, active-offset: 2px)
 ) !default;
 
 
