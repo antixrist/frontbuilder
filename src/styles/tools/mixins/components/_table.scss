@@ -117,7 +117,11 @@
   }
 
   @if $top and $bottom and $left and $right and $around and $between and not $half-between {
-    #{$cells} { padding: $padding; }
+    @if not $blocks {
+      #{$rows} { #{$cells} { padding: $padding; } }
+    } @else {
+      #{$blocks} { #{$rows} { #{$cells} { padding: $padding; } } }
+    }
   } @else {
     $bounds: get-bounds-map($padding);
     $bounds-half: get-bounds-list($bounds);
@@ -130,18 +134,26 @@
 
     @if $left or $right {
       @if $between and $around and not $half-between {
-        #{$blocks} {
+        @if not $blocks {
           #{$rows} {
             #{$cells} {
               @if $left  { padding-left:  map-get($bounds, left); }
               @if $right { padding-right: map-get($bounds, right); }
             }
           }
-        }
-      }
-      @else {
-        @if $between {
+        } @else {
           #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $left  { padding-left:  map-get($bounds, left); }
+                @if $right { padding-right: map-get($bounds, right); }
+              }
+            }
+          }
+        }
+      } @else {
+        @if $between {
+          @if not $blocks {
             #{$rows} {
               #{$cells} {
                 $_bounds: if($half-between, $bounds-half, $bounds);
@@ -155,15 +167,40 @@
                 }
               }
             }
+          } @else {
+            #{$blocks} {
+              #{$rows} {
+                #{$cells} {
+                  $_bounds: if($half-between, $bounds-half, $bounds);
+
+                  @if $right { &:first-child:not(:last-child) { padding-right: map-get($_bounds, right); } }
+                  @if $left  { &:last-child:not(:first-child) { padding-left:  map-get($_bounds, left); } }
+
+                  &:not(:last-child):not(:first-child) {
+                    @if $left  { padding-left:  map-get($_bounds, left); }
+                    @if $right { padding-right: map-get($_bounds, right); }
+                  }
+                }
+              }
+            }
           }
         }
 
         @if $around {
-          #{$blocks} {
+          @if not $blocks {
             #{$rows} {
               #{$cells} {
                 @if $left  { &:first-child { padding-left:  map-get($bounds, left); } }
                 @if $right { &:last-child  { padding-right: map-get($bounds, right); } }
+              }
+            }
+          } @else {
+            #{$blocks} {
+              #{$rows} {
+                #{$cells} {
+                  @if $left  { &:first-child { padding-left:  map-get($bounds, left); } }
+                  @if $right { &:last-child  { padding-right: map-get($bounds, right); } }
+                }
               }
             }
           }
@@ -173,22 +210,30 @@
 
     @if $top or $bottom {
       @if $between and $around and not $half-between {
-        #{$blocks} {
+        @if not $blocks {
           #{$rows} {
             #{$cells} {
               @if $top    { padding-top:    map-get($bounds, top); }
               @if $bottom { padding-bottom: map-get($bounds, bottom); }
             }
           }
+        } @else {
+          #{$blocks} {
+            #{$rows} {
+              #{$cells} {
+                @if $top    { padding-top:    map-get($bounds, top); }
+                @if $bottom { padding-bottom: map-get($bounds, bottom); }
+              }
+            }
+          }
         }
       }
       @else {
         @if $around {
-          @if $nowrap {
+          @if not $blocks {
             @if $top    { #{$rows} { &:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } } }
             @if $bottom { #{$rows} { &:last-child  { #{$cells} { padding-bottom: map-get($bounds, bottom); } } } }
-          }
-          @else {
+          } @else {
             #{$blocks} {
               @if $top    { &:first-child #{$rows} { &:first-child { #{$cells} { padding-top:    map-get($bounds, top); } } } }
               @if $bottom { &:last-child #{$rows} { &:last-child   { #{$cells} { padding-bottom: map-get($bounds, bottom); } } } }
@@ -198,7 +243,7 @@
 
         @if $between {
           $bounds: if($half-between, $bounds-half, $bounds);
-          @if $nowrap {
+          @if not $blocks {
             @if $bottom { #{$rows} { &:first-child:not(:last-child) { #{$cells} { padding-bottom: map-get($bounds, bottom); } } } }
             @if $top    { #{$rows} { &:last-child:not(:first-child) { #{$cells} { padding-top:    map-get($bounds, top); } } } }
 
@@ -210,8 +255,7 @@
                 }
               }
             }
-          }
-          @else {
+          } @else {
             #{$blocks} {
               &:first-child:last-child {
                 @if $bottom {
