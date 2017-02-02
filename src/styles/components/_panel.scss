@@ -1,8 +1,10 @@
 $panel-box: .5rem 1rem !default;
-$panel-box-bounds: get-bounds-map($panel-box) !default;
+$panel-box-bounds: get-bounds-map($panel-box); // without !default
 
 .panel {
   @include md-shadow(2);
+
+  overflow: auto;
 
   &-header {
     @include font-type(bold);
@@ -12,10 +14,24 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     .panel-icon { color: $color-primary; }
   }
 
+  &-header,
+  &-section {
+    max-width: 100%;
+    overflow: auto;
+  }
+
   &-x-sections {
+    margin-left: map-get($panel-box-bounds, y) * -1;
     > * {
       padding-left: map-get($panel-box-bounds, y);
-      &:first-child { padding-left: 0; }
+      //&:first-child { padding-left: 0; }
+    }
+  }
+
+  &-y-sections {
+    > * {
+      padding-top: map-get($panel-box-bounds, y);
+      &:first-child { padding-top: 0; }
     }
   }
 }

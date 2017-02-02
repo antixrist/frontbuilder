@@ -26,99 +26,102 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   &-table {
     $table-cells-box: 5px 15px;
-    min-width: 100%;
 
-    td, th { font-size: 12px; }
+    > table {
+      min-width: 100%;
 
-    @include table-cells-padding($table-cells-box, x between half-between);
-    @include table-cells-padding($table-cells-box, y);
-    > tbody { @include table-cells-border(1px dashed $borders-color, between top, $blocks: false); }
+      td, th { font-size: 12px; }
 
-    @include table-ears () {
-      background: $borders-color;
-      width: map-get($panel-box-bounds, x);
-      z-index: -1;
-    }
+      @include table-cells-padding($table-cells-box, x between half-between);
+      @include table-cells-padding($table-cells-box, y);
+      > tbody { @include table-cells-border(1px dashed $borders-color, between top, $blocks: false); }
 
-    thead {
-      color: $base-color-muted;
-      background: $borders-color;
-
-      th { vertical-align: middle; }
-      a {
-        @include link(
-          $color-normal: $base-color-muted,
-          $color-hover: $base-color,
-
-          $border-color-normal: transparent,
-          $border-color-hover: transparent,
-          $border-color-focus: transparent,
-          $border-color-active: transparent,
-          $border-color-visited: transparent,
-
-          $transition-normal: (color .2s ease-out),
-          $transition-active: (color .1s ease-out)
-        );
+      @include table-ears () {
+        background: $borders-color;
+        width: map-get($panel-box-bounds, x);
+        z-index: -1;
       }
-    }
 
-    .cell-unboxing {
-      @include unboxing(5px 7px);
-      @include box(5px 7px);
-      display: block;
-    }
+      thead {
+        color: $base-color-muted;
+        background: $borders-color;
 
-    .station {
-      &-sources-list {
-        white-space: nowrap;
+        th { vertical-align: middle; }
+        a {
+          @include link(
+            $color-normal: $base-color-muted,
+            $color-hover: $base-color,
 
-        .station-source {
-          padding-left: 12px;
-          &:first-child { padding-left: 0; }
-        }
+            $border-color-normal: transparent,
+            $border-color-hover: transparent,
+            $border-color-focus: transparent,
+            $border-color-active: transparent,
+            $border-color-visited: transparent,
 
-        &:hover .station-source {
-          @include opacity-states($normal: .5, $active: 1);
+            $transition-normal: (color .2s ease-out),
+            $transition-active: (color .1s ease-out)
+          );
         }
       }
-    }
 
-    .station-details {
-      &-table {
-        @include table-cells-padding($table-cells-box, x around between half-between);
-        @include table-cells-padding($table-cells-box, y);
-
-        @include table-cells-border(1px solid $borders-color, around left right bottom);
-        > tbody { @include table-cells-border(1px dashed $borders-color, y between, $blocks: false); }
+      .cell-unboxing {
+        @include unboxing(5px 7px);
+        @include box(5px 7px);
+        display: block;
       }
 
-      .icon-checkbox {
-        @extend %link;
-        @include opacity-states();
-        //@include link(
-        //  $color-normal: $base-color-muted,
-        //  $color-hover: $base-color,
-        //
-        //  $border-color-normal: transparent,
-        //  $border-color-hover: transparent,
-        //  $border-color-focus: transparent,
-        //  $border-color-active: transparent,
-        //  $border-color-visited: transparent,
-        //
-        //  $transition-normal: (color .2s ease-out),
-        //  $transition-active: (color .1s ease-out)
-        //);
+      .station {
+        &-sources-list {
+          white-space: nowrap;
+
+          .station-source {
+            padding-left: 12px;
+            &:first-child { padding-left: 0; }
+          }
+
+          &:hover .station-source {
+            @include opacity-states($normal: .5, $active: 1);
+          }
+        }
       }
-    }
 
-    .station-details { display: none; }
-    .station.is-expanded {
-      & + .station-details {
-        display: table-row;
-        > td, > th { border-top: none !important; }
+      .station-details {
+        &-table {
+          @include table-cells-padding($table-cells-box, x around between half-between);
+          @include table-cells-padding($table-cells-box, y);
 
-        & + .station {
+          @include table-cells-border(1px solid $borders-color, around left right bottom);
+          > tbody { @include table-cells-border(1px dashed $borders-color, y between, $blocks: false); }
+        }
+
+        .icon-checkbox {
+          @extend %link;
+          @include opacity-states();
+          //@include link(
+          //  $color-normal: $base-color-muted,
+          //  $color-hover: $base-color,
+          //
+          //  $border-color-normal: transparent,
+          //  $border-color-hover: transparent,
+          //  $border-color-focus: transparent,
+          //  $border-color-active: transparent,
+          //  $border-color-visited: transparent,
+          //
+          //  $transition-normal: (color .2s ease-out),
+          //  $transition-active: (color .1s ease-out)
+          //);
+        }
+      }
+
+      .station-details { display: none; }
+      .station.is-expanded {
+        & + .station-details {
+          display: table-row;
           > td, > th { border-top: none !important; }
+
+          & + .station {
+            > td, > th { border-top: none !important; }
+          }
         }
       }
     }

@@ -17,11 +17,49 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     display: block;
   }
 
-  .filters-form,
-  .description,
-  .pagination {
+  .properties {
+    @include box($panel-box);
+
     border-top: 1px solid $borders-color;
   }
 
+  .additional-properties-switcher {
+    @include box(.5em 1em);
+    @include link($color-normal: $link-color, $color-hover: lighten($link-color, 20%));
+
+    display: block;
+    white-space: nowrap;
+    text-align: center;
+    border: none !important;
+
+    > * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .c-switch {
+      width: 25px;
+      margin-right: 10px;
+    }
+  }
+
+  .schedules {
+    border-top: 1px dashed $borders-color;
+    border-bottom: 1px dashed $borders-color;
+
+    .schedule {
+      @include box($panel-box);
+
+      background: #f5f6fa;
+
+      margin-top: 2px;
+      &:first-child { margin-top: 0; }
+    }
+
+    .week-day-checked {
+      margin-left: 14px;
+      &:first-child { margin-left: 0; }
+    }
+  }
 
 }

@@ -53,3 +53,10 @@ $wrap-masonry: (
 
 @import '~flexiblegs-scss/flexiblegs-scss';
 @import '~flexiblegs-scss-plus/scss/helper/flexiblegs-scss-plus';
+
+
+// custom overrides
+
+.wrap {
+  width: auto;
+}
