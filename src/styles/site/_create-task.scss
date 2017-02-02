@@ -17,14 +17,35 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     display: block;
   }
 
-  .properties {
+  .actions,
+  .properties,
+  .notifications {
     @include box($panel-box);
+  }
+  .actions {
+    @include box(map-get($panel-box-bounds, x));
+  }
+  .actions,
+  .properties { border-top: 1px solid $borders-color; }
 
-    border-top: 1px solid $borders-color;
+  .schedule-time-add,
+  .schedule-time-remove,
+  .additional-properties-switcher {
+    @include box(.5em 1em);
+  }
+
+  .schedule-time-remove {
+    @include link(
+      $color-normal: #ff0000,
+      $color-hover:  lighten(#ff0000, 20%),
+      $color-active: $link-color,
+      $proxy: '.text'
+    );
+
+    .text { border: none !important; }
   }
 
   .additional-properties-switcher {
-    @include box(.5em 1em);
     @include link($color-normal: $link-color, $color-hover: lighten($link-color, 20%));
 
     display: block;
@@ -56,10 +77,17 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       &:first-child { margin-top: 0; }
     }
 
-    .week-day-checked {
-      margin-left: 14px;
-      &:first-child { margin-left: 0; }
+    .week-day-checkers {
+      $checker-box: .5em 7px;
+      $checker-box-bounds: get-bounds-map($checker-box);
+
+      @include box($checker-box, y);
+      @include unboxing($checker-box);
+
+      .checker {
+        //@include unboxing($checker-box, y);
+        @include box($checker-box);
+      }
     }
   }
-
 }

@@ -1,3 +1,13 @@
+@include u(block) {
+  display: block !important;
+}
+@include u(inline) {
+  display: inline !important;
+}
+@include u(inline-block) {
+  display: inline-block !important;
+}
+
 @include u(nowrap) {
   white-space: nowrap !important;
 }
