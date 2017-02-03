@@ -40,6 +40,7 @@ $control-sizes: (
     @if $include-offset and $offset != null {
       &:active {
         $bounds: get-bounds-map(map-get($styles, padding));
+        $bounds: if($bounds, $bounds, 0);
 
         @include proxy($proxy) {
           @if map-has-key($styles, padding) {
@@ -87,6 +88,7 @@ $control-sizes: (
   $proxy: null
 ) {
   $bounds: get-bounds-map($bounds);
+  $bounds: if($bounds, $bounds, 0);
   $bounds-list: get-bounds-list($bounds);
 
   @include proxy($proxy) {

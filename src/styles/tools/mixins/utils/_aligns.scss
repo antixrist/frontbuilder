@@ -4,7 +4,7 @@
   margin-right: auto;
 }
 
-@mixin center ($direction: x y, $size: null) {
+@mixin center ($size, $direction: x y) {
   position: absolute;
   $x: not not index($direction, x);
   $y: not not index($direction, y);
@@ -58,7 +58,7 @@
   $right: nth($position, 2);
 
   @if $left == center and $right == center {
-    @include center($size: $size);
+    @include center($size);
   }
   @else {
     @if $left == top {
@@ -74,7 +74,7 @@
         right: 0;
       }
       @if $right == center {
-        @include center(x, $size: $size);
+        @include center($size, x);
       }
     }
     @if $left == right {
@@ -90,7 +90,7 @@
         bottom: 0;
       }
       @if $right == center {
-        @include center(y, $size: $size);
+        @include center($size, y);
       }
     }
     @if $left == bottom {
@@ -106,7 +106,7 @@
         right: 0;
       }
       @if $right == center {
-        @include center(x, $size: $size);
+        @include center($size, x);
       }
     }
     @if $left == left {
@@ -122,7 +122,7 @@
         bottom: 0;
       }
       @if $right == center {
-        @include center(y, $size: $size);
+        @include center($size, y);
       }
     }
   }

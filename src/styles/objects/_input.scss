@@ -77,7 +77,7 @@ $input-variants: (
     &:after {
       $size: 6px 3px;
       @include triangle($size, bottom);
-      @include center(y, get-triangle-real-size($size, bottom));
+      @include center(get-triangle-real-size($size, bottom), y);
       margin-right: 5px;
     }
   }

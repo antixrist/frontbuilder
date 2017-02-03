@@ -1,4 +1,9 @@
 @mixin size($width, $height: $width) {
-  width: $width;
-  height: $height;
+  @if type-of($width) == list {
+    width: nth($width, 1);
+    height: nth($width, 2);
+  } @else {
+    width: $width;
+    height: $height;
+  }
 }
