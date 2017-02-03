@@ -47,9 +47,15 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
     @include box($panel-box);
   }
 
+  .description {
+    color: $base-color-accent;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
   $table-cells-box: 5px 15px;
   &-table {
-    @include box($panel-box, x);
+    @include box($panel-box, x bottom);
 
     > table {
       $table-cells-box: 5px 15px;

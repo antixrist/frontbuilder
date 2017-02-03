@@ -22,17 +22,7 @@
   text-align: right !important;
 }
 
-@include u(text-primary) {
-  color: $color-primary !important;
-}
-@include u(text-success) {
-  color: $color-success !important;
-}
-@include u(text-danger) {
-  color: $color-danger !important;
-}
-
-@include u (truncate) {
+@include u(truncate) {
   @include truncate();
 }
 
@@ -47,6 +37,16 @@
 }
 @include u(text-bold-italic) {
   @include font-type(bold-italic);
+}
+
+@include u(text-primary) {
+  color: $color-primary !important;
+}
+@include u(text-success) {
+  color: $color-success !important;
+}
+@include u(text-danger) {
+  color: $color-danger !important;
 }
 
 @include u(text-muted) {
