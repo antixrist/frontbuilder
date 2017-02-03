@@ -149,22 +149,22 @@ $base-font-size: 16px !default;
 
   $bg-color-normal: if(type_of($color-normal) == color, invert($color-normal), $color-normal),
   $bg-color-hover:  if(type_of($bg-color-normal) == color, lighten($bg-color-normal, 20%), $bg-color-normal),
-  $bg-color-focus:  $bg-color-hover,
+  $bg-color-focus:  $bg-color-normal,
   $bg-color-active: if(type_of($bg-color-normal) == color, lighten($bg-color-normal, 20%), $bg-color-normal),
 
   $border-color-normal: $bg-color-normal,
   $border-color-hover:  $bg-color-hover,
-  $border-color-focus:  $border-color-hover,
+  $border-color-focus:  $bg-color-focus,
   $border-color-active: $bg-color-active,
 
   $shadow-normal: none,
   $shadow-hover:  $shadow-normal,
-  $shadow-focus:  $shadow-hover,
+  $shadow-focus:  $shadow-normal,
   $shadow-active: inset 0 3px 5px rgba(0, 0, 0, .125),
 
   $transition-normal: all .1s ease-out,
   $transition-hover:  $transition-normal,
-  $transition-focus:  $transition-hover,
+  $transition-focus:  $transition-normal,
   $transition-active: $transition-hover,
 
   $css-normal: (),
@@ -200,16 +200,6 @@ $base-font-size: 16px !default;
     box-shadow: $shadow-hover;
 
     @include apply-styles($css-hover);
-
-    //@include btn-focus ($proxy) {
-    //  color: $color-hover;
-    //  border-color: $border-color-hover;
-    //  background-color: $bg-color-hover;
-    //  transition: $transition-hover;
-    //  box-shadow: $shadow-hover;
-    //
-    //  @include apply-styles($css-hover);
-    //}
   }
 
   @include btn-focus ($proxy) {
@@ -220,6 +210,26 @@ $base-font-size: 16px !default;
     box-shadow: $shadow-focus;
 
     @include apply-styles($css-focus);
+
+    @include btn-hover ($proxy) {
+      color: $color-hover;
+      border-color: $border-color-hover;
+      background-color: $bg-color-hover;
+      transition: $transition-hover;
+      box-shadow: $shadow-hover;
+
+      @include apply-styles($css-hover);
+    }
+
+    @include btn-active ($proxy) {
+      color: $color-active;
+      border-color: $border-color-active;
+      background-color: $bg-color-active;
+      transition: $transition-active;
+      box-shadow: $shadow-active;
+
+      @include apply-styles($css-active);
+    }
   }
 
   @include btn-active ($proxy) {

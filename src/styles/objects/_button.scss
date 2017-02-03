@@ -17,6 +17,7 @@ $btn-variants: (
 
     bg-color-normal: $color-primary,
     bg-color-hover: darken($color-primary, 10%),
+    bg-color-focus: $color-primary,
     bg-color-active: darken($color-primary, 10%),
   ),
   success: (
@@ -26,6 +27,7 @@ $btn-variants: (
 
     bg-color-normal: $color-success,
     bg-color-hover: darken($color-success, 10%),
+    bg-color-focus: $color-success,
     bg-color-active: darken($color-success, 10%)
   ),
   danger: (
@@ -35,6 +37,7 @@ $btn-variants: (
 
     bg-color-normal: $color-danger,
     bg-color-hover: darken($color-danger, 10%),
+    bg-color-focus: $color-danger,
     bg-color-active: darken($color-danger, 10%)
   ),
   secondary: (
@@ -44,6 +47,7 @@ $btn-variants: (
 
     bg-color-normal: $borders-color,
     bg-color-hover: darken($borders-color, 10%),
+    bg-color-focus: $borders-color,
     bg-color-active: darken($borders-color, 10%)
   )
 ) !default;
@@ -78,44 +82,68 @@ $btn-variants: (
   display: inline-block;
 
   .btn {
-    //@include btn;
-    @include btn-hover  () {  }
-    @include btn-focus  () {  }
-    @include btn-active () {  }
-
+    padding: 0;
+    border: none;
     border-radius: 0;
 
-    //@include btn-variant(
-    //  $color-normal: $color-primary,
-    //  $color-hover:  #fff,
-    //  $color-focus:  #fff,
-    //  $color-active: #fff,
-    //
-    //  $bg-color-normal: #fff,
-    //  $bg-color-hover:  $color-primary,
-    //  $bg-color-focus:  $color-primary,
-    //  $bg-color-active: $color-primary,
-    //
-    //  $shadow-normal: none,
-    //  $shadow-hover:  none,
-    //  $shadow-focus:  none,
-    //  $shadow-active: inset 0 3px 5px rgba(0, 0, 0, .125)
-    //);
+    $btn-size: 47px 45px;
+    $btn-size-map: get-sizes-map($btn-size);
 
-    border: none;
-    //padding: 0;
-    //width: 47px;
-    //height: 45px;
+    @include size($btn-size);
+    @include control-size(0, 1px);
+    line-height: map-get($btn-size-map, height);
 
-    > .btn-icon {
-      $size: 18px;
-      $size-bounds: get-sizes-map($size);
+    .inner {
+      display: inline-block;
 
-      display: block;
+      &.-circle {
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 50%;
+      }
+
+      $size: 25px;
+      $size-map: get-sizes-map($size);
+
       @include size($size);
-      //@include center($size);
-      font-size:   map-get($size-bounds, height);
-      line-height: map-get($size-bounds, height);
+      font-size: 20px;
+
+      line-height: map-get($size-map, height) - 2;
+      [class^="icon-"]:before, [class*=" icon-"]:before { line-height: map-get($size-map, height); }
+
+      @include box(
+        ((map-get($btn-size-map, height) - map-get($size-map, height)) /2)
+        floor(((map-get($btn-size-map, width) - map-get($size-map, width)) /2)),
+        x y, margin
+      );
+    }
+
+    .counter {
+      position: absolute;
+      top: 0;
+      right: 0;
+      line-height: 1;
+      font-size: 9px;
+      border-bottom-left-radius: 8px;
+      padding: 3px 3px 2px 4px;
+    }
+
+    &.-inner-sm .inner {
+      $size: 18px;
+      $size-map: get-sizes-map($size);
+
+      @include size($size);
+      font-size: 14px;
+      font-weight: bold;
+
+      line-height: map-get($size-map, height) - 2;
+      [class^="icon-"]:before, [class*=" icon-"]:before { line-height: map-get($size-map, height); }
+
+      @include box(
+        ((map-get($btn-size-map, height) - map-get($size-map, height)) /2)
+        floor(((map-get($btn-size-map, width) - map-get($size-map, width)) /2)),
+        x y, margin
+      );
     }
 
     @each $variant, $data in $btn-variants {
@@ -124,7 +152,7 @@ $btn-variants: (
         $opts: map-get($btn-variants, $variant);
         $color:        map-get($opts, bg-color-normal);
         $color-hover:  map-get($opts, bg-color-hover);
-        $color-focus:  map-get($opts, bg-color-focus);
+        $color-focus:  map-get($opts, bg-color-hover);
         $color-active: map-get($opts, bg-color-active);
 
         @if $variant == default {
@@ -141,45 +169,19 @@ $btn-variants: (
           $color-active: map-get($opts, color-active);
         }
 
-        > .circle {
+        .inner.-circle {
           color: $color;
           background: #fff;
           border-color: rgba($color, .4);
         }
+        .counter {
+          color: #fff;
+          background: $color;
+        }
 
-        @include btn-hover  ($proxy: '> .circle') { color: $color-hover; }
-        @include btn-focus  ($proxy: '> .circle') { color: $color-focus; }
-        @include btn-active ($proxy: '> .circle') { color: $color-active; }
-      }
-    }
-
-    $btn-size: 47px 45px;
-    $btn-size-map: get-sizes-map($btn-size);
-    @include size($btn-size);
-    @include control-size(0, 1px);
-    line-height: map-get($btn-size-map, height);
-
-    padding: 0;
-
-    > .circle {
-      display: inline-block;
-      border-width: 1px;
-      border-style: solid;
-      border-radius: 50%;
-
-      $size: 25px;
-      $size-map: get-sizes-map($size);
-      @include size($size);
-      line-height: map-get($size-map, height) - 2;
-      font-size: 20px;
-
-      &.-small {
-        $size: 18px;
-        $size-map: get-sizes-map($size);
-        @include size($size);
-        line-height: map-get($size-map, height) - 2;
-        font-size: 14px;
-        font-weight: bold;
+        @include btn-hover  { .inner.-circle { color: $color-hover; } }
+        @include btn-focus  { .inner.-circle { color: $color-focus; } }
+        @include btn-active { .inner.-circle { color: $color-active; } }
       }
     }
   }
