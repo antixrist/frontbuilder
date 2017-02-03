@@ -32,6 +32,10 @@
   color: $color-danger !important;
 }
 
+@include u (truncate) {
+  @include truncate();
+}
+
 @include u(text-bold) {
   @include font-type(bold);
 }

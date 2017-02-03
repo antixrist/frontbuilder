@@ -122,19 +122,6 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
         .icon-checkbox {
           @extend %link;
           @include opacity-states();
-          //@include link(
-          //  $color-normal: $base-color-muted,
-          //  $color-hover: $base-color,
-          //
-          //  $border-color-normal: transparent,
-          //  $border-color-hover: transparent,
-          //  $border-color-focus: transparent,
-          //  $border-color-active: transparent,
-          //  $border-color-visited: transparent,
-          //
-          //  $transition-normal: (color .2s ease-out),
-          //  $transition-active: (color .1s ease-out)
-          //);
         }
       }
 

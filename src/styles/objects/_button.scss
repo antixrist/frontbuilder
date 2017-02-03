@@ -179,9 +179,18 @@ $btn-variants: (
           background: $color;
         }
 
-        @include btn-hover  { .inner.-circle { color: $color-hover; } }
-        @include btn-focus  { .inner.-circle { color: $color-focus; } }
-        @include btn-active { .inner.-circle { color: $color-active; } }
+        @include btn-hover {
+          .inner.-circle { color: $color-hover; }
+          //.counter { background: none; }
+        }
+        @include btn-focus {
+          .inner.-circle { color: $color-focus; }
+          //.counter { background: none; }
+        }
+        @include btn-active {
+          .inner.-circle { color: $color-active; }
+          //.counter { background: none; }
+        }
       }
     }
   }
