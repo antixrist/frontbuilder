@@ -1,0 +1,116 @@
+.projects-list {
+  font-size: 13px;
+
+  > .actions {
+    $border: 1px solid $borders-color;
+    border-bottom: $border;
+
+    .addon,
+    .action {
+      @include box(8px 14px);
+      text-align: center;
+    }
+
+    .addon { color: $base-color-muted; }
+
+    .action {
+      @include font-type(bold);
+      border-left: $border;
+
+      .icon {
+        max-width: 16px;
+        margin-right: 3px;
+      }
+    }
+  }
+
+  > .filters { @include box($panel-box); }
+
+  > .list {
+    @include box($panel-box);
+
+    border-top: 1px solid $borders-color;
+
+    .actions {
+      $box: 1px 3px;
+
+      @include unboxing($box);
+
+      .action {
+        @include box($box);
+        @include opacity-states(
+          $normal: .3,
+          $hover: 1,
+          $active: .7
+        );
+      }
+    }
+
+    > .item {
+      border-top: 1px dashed $borders-color;
+      &:first-child { border-top: none; }
+
+      .item { border-top: 1px dashed $borders-color; }
+    }
+
+    .item {
+      .list { display: none; }
+
+      > .content {
+        @include box(6px 0);
+
+        .item-icon {
+          @include box(4px);
+          @include unboxing(4px);
+
+          color: $color-primary;
+          margin-right: 0;
+          background: #fff;
+        }
+      }
+
+      &.folder {
+        > .content .icon {
+          @extend %fontello-base;
+          @extend .icon-folder;
+        }
+
+        .list { padding-left: 18px; }
+
+        &.is-expanded {
+          > .list { display: block; }
+          > .content .icon {
+            @extend %fontello-base;
+            @extend .icon-folder-open;
+          }
+        }
+      }
+
+      &.task {
+        > .content .item-icon { display: none; }
+
+        &.has-errors > .content {
+          .item-icon { display: inline-block; }
+          .icon {
+            @extend %fontello-base;
+            @extend .icon-attention-circled;
+            color: $color-danger;
+            font-size: 12px;
+          }
+        }
+
+        .description {
+          font-size: 11px;
+          margin-top: 2px;
+        }
+      }
+
+      &.polygon {
+        > .content .icon {
+          @extend %fontello-base;
+          @extend .icon-connectdevelop;
+        }
+      }
+    }
+  }
+}

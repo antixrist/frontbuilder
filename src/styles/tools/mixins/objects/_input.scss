@@ -158,6 +158,7 @@
 @mixin input-block {
   display: block;
   min-width: 100%;
+  max-width: 100%;
 }
 
 @mixin input-after () {

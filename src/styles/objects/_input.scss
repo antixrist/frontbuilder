@@ -63,13 +63,9 @@ $input-variants: (
   }
 
   border-radius: $base-radius;
-  &.-square {
-    border-radius: 0;
-  }
+  &.-square { border-radius: 0; }
 
-  &.-wide {
-    @include input-block;
-  }
+  &.-wide { @include input-block; }
 
   @at-root {
     select#{&} {
