@@ -52,13 +52,40 @@
 
     white-space: nowrap;
     display: block;
+    position: relative;
 
-    &.sidebar-toggle {
+    &.-square {
       @include box(14px 15px);
+      @include opacity-states(
+        $normal: .8,
+        $hover: 1,
+        $active: 1,
+        $proxy: '.top-menu-item-icon:before'
+      );
 
-      .top-menu-item-icon:before {
-        line-height: 1.2;
+      .top-menu-item-icon:before { line-height: 1.2; }
+
+      &.is-active {
+        @include opacity-states(
+          $normal: .8,
+          $hover: 1,
+          $active: .6,
+          $proxy: '.top-menu-item-icon:before'
+        );
       }
+    }
+
+    .counter {
+      position: absolute;
+      top: 0;
+      right: 0;
+      line-height: 1;
+      font-size: 9px;
+      border-bottom-left-radius: 8px;
+      padding: 3px 3px 2px 4px;
+
+      color: #fff;
+      background: $color-primary;
     }
   }
 
