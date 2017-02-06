@@ -7,7 +7,7 @@ const { isDevelopment, browsers } = require('./tools/config');
 
 module.exports = function (ctx) {
   const plugins = [
-    require('postcss-assets')({
+    require('postcss-assets-fork')({
       relative: true,
       customizeUrl (decl) {
         return /^\s*url\s*\(/.test(decl) ? decl.match(/\s*url\s*\(\s*(.+)\s*\)/)[1] : decl;
