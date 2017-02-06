@@ -39,13 +39,14 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   .filters-form,
   .description,
+  .pagination { border-top: 1px solid $borders-color; }
+
   .pagination {
-    border-top: 1px solid $borders-color;
+    @include box($panel-box);
+    @include unboxing($panel-box, bottom);
   }
 
-  .filters-form {
-    @include box($panel-box);
-  }
+  .filters-form { @include box($panel-box); }
 
   .description {
     color: $base-color-accent;

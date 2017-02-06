@@ -49,6 +49,10 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   &,
   .pagination { border-top: 1px solid $borders-color; }
+  .pagination {
+    @include box($panel-box);
+    @include unboxing($panel-box, x bottom);
+  }
 
   .search-results-title {
     margin: 0;

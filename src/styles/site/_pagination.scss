@@ -1,7 +1,4 @@
 .pagination {
-  @include box($panel-box);
-  @include unboxing($panel-box, x bottom);
-
   @include stack(x, $items: '.link, .placeholder');
 
   .link,
