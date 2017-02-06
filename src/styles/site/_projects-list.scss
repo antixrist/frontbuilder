@@ -35,37 +35,85 @@
       $box: 1px 3px;
 
       @include unboxing($box);
-
-      .action {
-        @include box($box);
-        @include opacity-states(
-          $normal: .3,
-          $hover: 1,
-          $active: .7
-        );
-      }
+      .action { @include box($box); }
     }
 
-    > .item {
+    > .list-inner > .item {
       border-top: 1px dashed $borders-color;
       &:first-child { border-top: none; }
-
-      .item { border-top: 1px dashed $borders-color; }
     }
 
     .item {
-      .list { display: none; }
+      .item {
+        border-top: 1px dashed $borders-color;
 
+        .content:before {
+          content: '';
+          position: absolute;
+          display: block;
+          height: 1px;
+          background: $borders-color;
+          width: 8px;
+          top: 13px;
+          left: -13px;
+        }
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+
+        .title { cursor: pointer; }
+        .actions {
+          opacity: .3;
+          transition: .1s opacity ease-out;
+        }
+        &:hover .actions { opacity: 1; }
+        .action {
+          @include opacity-states(
+            $normal: .8,
+            $hover: 1,
+            $active: .6
+          );
+        }
+      }
+
+      $content-box: 6px 0;
       > .content {
-        @include box(6px 0);
+        .title,
+        .actions { @include box($content-box); }
+
+        .title {
+          @include opacity-states(
+            $normal: .9,
+            $hover: 1,
+            $active: .6
+          );
+        }
 
         .item-icon {
-          @include box(4px);
-          @include unboxing(4px);
+          @include box(2px 4px);
+          @include unboxing(2px 4px);
 
           color: $color-primary;
           margin-right: 0;
           background: #fff;
+        }
+      }
+
+      .list {
+        display: none;
+
+        border-left: 1px solid $borders-color;
+        padding-left: 12px;
+        margin-left: 6px;
+
+        position: relative;
+        top: -13px;
+
+        > .list-inner {
+          position: relative;
+          top: 13px;
         }
       }
 
@@ -74,8 +122,6 @@
           @extend %fontello-base;
           @extend .icon-folder;
         }
-
-        .list { padding-left: 18px; }
 
         &.is-expanded {
           > .list { display: block; }
@@ -99,16 +145,23 @@
           }
         }
 
+        .title,
+        .description { padding: 0; }
+        .title { @include box($content-box, top); }
         .description {
           font-size: 11px;
           margin-top: 2px;
+          @include box($content-box, bottom);
         }
       }
 
       &.polygon {
-        > .content .icon {
-          @extend %fontello-base;
-          @extend .icon-connectdevelop;
+        > .content {
+          .item-icon { margin-right: 2px; }
+          .icon {
+            @extend %fontello-base;
+            @extend .icon-connectdevelop;
+          }
         }
       }
     }
