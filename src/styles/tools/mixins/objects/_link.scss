@@ -109,6 +109,17 @@
   border-bottom-style: dashed;
 }
 
+@mixin link-all-states () {
+  &,
+  &:hover,
+  &:focus,
+  &:focus:hover,
+  &:active,
+  &:visited {
+    @content;
+  }
+}
+
 @mixin link-reset ($important: false) {
   $i: important($important);
 

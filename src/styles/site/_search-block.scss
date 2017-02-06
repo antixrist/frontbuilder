@@ -45,9 +45,10 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 }
 
 .search-results {
-  @include box($panel-box, right bottom left);
+  @include box($panel-box, x bottom);
 
-  border-top: 1px solid $borders-color;
+  &,
+  .pagination { border-top: 1px solid $borders-color; }
 
   .search-results-title {
     margin: 0;
@@ -62,6 +63,8 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   &-table {
     $table-cells-box: 5px 15px;
+
+    //&:last-child { @include box($panel-box, bottom); }
 
     > table {
       min-width: 100%;
@@ -133,19 +136,6 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
         .icon-checkbox {
           @extend %link;
           @include opacity-states();
-          //@include link(
-          //  $color-normal: $base-color-muted,
-          //  $color-hover: $base-color,
-          //
-          //  $border-color-normal: transparent,
-          //  $border-color-hover: transparent,
-          //  $border-color-focus: transparent,
-          //  $border-color-active: transparent,
-          //  $border-color-visited: transparent,
-          //
-          //  $transition-normal: (color .2s ease-out),
-          //  $transition-active: (color .1s ease-out)
-          //);
         }
       }
 
@@ -159,6 +149,45 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
             > td, > th { border-top: none !important; }
           }
         }
+      }
+    }
+  }
+
+  .pagination {
+    @include box($panel-box);
+    @include unboxing($panel-box, x bottom);
+
+    @include stack(x, $items: '.link, .placeholder');
+
+    .link,
+    .placeholder {
+      border: 1px solid $borders-color;
+      border-radius: $base-radius;
+
+      @include box(5px 10px);
+    }
+
+    .link {
+      &:hover { background: $borders-color; }
+
+      //&:hover,
+      //&:active { @include stack-item-upward; }
+
+      &.is-active {
+        @include link-all-states {
+          color: #fff;
+          border: 1px solid $color-primary;
+          background-color: $color-primary;
+        }
+      }
+    }
+
+    .link.is-disabled,
+    .placeholder {
+      @include link-all-states {
+        cursor: default;
+        background: none;
+        color: $base-color-muted;
       }
     }
   }
