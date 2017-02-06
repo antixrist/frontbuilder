@@ -71,14 +71,16 @@ $input-variants: (
     @include input-block;
   }
 
-  select#{&} {
-    cursor: pointer;
+  @at-root {
+    select#{&} {
+      cursor: pointer;
 
-    &:after {
-      $size: 6px 3px;
-      @include triangle($size, bottom);
-      @include center(get-triangle-real-size($size, bottom), y);
-      margin-right: 5px;
+      &:after {
+        $size: 6px 3px;
+        @include triangle($size, bottom);
+        @include center(get-triangle-real-size($size, bottom), y);
+        margin-right: 5px;
+      }
     }
   }
 }

@@ -20,6 +20,20 @@ $control-sizes: (
 //  height: auto;
 //}
 
+//&:not([size]):not([multiple]) {
+//  $select-border-width: ($border-width * 2);
+//  height: calc(#{$input-height} + #{$select-border-width});
+//}
+//&:focus::-ms-value {
+//  // Suppress the nested default white text on blue background highlight given to
+//  // the selected option text when the (still closed) <select> receives focus
+//  // in IE and (under certain conditions) Edge, as it looks bad and cannot be made to
+//  // match the appearance of the native widget.
+//  // See https://github.com/twbs/bootstrap/issues/19398.
+//  color: $input-color;
+//  background-color: $input-bg;
+//}
+
 @mixin control-size-preset (
   $size: default,
   $include-offset: true,
