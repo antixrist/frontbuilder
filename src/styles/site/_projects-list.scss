@@ -55,7 +55,7 @@
           background: $borders-color;
           width: 8px;
           top: 13px;
-          left: -13px;
+          left: -8px;
         }
       }
 
@@ -67,21 +67,25 @@
         .actions {
           opacity: .3;
           transition: .1s opacity ease-out;
+
+          &:hover .action {
+            @include opacity-states(
+              $normal: .5,
+              $hover: 1,
+              $active: .3
+            );
+          }
         }
         &:hover .actions { opacity: 1; }
-        .action {
-          @include opacity-states(
-            $normal: .8,
-            $hover: 1,
-            $active: .6
-          );
-        }
       }
 
-      $content-box: 6px 0;
+      $content-box: 6px 4px;
       > .content {
+        @include unboxing($content-box, x);
+        @include box($content-box, x);
+
         .title,
-        .actions { @include box($content-box); }
+        .actions { @include box($content-box, y); }
 
         .title {
           @include opacity-states(
@@ -92,8 +96,9 @@
         }
 
         .item-icon {
-          @include box(2px 4px);
-          @include unboxing(2px 4px);
+          $box: 2px 4px;
+          @include box($box);
+          @include unboxing($box);
 
           color: $color-primary;
           margin-right: 0;
@@ -117,6 +122,17 @@
         }
       }
 
+      %active-item {
+        &.is-active {
+          &,
+          & + .item { border-top: none; }
+
+          > .content {
+            &, .item-icon { background: $bg-color-item-hover; }
+          }
+        }
+      }
+
       &.folder {
         > .content .icon {
           @extend %fontello-base;
@@ -133,6 +149,8 @@
       }
 
       &.task {
+        @extend %active-item;
+
         > .content .item-icon { display: none; }
 
         &.has-errors > .content {
@@ -156,6 +174,8 @@
       }
 
       &.polygon {
+        @extend %active-item;
+
         > .content {
           .item-icon { margin-right: 2px; }
           .icon {

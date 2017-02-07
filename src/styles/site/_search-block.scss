@@ -129,6 +129,8 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       }
 
       .station-details {
+        > td { padding: 0; }
+
         &-table {
           @include table-cells-padding($table-cells-box, x around between half-between);
           @include table-cells-padding($table-cells-box, y);
