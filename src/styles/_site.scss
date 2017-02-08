@@ -16,3 +16,27 @@
 #ui {
   padding: 2rem 5rem;
 }
+
+.layout-sidebars {
+  $transition: .1s ease-out;
+
+  .layout-content {
+    transition: padding-left $transition;
+    background: $borders-color;
+  }
+
+  .layout-left {
+    transition: transform $transition;
+    background: $bg-color-item-hover;
+  }
+
+  &.-closed-left {
+    .layout-content {
+      padding-left: 0;
+    }
+
+    .layout-left {
+      transform: translateX(-100%);
+    }
+  }
+}

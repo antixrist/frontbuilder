@@ -105,11 +105,15 @@
 <template>
   <div class="layout">
     <div class="layout-header">
-      Верх
+      <check-box v-model="leftOpened" style="display: block;">
+        Тугл!
+      </check-box>
     </div>
   
     <div class="layout-main">
-      <div class="layout-sidebars">
+      <div class="layout-sidebars"
+           :class="{'-closed-left': !leftOpened}"
+      >
         <div class="layout-content-outer">
           <main class="layout-content" role="main">
             Центр
@@ -117,8 +121,6 @@
         </div>
   
         <aside class="layout-left">Лево</aside>
-  
-        <aside class="layout-right">Право</aside>
       </div>
     </div>
   
@@ -210,6 +212,7 @@
 
     data () {
       return {
+        leftOpened: true,
         layout: {
           indeterminate: false,
           leftSideOpened: true

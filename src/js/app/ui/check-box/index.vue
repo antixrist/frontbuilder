@@ -16,9 +16,11 @@
 <template>
   <label class="check-box"
          :class="{
-          [checkedClassName]: checked,
-          [disabledClassName]: disabled,
-          [indeterminateClassName]: indeterminate
+           [checkedClassName]: checked,
+           [disabledClassName]: disabled,
+           [focusClassName]: focus,
+           [activeClassName]: active,
+           [indeterminateClassName]: indeterminate
          }"
   >
     <span class="inner"><slot></slot></span>
@@ -28,6 +30,8 @@
            :disabled="disabled"
            :checked="checked"
            :value="value"
+           :tabindex="tabindex"
+           :autofocus="autofocus"
     >
   </label>
 </template>
@@ -46,6 +50,13 @@
         type: Boolean,
         default: false
       },
+      tabindex: {
+        type: Number
+      },
+      autofocus: {
+        type: Boolean,
+        default: false
+      },
       checkedClassName: {
         type: String,
         default: 'is-checked'
@@ -54,13 +65,24 @@
         type: String,
         default: 'is-indeterminated'
       },
+      focusClassName: {
+        type: String,
+        default: 'is-focused'
+      },
+      activeClassName: {
+        type: String,
+        default: 'is-active'
+      },
       disabledClassName: {
         type: String,
         default: 'is-disabled'
       }
     },
     data () {
-      return { };
+      return {
+        focus: false,
+        active: false
+      };
     },
     watch: {
       indeterminate () {
@@ -72,12 +94,23 @@
     },
     computed: {
       checked: {
-        get () {
-          return this.value;
-        },
-        set (newVal) {
-          this.$emit('input', newVal);
-        }
+        get () { return this.value; },
+        set (newVal) { this.$emit('input', newVal); }
+      }
+    },
+    mounted () {
+      const self = this;
+      
+      this.$refs.checkbox.addEventListener('focus', e => this.focus = true);
+      this.$refs.checkbox.addEventListener('blur',  e => this.focus = false);
+      
+      this.$el.addEventListener('mousedown', function () {
+        self.active = true;
+        document.addEventListener('mouseup', mouseupEventListener);
+      });
+      function mouseupEventListener () {
+        self.active = false;
+        document.removeEventListener('mouseup', mouseupEventListener);
       }
     }
   };
