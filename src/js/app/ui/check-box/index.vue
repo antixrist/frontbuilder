@@ -23,7 +23,7 @@
            [indeterminateClassName]: indeterminate
          }"
   >
-    <span class="inner"><slot></slot></span>
+    <slot></slot>
     <input type="checkbox"
            ref="checkbox"
            v-model="checked"
