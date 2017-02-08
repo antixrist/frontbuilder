@@ -2,6 +2,7 @@ $panel-box: .5rem 1rem !default;
 $panel-box-bounds: get-bounds-map($panel-box); // without !default
 
 .panel {
+  background: #fff;
   @include md-shadow(2);
 
   //overflow: auto;

@@ -43,7 +43,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   .pagination {
     @include box($panel-box);
-    @include unboxing($panel-box, bottom);
+    @include box($panel-box, top, margin);
   }
 
   .filters-form { @include box($panel-box); }
@@ -56,7 +56,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
 
   $table-cells-box: 5px 15px;
   &-table {
-    @include box($panel-box, x bottom);
+    @include box($panel-box, x);
 
     > table {
       $table-cells-box: 5px 15px;
@@ -71,7 +71,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       @include table-ears () {
         background: $borders-color;
         width: map-get($panel-box-bounds, x);
-        z-index: -1;
+        //z-index: -1;
       }
 
       thead {

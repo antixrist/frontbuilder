@@ -1,0 +1,53 @@
+.layout-sidebars(:class="{'-closed-left': !layout.leftSideOpened}")
+  .layout-content-outer
+    main.layout-content(role="main")
+      .layout
+        .layout-header(layout="row top-justify")
+          div: check-box.layout-burger-toggle.top-menu-link.is-active.-square(v-model="layout.leftSideOpened")
+            i.top-menu-item-icon.icon-angle-double-right
+          div(self="size-x1")
+          div: a.top-menu-link.is-active(href="#") Выход #[i.top-menu-item-icon.icon-logout]
+
+        .layout-content-inner(layout="column top-stretch")
+          div(self="size-x1")
+            div(layout="row top-justify")
+              search-block
+              div: div(layout="column top-right")
+                layers-checkers
+                p
+                .panel.float-buttons.-y
+                  button.btn.-inner: span.inner.-circle +
+                  button.btn.-inner.-inner-sm: span.inner.-circle &ndash;
+
+          div
+            p
+            div(layout="row top-right")
+              .panel.float-buttons.-y
+                button.btn: span.inner
+                  i.icon-ok-circled
+                  span.counter 13
+            p
+            task-details
+
+
+  aside.layout-left
+    .layout-header(layout="row stretch-justify")
+      div: check-box.top-menu-link.-square(v-model="layout.leftSideOpened")
+        i.top-menu-item-icon.icon-angle-double-left
+      div(self="size-x1")
+        div(layout="row stretch-stretch")
+          a.top-menu-link(:class="{'is-active': layout.activeSidebar == 'projects'}", @click="layout.activeSidebar = 'projects'")
+            | #[i.top-menu-item-icon.icon-folder] Проекты
+          a.top-menu-link(:class="{'is-active': layout.activeSidebar == 'contacts'}", @click="layout.activeSidebar = 'contacts'")
+            | #[i.top-menu-item-icon.icon-phone-squared] Номера
+      div
+          a.top-menu-link.-square(:class="{'is-active': layout.activeSidebar == 'trash'}", @click="layout.activeSidebar = 'trash'")
+            i.top-menu-item-icon.icon-trash
+            span.counter 10
+
+    .panel
+      .layout-left-content
+        .layout-left-content-inner
+          div(v-show="layout.activeSidebar == 'projects'"): projects-list
+          div(v-show="layout.activeSidebar == 'contacts'"): contact-list
+          div(v-show="layout.activeSidebar == 'trash'") Корзина

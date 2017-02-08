@@ -1,6 +1,18 @@
 $panel-box-bounds: get-bounds-map($panel-box) !default;
 
-.layers-checker {
+.layers-checkers-block {
+  .layers-checkers-toggler {}
+  .layers-checkers-panel { display: none; }
+
+  &.is-expanded {
+    .layers-checkers-toggler { display: none; }
+    .layers-checkers-panel { display: block; }
+  }
+}
+
+.layers-checkers {
+  white-space: nowrap;
+
   &-header {
     @include box($panel-box);
     border-bottom: 1px solid $borders-color;

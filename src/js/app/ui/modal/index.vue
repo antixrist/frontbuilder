@@ -33,8 +33,6 @@
       };
     },
     updated () {
-      console.log('updated', this.opened);
-
       document.documentElement.classList[this.opened ? 'add' : 'remove']('modal-opened');
     },
     methods: {

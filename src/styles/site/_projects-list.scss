@@ -3,6 +3,7 @@
 
   > .actions {
     $border: 1px solid $borders-color;
+    //border-top: $border;
     border-bottom: $border;
 
     .addon,

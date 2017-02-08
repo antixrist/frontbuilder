@@ -53,6 +53,7 @@
     white-space: nowrap;
     display: block;
     position: relative;
+    text-align: center;
 
     &.-square {
       @include box(14px 15px);
