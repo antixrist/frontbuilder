@@ -1,6 +1,6 @@
 <script>
-  import modal from './modal/index.vue';
-  import longLongText from './test/long-long-text.vue';
+  import modal from '../ui/modal/index.vue';
+  import longLongText from './long-long-text.vue';
 
   export default {
     components: { longLongText, modal },

@@ -8,6 +8,9 @@ sync(store, router);
 
 Vue.prototype.$api = api;
 
+Vue.component('check-box', require('./ui/check-box/index.vue'));
+Vue.component('modal', require('./ui/modal/index.vue'));
+
 const app = new Vue({
   router,
   store,

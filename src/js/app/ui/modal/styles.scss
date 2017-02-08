@@ -1,5 +1,4 @@
-/*
-@import '../../../../styles/utils/mixins';
+@import '../../../../styles/tools';
 
 html.modal-opened {
   height: 100%;
@@ -34,7 +33,7 @@ html.modal-opened {
   @include box(1em);
 }
 .modal__content {
-  !*background: #fff;*!
+  /*background: #fff;*/
   box-shadow: 0 0 10px rgba(#000, .6);
   position: relative;
 }
@@ -53,4 +52,3 @@ html.modal-opened {
   text-align: left;
   display: inline-block;
 }
-*/

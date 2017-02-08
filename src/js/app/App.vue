@@ -104,7 +104,7 @@
 
 <template>
   <div id="app">
-    <app-map class="app-map"></app-map>
+    <div class="app-map"></div>
     <div class="app-layout" layout="row stretch-spread">
       <aside class="app-layout__left app-layout__on-top"
              v-show="layout.leftSideOpened"
@@ -113,12 +113,12 @@
           <div class="layout-left__header"
                layout="row stretch-left"
           >
-            <checkbox class="layout-link router-link"
+            <check-box class="layout-link router-link"
                       v-model="layout.leftSideOpened"
                       :indeterminate="layout.indeterminate"
             >
               <i class="layout-link__icon icon-angle-double-left"></i>
-            </checkbox>
+            </check-box>
   
             <router-link to="/ui" tag="a" exact class="layout-link router-link">
               Проекты
@@ -139,21 +139,21 @@
           <div class="app-layout__header app-layout__on-top"
                layout="row stretch-spread"
           >
-            <checkbox class="layout-link router-link"
+            <check-box class="layout-link router-link"
                       self="left"
                       v-model="layout.leftSideOpened"
                       v-show="!layout.leftSideOpened"
                       :indeterminate="layout.indeterminate"
             >
               <i class="layout-link__icon fa fa-bars"></i>
-            </checkbox>
+            </check-box>
             <a href="#" class="layout-link" self="right">
               Выход
               <i class="layout-link__icon fa fa-sign-out"></i>
             </a>
           </div>
           <div class="app-layout__content">
-            <panel class="app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
+            <section class="panel app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
               <p>Какой-то контент панельки</p>
               <p>
                 <label>
@@ -161,13 +161,13 @@
                   {{ layout.leftSideOpened }}
                 </label>
               </p>
-            </panel>
+            </section>
           </div>
 
           <div class="app-layout__footer app-layout__on-top">
-            <panel class="app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
+            <section class="panel app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
               А вот это уже фууутер
-            </panel>
+            </section>
           </div>
         </div>
       </div>
@@ -176,14 +176,9 @@
 </template>
 
 <script>
-  import AppMap from './components/map/index.vue';
-  import panel from './components/panel/index.vue';
-  import checkbox from './components/checkbox.vue';
-
   export default {
     components: {
-      panel, checkbox,
-      'app-map': AppMap
+      
     },
 
     data () {

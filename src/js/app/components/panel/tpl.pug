@@ -1,7 +1,0 @@
-.panel(:class="classNames")
-  .panel__header(v-if="hasSlot('heading')")
-    slot(name="heading")
-  .panel__body(v-if="hasSlot('default')")
-    slot
-  .panel__footer(v-if="hasSlot('footer')")
-    slot(name="footer")
