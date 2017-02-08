@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&subset=cyrillic');
 
+@import 'site/layout';
 @import 'site/icons';
 @import 'site/header';
 @import 'site/pagination';
@@ -12,31 +13,3 @@
 @import 'site/layers-checker';
 @import 'site/projects-list';
 @import 'site/contact-list';
-
-#ui {
-  padding: 2rem 5rem;
-}
-
-.layout-sidebars {
-  $transition: .1s ease-out;
-
-  .layout-content {
-    transition: padding-left $transition;
-    background: $borders-color;
-  }
-
-  .layout-left {
-    transition: transform $transition;
-    background: $bg-color-item-hover;
-  }
-
-  &.-closed-left {
-    .layout-content {
-      padding-left: 0;
-    }
-
-    .layout-left {
-      transform: translateX(-100%);
-    }
-  }
-}
