@@ -103,76 +103,103 @@
 </style>
 
 <template>
-  <div id="app">
-    <div class="app-map"></div>
-    <div class="app-layout" layout="row stretch-spread">
-      <aside class="app-layout__left app-layout__on-top"
-             v-show="layout.leftSideOpened"
-      >
-        <div class="layout-left" layout="column spread-stretch">
-          <div class="layout-left__header"
-               layout="row stretch-left"
-          >
-            <check-box class="layout-link router-link"
-                      v-model="layout.leftSideOpened"
-                      :indeterminate="layout.indeterminate"
-            >
-              <i class="layout-link__icon icon-angle-double-left"></i>
-            </check-box>
+  <div class="layout">
+    <div class="layout-header">
+      Верх
+    </div>
   
-            <router-link to="/ui" tag="a" exact class="layout-link router-link">
-              Проекты
-              <i class="layout-link__icon fa fa-folder"></i>
-            </router-link>
-            <router-link to="/phones" tag="a" class="layout-link router-link">
-              Номера
-              <i class="layout-link__icon fa fa-phone-square"></i>
-            </router-link>
-          </div>
-          <div class="layout-left__content" self="size-x1">
-            <router-view></router-view>
-          </div>
+    <div class="layout-main">
+      <div class="layout-sidebars">
+        <div class="layout-content-outer">
+          <main class="layout-content" role="main">
+            Центр
+          </main>
         </div>
-      </aside>
-      <div class="app-layout__center" self="size-x1">
-        <div class="app-layout__wrapper">
-          <div class="app-layout__header app-layout__on-top"
-               layout="row stretch-spread"
-          >
-            <check-box class="layout-link router-link"
-                      self="left"
-                      v-model="layout.leftSideOpened"
-                      v-show="!layout.leftSideOpened"
-                      :indeterminate="layout.indeterminate"
-            >
-              <i class="layout-link__icon fa fa-bars"></i>
-            </check-box>
-            <a href="#" class="layout-link" self="right">
-              Выход
-              <i class="layout-link__icon fa fa-sign-out"></i>
-            </a>
-          </div>
-          <div class="app-layout__content">
-            <section class="panel app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
-              <p>Какой-то контент панельки</p>
-              <p>
-                <label>
-                  <input type="checkbox" v-model="layout.leftSideOpened">
-                  {{ layout.leftSideOpened }}
-                </label>
-              </p>
-            </section>
-          </div>
+  
+        <aside class="layout-left">Лево</aside>
+  
+        <aside class="layout-right">Право</aside>
+      </div>
+    </div>
+  
+    <div class="layout-footer">
+      Низ
+    </div>
+  </div>
 
-          <div class="app-layout__footer app-layout__on-top">
-            <section class="panel app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
-              А вот это уже фууутер
-            </section>
+
+  <!--
+    <div id="app">
+      <div class="app-map"></div>
+      <div class="app-layout" layout="row stretch-spread">
+        <aside class="app-layout__left app-layout__on-top"
+               v-show="layout.leftSideOpened"
+        >
+          <div class="layout-left" layout="column spread-stretch">
+            <div class="layout-left__header"
+                 layout="row stretch-left"
+            >
+              <check-box class="layout-link router-link"
+                        v-model="layout.leftSideOpened"
+                        :indeterminate="layout.indeterminate"
+              >
+                <i class="layout-link__icon icon-angle-double-left"></i>
+              </check-box>
+    
+              <router-link to="/ui" tag="a" exact class="layout-link router-link">
+                Проекты
+                <i class="layout-link__icon fa fa-folder"></i>
+              </router-link>
+              <router-link to="/phones" tag="a" class="layout-link router-link">
+                Номера
+                <i class="layout-link__icon fa fa-phone-square"></i>
+              </router-link>
+            </div>
+            <div class="layout-left__content" self="size-x1">
+              <router-view></router-view>
+            </div>
+          </div>
+        </aside>
+        <div class="app-layout__center" self="size-x1">
+          <div class="app-layout__wrapper">
+            <div class="app-layout__header app-layout__on-top"
+                 layout="row stretch-spread"
+            >
+              <check-box class="layout-link router-link"
+                        self="left"
+                        v-model="layout.leftSideOpened"
+                        v-show="!layout.leftSideOpened"
+                        :indeterminate="layout.indeterminate"
+              >
+                <i class="layout-link__icon fa fa-bars"></i>
+              </check-box>
+              <a href="#" class="layout-link" self="right">
+                Выход
+                <i class="layout-link__icon fa fa-sign-out"></i>
+              </a>
+            </div>
+            <div class="app-layout__content">
+              <section class="panel app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
+                <p>Какой-то контент панельки</p>
+                <p>
+                  <label>
+                    <input type="checkbox" v-model="layout.leftSideOpened">
+                    {{ layout.leftSideOpened }}
+                  </label>
+                </p>
+              </section>
+            </div>
+  
+            <div class="app-layout__footer app-layout__on-top">
+              <section class="panel app-layout__on-top" style="background: #ccc; padding: 2em 4em;">
+                А вот это уже фууутер
+              </section>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  -->
 </template>
 
 <script>

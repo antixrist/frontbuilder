@@ -124,10 +124,10 @@
   $right: if(type-of($right) == string and $right != '', $right, null);
 
   $left-width: if(type-of($left-width) == number and strip-units($left-width) > 0, $left-width, null);
-  $right-width: if(type-of($left-width) == number and strip-units($right-width) > 0, $right-width, null);
+  $right-width: if(type-of($right-width) == number and strip-units($right-width) > 0, $right-width, null);
 
   $left-gutter: if(type-of($left-gutter) == number and strip-units($left-gutter) > 0, $left-gutter, 0);
-  $right-gutter: if(type-of($left-gutter) == number and strip-units($right-gutter) > 0, $right-gutter, 0);
+  $right-gutter: if(type-of($right-gutter) == number and strip-units($right-gutter) > 0, $right-gutter, 0);
 
   /** если нужен либо левый, либо правый (ну или оба сразу) сайдбары */
   @if $left or $right {

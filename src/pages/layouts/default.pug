@@ -48,24 +48,30 @@ block vars
     <![endif]-->
     noscript Не, ну кто сейчас в энторнеты без javascript'а ходит? Боты. Да групцы. Будьте паинькой! Не будьте ни тем, ни другим!
 
-    .layout
-      .layout-header
-        block header
-      .layout-main
-        .layout-sidebars
-          .layout-content-outer
-            main.layout-content(role="main")
-              block content
-                block app
-                  //- сюда воткнётся vue-приложение
-                  #app
-          aside.layout-left
-            block left
-          aside.layout-right
-            block right
+    block layout
+      .layout
 
-      .layout-footer
-        block footer
+        .layout-header
+          block header
+
+        .layout-main
+          .layout-sidebars
+            .layout-content-outer
+
+              main.layout-content(role="main")
+                block content
+                  block app
+                    //- сюда воткнётся vue-приложение
+                    #app
+
+            aside.layout-left
+              block left
+
+            aside.layout-right
+              block right
+
+        .layout-footer
+          block footer
 
     block scripts-before
 
