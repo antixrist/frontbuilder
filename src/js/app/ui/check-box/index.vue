@@ -33,6 +33,8 @@
            :tabindex="tabindex"
            :autofocus="autofocus"
     >
+           <!--:true-value-->
+           <!--:false-value-->
   </label>
 </template>
 

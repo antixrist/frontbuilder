@@ -14,10 +14,12 @@ html.modal-opened {
   @include stretch(x y);
   position: fixed;
   overflow: hidden;
+  z-index: 999;
 }
 
 .modal__overlay {
   @include stretch(x y);
+  background: rgba(#000, .7);
 }
 
 .modal__outer {
@@ -33,7 +35,6 @@ html.modal-opened {
   @include box(1em);
 }
 .modal__content {
-  /*background: #fff;*/
   box-shadow: 0 0 10px rgba(#000, .6);
   position: relative;
 }
@@ -51,4 +52,14 @@ html.modal-opened {
 .modal__x {
   text-align: left;
   display: inline-block;
+}
+
+.modal { transition: opacity .1s ease, transform .1s ease; }
+.modal-enter { opacity: 0; }
+.modal-leave-active { opacity: 0; }
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
 }

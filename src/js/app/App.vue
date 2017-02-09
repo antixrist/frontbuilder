@@ -2,24 +2,16 @@
 <style lang="scss" rel="stylesheet/scss"></style>
 
 <script>
-  import projectsList from './components/projects-list/index.vue';
-  import contactList from './components/contact-list/index.vue';
-  import searchBlock from './components/search-block/index.vue';
-  import layersCheckers from './components/layers-checkers/index.vue';
-  import taskDetails from './components/task-details/index.vue';
-  import createTask from './components/create-task/index.vue';
-  import createContact from './components/create-contact/index.vue';
+  import Vue from 'vue';
+  Vue.component('projects-list',   require('./components/projects-list/index.vue'));
+  Vue.component('contact-list',    require('./components/contact-list/index.vue'));
+  Vue.component('search-block',    require('./components/search-block/index.vue'));
+  Vue.component('layers-checkers', require('./components/layers-checkers/index.vue'));
+  Vue.component('task-details',    require('./components/task-details/index.vue'));
+  Vue.component('create-task',     require('./components/create-task/index.vue'));
+  Vue.component('create-contact',  require('./components/create-contact/index.vue'));
   
   export default {
-    components: {
-      'projects-list': projectsList,
-      'contact-list': contactList,
-      'search-block': searchBlock,
-      'layers-checkers': layersCheckers,
-      'task-details': taskDetails,
-      'create-task': createTask,
-      'create-contact': createContact
-    },
     data () {
       return {
         layout: {

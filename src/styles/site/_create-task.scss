@@ -86,6 +86,7 @@ $panel-box-bounds: get-bounds-map($panel-box) !default;
       .checker {
         //@include unboxing($checker-box, y);
         @include box($checker-box);
+        white-space: nowrap;
       }
     }
   }
