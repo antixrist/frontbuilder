@@ -1,4 +1,19 @@
 <script>
+  import _ from 'lodash';
+  
+  let modalsOnEscListenerAdded = false;
+  
+  function modalsOnEscListener (e) {
+    if (e.keyCode !== 27) { return; }
+
+    const openedModals = this.$root.openedModals;
+    const lastInstance = _.last(openedModals);
+
+    if (!lastInstance) { return; }
+
+    lastInstance.opened && lastInstance.closeOnEsc && lastInstance.close();
+  }
+  
   export default {
     props: {
       opened: {
@@ -46,29 +61,35 @@
     methods: {
       open () {
         document.documentElement.classList.add('modal-opened');
-        this.closeOnEsc && document.addEventListener('keyup', this.onEscListener.bind(this));
+        this.$root.openedModals.push(this);
         this.$emit('open');
       },
 
       close () {
         document.documentElement.classList.remove('modal-opened');
-        this.closeOnEsc && document.removeEventListener('keyup', this.onEscListener);
+        _.pull(this.$root.openedModals, this);
         this.$emit('close');
+        
+        if (!this.$root.openedModals.length) {
+          document.removeEventListener('keyup', modalsOnEscListener);
+        }
       },
       
       closeOnOverlay () {
         this.overlay && this.closeOnOverlayClick && this.close();
-      },
-      
-      onEscListener (e) {
-        e.keyCode === 27 && this.close();
       }
     },
     created () {
-      // здесь можно записывать инстансы, а в onEscListener() эти инстансы поочерёдно закрывать
+      this.$root.openedModals = this.$root.openedModals || [];
     },
     mounted () {
       this.$watch('opened', opened => opened ? this.open() : this.close());
+      this.opened ? this.open() : this.close();
+      
+      if (!modalsOnEscListenerAdded) {
+        modalsOnEscListenerAdded = true;
+        document.addEventListener('keyup', modalsOnEscListener.bind(this));
+      }
     },
   };
 </script>

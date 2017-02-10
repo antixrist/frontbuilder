@@ -3,6 +3,7 @@
 
 <script>
   import Vue from 'vue';
+  Vue.component('login',           require('./components/login/index.vue'));
   Vue.component('projects-list',   require('./components/projects-list/index.vue'));
   Vue.component('contact-list',    require('./components/contact-list/index.vue'));
   Vue.component('search-block',    require('./components/search-block/index.vue'));
