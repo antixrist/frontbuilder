@@ -1,5 +1,6 @@
 <script>
   import _ from 'lodash';
+  import isVisible, { domIsVisible } from '../../mixins/domIsVisibile';
   
   let modalsOnEscListenerAdded = false;
   
@@ -14,13 +15,16 @@
     lastInstance.opened && lastInstance.closeOnEsc && lastInstance.close();
   }
   
+  let instance = 0;
+  
   export default {
+    mixins: [isVisible],
     props: {
-      opened: {
-        type: Boolean,
-        required: true,
-        default: false
-      },
+//      opened: {
+//        type: Boolean,
+//        required: true,
+//        default: false
+//      },
       position: {
         type: String,
         default: ''
@@ -56,7 +60,7 @@
       }
     },
     data () {
-      return {  };
+      return { instance: 0 };
     },
     methods: {
       open () {
@@ -81,6 +85,15 @@
     },
     created () {
       this.$root.openedModals = this.$root.openedModals || [];
+      this.instance = instance++;
+    },
+    updated () {
+      setTimeout(() => {
+        console.time('isVisible');
+        const $elIsVisible = domIsVisible(this.$el);
+        console.timeEnd('isVisible');
+        console.log('beforeUpdate', this.instance, $elIsVisible, this.$el);
+      }, 0);
     },
     mounted () {
       this.$watch('opened', opened => opened ? this.open() : this.close());
@@ -91,14 +104,18 @@
         document.addEventListener('keyup', modalsOnEscListener.bind(this));
       }
     },
+    beforeDestroy () {
+      
+    }
   };
 </script>
 
 <style lang="sass" src="./styles.scss"></style>
 <template>
   <div class="modal"
-       v-show="opened"
+       
   >
+    <!--v-show="opened"-->
     <div class="modal__overlay"
          v-if="overlay"
          :style="overlayCSS"
