@@ -1,4 +1,4 @@
-<script>
+<script rel="text/babel">
   import _ from 'lodash';
   import { domIsVisible } from '../../mixins/domIsVisibile';
   
