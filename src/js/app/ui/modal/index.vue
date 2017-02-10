@@ -87,7 +87,7 @@
       this.$root.openedModals = this.$root.openedModals || [];
       this.instance = instance++;
     },
-    updated () {
+    beforeUpdate () {
       setTimeout(() => {
         console.time('isVisible');
         const $elIsVisible = domIsVisible(this.$el);

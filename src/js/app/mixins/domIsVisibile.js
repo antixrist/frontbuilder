@@ -49,12 +49,12 @@ export function domIsVisible (el, t, r, b, l, w, h) {
   }
 
   if (
-    'undefined' === typeof(t) ||
-    'undefined' === typeof(r) ||
-    'undefined' === typeof(b) ||
-    'undefined' === typeof(l) ||
-    'undefined' === typeof(w) ||
-    'undefined' === typeof(h)
+    'undefined' === typeof (t) ||
+    'undefined' === typeof (r) ||
+    'undefined' === typeof (b) ||
+    'undefined' === typeof (l) ||
+    'undefined' === typeof (w) ||
+    'undefined' === typeof (h)
   ) {
     t = el.offsetTop;
     l = el.offsetLeft;
