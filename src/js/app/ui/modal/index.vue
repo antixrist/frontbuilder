@@ -1,9 +1,8 @@
 <script>
   import _ from 'lodash';
-  import isVisible, { domIsVisible } from '../../mixins/domIsVisibile';
+  import { domIsVisible } from '../../mixins/domIsVisibile';
   
   let modalsOnEscListenerAdded = false;
-  
   function modalsOnEscListener (e) {
     if (e.keyCode !== 27) { return; }
 
@@ -12,19 +11,17 @@
 
     if (!lastInstance) { return; }
 
-    lastInstance.opened && lastInstance.closeOnEsc && lastInstance.close();
+    /*lastInstance.opened && */lastInstance.closeOnEsc && lastInstance.close();
   }
   
-  let instance = 0;
+//  let instance = 0;
   
   export default {
-    mixins: [isVisible],
     props: {
-//      opened: {
-//        type: Boolean,
-//        required: true,
-//        default: false
-//      },
+      opened: {
+        type: Boolean,
+        default: false
+      },
       position: {
         type: String,
         default: ''
@@ -81,23 +78,31 @@
       
       closeOnOverlay () {
         this.overlay && this.closeOnOverlayClick && this.close();
+      },
+      
+      defineOpened () {
+        return domIsVisible(this.$el);
       }
     },
     created () {
       this.$root.openedModals = this.$root.openedModals || [];
-      this.instance = instance++;
+//      this.instance = ++instance;
     },
-    beforeUpdate () {
-      setTimeout(() => {
-        console.time('isVisible');
-        const $elIsVisible = domIsVisible(this.$el);
-        console.timeEnd('isVisible');
-        console.log('beforeUpdate', this.instance, $elIsVisible, this.$el);
-      }, 0);
+//    beforeUpdate () {
+////      this.defineOpened();
+//    },
+    updated () {
+      this.defineOpened() ? this.open() : this.close();
+//      this.defineOpened();
+//      console.log('updated', this.defineOpened());
+//      _.delay(() => console.log('delay', this.defineOpened()));
+//
     },
     mounted () {
-      this.$watch('opened', opened => opened ? this.open() : this.close());
-      this.opened ? this.open() : this.close();
+//      this.$watch('opened', opened => opened ? this.open() : this.close());
+      this.defineOpened() ? this.open() : this.close();
+
+//      this.$el.addEventListener('transitionend', e => e.target === this.$el && console.log('transitionend', this.defineOpened()));
       
       if (!modalsOnEscListenerAdded) {
         modalsOnEscListenerAdded = true;
@@ -105,16 +110,14 @@
       }
     },
     beforeDestroy () {
-      
+      this.close();
     }
   };
 </script>
 
 <style lang="sass" src="./styles.scss"></style>
 <template>
-  <div class="modal"
-       
-  >
+  <div class="modal">
     <!--v-show="opened"-->
     <div class="modal__overlay"
          v-if="overlay"
