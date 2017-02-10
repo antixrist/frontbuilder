@@ -27,8 +27,8 @@ export default {
  * @param (h)       Element height number
  */
 export function domIsVisible (el, t, r, b, l, w, h) {
-  let p = el.parentNode,
-      VISIBLE_PADDING = 2;
+  const p = el.parentNode;
+  const VISIBLE_PADDING = 2;
 
   if (!_elementInDocument(el)) {
     return false;
