@@ -7197,7 +7197,13 @@ tempfile@^1.0.0:
     os-tmpdir "^1.0.0"
     uuid "^2.0.1"
 
-tether@^1.4.0:
+tether-drop@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/tether-drop/-/tether-drop-1.4.2.tgz#28e240cce077f4ae1d8e5990a03b71e0cd6fbfec"
+  dependencies:
+    tether "^1.1.0"
+
+tether@^1.1.0, tether@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/tether/-/tether-1.4.0.tgz#0f9fa171f75bf58485d8149e94799d7ae74d1c1a"
 
@@ -7630,6 +7636,12 @@ void-elements@^2.0.1, void-elements@~2.0.1:
 vue-dom-portal@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/vue-dom-portal/-/vue-dom-portal-0.1.6.tgz#844291456773e8ae1174313614f254a93f75ed75"
+
+vue-droppler@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/vue-droppler/-/vue-droppler-0.1.2.tgz#66ecb80577582d2ef02597f612d71dea9634d3c9"
+  dependencies:
+    tether-drop "^1.4.2"
 
 vue-head@^2.0.10:
   version "2.0.10"
