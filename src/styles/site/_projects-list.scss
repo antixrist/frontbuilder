@@ -123,10 +123,10 @@
         }
       }
 
-      %active-item {
+      @mixin active-item {
         &.is-active {
           &,
-          & + .item { border-top: none; }
+          & + .item { border-top: 1px solid transparent; }
 
           > .content {
             &, .item-icon { background: $bg-color-item-hover; }
@@ -150,7 +150,7 @@
       }
 
       &.task {
-        @extend %active-item;
+        @include active-item;
 
         > .content .item-icon { display: none; }
 
@@ -175,7 +175,7 @@
       }
 
       &.polygon {
-        @extend %active-item;
+        @include active-item;
 
         > .content {
           .item-icon { margin-right: 2px; }
