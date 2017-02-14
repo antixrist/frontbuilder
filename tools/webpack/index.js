@@ -8,6 +8,11 @@ import * as setup from './setup';
 const SCRIPTS_SOURCES = _.get(pathes, 'scripts.source') || '.';
 const SCRIPTS_TARGET = _.get(pathes, 'scripts.target') || '.';
 
+/**
+ * todo раскурить ссылки:
+ * http://robertknight.github.io/posts/webpack-dll-plugins/
+ */
+
 /** контекст для резолвинга */
 const context = path.join(cwd, pathes.source);
 /**
