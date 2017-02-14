@@ -30,6 +30,7 @@
     "accoutrement-color": "^2.0.1",
     "accoutrement-type": "github:oddbird/accoutrement-type",
     "animate.css": "^3.5.2",
+    "avalanche-css": "^1.2.0",
     "axios": "^0.15.3",
     "babel-polyfill": "^6.22.0",
     "bluebird": "^3.4.7",
