@@ -8,6 +8,10 @@ const STYLES_TARGET = _.get(pathes, 'styles.target') || '.';
 
 /** Стили будут кукожиться gulp'ом в `production`-сборке */
 
+/**
+ * todo здесь посмотреть и перенять:
+ * https://gist.github.com/newcloudtech/b5001f993cb2e2974725ff58962bf01b#file-webpack-config-js
+ */
 export default function (webpackConfig) {
   const { rules, plugins } = extractFromConfigSafely(webpackConfig);
 
