@@ -12,7 +12,7 @@ let instance = axios.create({
 
 _.assign(instance.defaults.headers.common, {
   Accept: 'application/json',
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json' // 'application/x-www-form-urlencoded'
 });
 
 instance.interceptors.request.use(req => {
