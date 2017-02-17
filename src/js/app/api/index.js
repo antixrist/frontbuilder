@@ -6,7 +6,7 @@ const api = http.factory({
   baseURL: process.env.API_URL,
   // withCredentials: true,
   headers: {
-  //   'Accept': 'application/json',
+    'Accept': 'application/json',
     'Content-Type': 'application/x-www-form-urlencoded'
     // 'Content-Type': 'application/json'
   },
