@@ -8,6 +8,7 @@ const api = http.factory({
   headers: {
   //   'Accept': 'application/json',
     'Content-Type': 'application/x-www-form-urlencoded'
+    // 'Content-Type': 'application/json'
   },
   data: {}
 });
@@ -19,25 +20,26 @@ api.interceptors.request.use((request) => {
   return request;
 });
 
-// api.interceptors.request.use(req => {
-//   progress.start();
-//
-//   return req;
-// }, err => {
-//   progress.done(true);
-//
-//   return Promise.reject(err);
-// });
-// api.interceptors.response.use(res => {
-//   progress.done(true);
-//
-//   return res;
-// }, err => {
-//   progress.done(true);
-//
-//   return Promise.reject(err);
-// });
+api.interceptors.request.use(req => {
+  progress.start();
+
+  return req;
+}, err => {
+  progress.done(true);
+
+  return Promise.reject(err);
+});
+api.interceptors.response.use(res => {
+  progress.done(true);
+
+  return res;
+}, err => {
+  progress.done(true);
+
+  return Promise.reject(err);
+});
 
 export default api;
 
 window.api = api;
+window.progress = progress;
