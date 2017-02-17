@@ -2,6 +2,7 @@
 import os from 'os';
 import history from 'connect-history-api-fallback';
 import compression from 'compression';
+import { config } from 'dotenv';
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -9,10 +10,13 @@ const cwd            = process.cwd();
 const NODE_ENV       = process.env.NODE_ENV;
 const isProduction   = process.env.NODE_ENV == 'production';
 const isDevelopment  = process.env.NODE_ENV == 'development';
-const DISABLE_HMR    =
-        process.env.DISABLE_HMR && (process.env.DISABLE_HMR === '1' || process.env.DISABLE_HMR === 'true');
-const EXTRACT_STYLES =
-        process.env.EXTRACT_STYLES && (process.env.EXTRACT_STYLES === '1' || process.env.EXTRACT_STYLES === 'true');
+
+// относительный путь от корня проекта
+config({path: `tools/constants/.env.${NODE_ENV}`});
+config({path: `tools/constants/.env.default`});
+
+const DISABLE_HMR    = process.env.DISABLE_HMR && (process.env.DISABLE_HMR === '1' || process.env.DISABLE_HMR === 'true');
+const EXTRACT_STYLES = process.env.EXTRACT_STYLES && (process.env.EXTRACT_STYLES === '1' || process.env.EXTRACT_STYLES === 'true');
 
 const pathes = {
   /** здесь указываем относительно cwd */

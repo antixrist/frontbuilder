@@ -63,6 +63,10 @@ export default function (webpackConfig) {
      * Значение каждого ключа должно быть stringify'нуто
      */
     new DefinePlugin({
+      ...Object.keys(process.env).reduce((all, key) => {
+        all[`process.env.${key}`] = JSON.stringify(process.env[key]);
+        return all;
+      }, {}),
       // к примеру
       LANG: JSON.stringify('ru')
     }),

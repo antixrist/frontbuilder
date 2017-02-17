@@ -36,6 +36,7 @@
     "babel-polyfill": "^6.23.0",
     "bluebird": "^3.4.7",
     "bootstrap": "4.0.0-alpha.6",
+    "dotenv": "^4.0.0",
     "family.scss": "^1.0.8",
     "fastclick": "^1.0.6",
     "flex-layout-attribute": "^1.0.3",
