@@ -13,7 +13,10 @@
 block vars
 
 -
-  var cssFiles = allChunks[pageEntry] && allChunks[pageEntry].css ? allChunks[pageEntry].css : [];
+  // var cssFiles = allChunks[pageEntry] && allChunks[pageEntry].css ? allChunks[pageEntry].css : [];
+  var cssFiles = chunks.reduce(function (css, chunkName) {
+    return css.concat(allChunks[chunkName] && allChunks[chunkName].css ? allChunks[chunkName].css : []);
+  }, []);
   var jsFiles = chunks
     .map(function (chunk) {
       return allChunks[chunk] && allChunks[chunk].entry ? allChunks[chunk].entry : null;

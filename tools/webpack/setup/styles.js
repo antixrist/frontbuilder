@@ -141,5 +141,5 @@ function fakeExtractTextPluginExtract (options) {
       return loader.loader + '?' + query;
     })
     .join('!')
-    ;
+  ;
 }
