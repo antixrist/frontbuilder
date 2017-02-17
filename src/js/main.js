@@ -16,4 +16,3 @@ import { ls } from './app/services';
 if (!ls.enabled) {
   throw new Error('LocalStorage не доступен. Пожалуйста, выйдите из приватного режима Safari');
 }
-

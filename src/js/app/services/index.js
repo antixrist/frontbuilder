@@ -1,9 +1,11 @@
+import bus from './bus';
 import ls from './ls';
-import api from './api';
+import http from './http';
 import progress from './progress';
 
 export {
+  bus,
   ls,
-  api,
+  http,
   progress
 };

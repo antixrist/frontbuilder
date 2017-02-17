@@ -1,7 +1,12 @@
 import NProgress from 'nprogress';
 
 NProgress.configure({
-  easing: 'ease-out', speed: 500
+  speed: 500,
+  easing: 'ease-out'
 });
+
+NProgress.factory = function factory (opts = {}) {
+  return NProgress.configure(opts);
+};
 
 export default NProgress;

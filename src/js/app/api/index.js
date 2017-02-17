@@ -1,32 +1,19 @@
+import { http } from '../services';
+
 const ENDPOINTS = {
   LOGIN: {
     url: 'login',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
   }
 };
 
-const AxiosConfig = {
-  url: '',
-  method: 'get',
-  baseURL: API_URL,
-  withCredentials: true, // default
-  transformResponse: [function (data) {
-    if (data == 'Unauthorized') {
-      window.location.href = '/login';
-    }
-    else {
-      return JSON.parse(data);
-    }
-  }],
-};
+const api = http.factory({
+  method: 'post',
+  baseURL: process.env.API_URL,
+  withCredentials: true,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+});
 
-const AuthAxiosConfig = {
-  url: '',
-  method: 'get',
-  baseURL: API_URL,
-  withCredentials: true, // default
-};
-
-export { ENDPOINTS, AxiosConfig, AuthAxiosConfig }
+export default api;
