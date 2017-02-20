@@ -16,7 +16,7 @@
 <template>
   <label class="check-box"
          :class="{
-           [checkedClassName]: checked,
+           [checkedClassName]: local.value,
            [disabledClassName]: disabled,
            [focusClassName]: focus,
            [activeClassName]: active,
@@ -26,24 +26,29 @@
     <slot></slot>
     <input type="checkbox"
            ref="checkbox"
-           v-model="checked"
+           v-model="local.value"
+           @change="$emit('input', $event.target.checked)"
            :disabled="disabled"
-           :checked="checked"
            :value="value"
            :tabindex="tabindex"
            :autofocus="autofocus"
     >
-           <!--:true-value-->
-           <!--:false-value-->
   </label>
 </template>
 
 <script>
+  import { mapProps } from '../../utils';
+  
   export default {
+    mixins: [
+      mapProps({
+        value: {
+          type: Boolean,
+          default: false
+        }
+      })
+    ],
     props: {
-      value: {
-        default: false
-      },
       indeterminate: {
         type: Boolean,
         default: false
@@ -94,15 +99,9 @@
         this.$refs.checkbox.disabled = this.disabled;
       }
     },
-    computed: {
-      checked: {
-        get () { return this.value; },
-        set (newVal) { this.$emit('input', newVal); }
-      }
-    },
     mounted () {
       const self = this;
-      
+
       this.$refs.checkbox.addEventListener('focus', e => this.focus = true);
       this.$refs.checkbox.addEventListener('blur',  e => this.focus = false);
       
