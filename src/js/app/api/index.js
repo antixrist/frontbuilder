@@ -1,5 +1,5 @@
 import { progress, http } from '../services';
-import qs from 'qs';
+// import qs from 'qs';
 
 const api = http.factory({
   method: 'post',
@@ -7,8 +7,8 @@ const api = http.factory({
   // withCredentials: true,
   headers: {
     'Accept': 'application/json',
-    // 'Content-Type': 'application/x-www-form-urlencoded'
     'Content-Type': 'application/json'
+    // 'Content-Type': 'application/x-www-form-urlencoded'
   },
   data: {}
 });
