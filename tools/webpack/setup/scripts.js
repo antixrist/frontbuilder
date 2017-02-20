@@ -63,10 +63,6 @@ export default function (webpackConfig) {
      * Значение каждого ключа должно быть stringify'нуто
      */
     new DefinePlugin({
-      ...Object.keys(process.env).reduce((all, key) => {
-        all[`process.env.${key}`] = JSON.stringify(process.env[key]);
-        return all;
-      }, {}),
       // к примеру
       LANG: JSON.stringify('ru')
     }),
@@ -83,8 +79,8 @@ export default function (webpackConfig) {
       // Promise: 'bluebird'
     }),
   
-    /** внедряем все имеющиеся переменные среды */
-    new EnvironmentPlugin(Object.keys(process.env)),
+    /** внедряем все имеющиеся переменные среды, кроме 'npm_*' */
+    new EnvironmentPlugin(Object.keys(process.env).filter(key => !/^npm_/.test(key))),
   );
   
   /** настраиваем продакшн-сборку */
