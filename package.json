@@ -82,7 +82,6 @@
     "vue-router": "^2.2.1",
     "vue-slider-component": "^2.1.2",
     "vue-socket.io": "^2.1.0",
-    "vue-text-mask": "^0.2.0",
     "vue-touch-ripple": "^2.3.2",
     "vue2-leaflet": "^0.0.32",
     "vuex": "^2.1.2",

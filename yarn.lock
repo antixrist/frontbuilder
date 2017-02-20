@@ -69,13 +69,9 @@ acorn@^3.0.4, acorn@^3.1.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
-acorn@^4.0.3, acorn@^4.0.4:
+acorn@^4.0.3, acorn@^4.0.4, acorn@~4.0.2:
   version "4.0.11"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-4.0.11.tgz#edcda3bd937e7556410d42ed5860f67399c794c0"
-
-acorn@~4.0.2:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-4.0.3.tgz#1a3e850b428e73ba6b09d1cc527f5aaad4d03ef1"
 
 adjust-sourcemap-loader@^1.0.0:
   version "1.0.0"
@@ -7687,10 +7683,6 @@ vue-template-compiler@^2.1.10:
 vue-template-es2015-compiler@^1.2.2:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.4.0.tgz#7b88853ca4bf8d84ae54ab9e56771de271e60198"
-
-vue-text-mask@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/vue-text-mask/-/vue-text-mask-0.2.0.tgz#18ec9c53f9ba1d1363b8a140520751ad7ed9ad81"
 
 vue-touch-ripple@^2.3.2:
   version "2.3.2"
