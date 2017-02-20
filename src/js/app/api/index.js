@@ -7,18 +7,18 @@ const api = http.factory({
   // withCredentials: true,
   headers: {
     'Accept': 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded'
-    // 'Content-Type': 'application/json'
+    // 'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'application/json'
   },
   data: {}
 });
 
-api.interceptors.request.use((request) => {
-  if (request.data && request.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-    request.data = qs.stringify(request.data, { encode: false, arrayFormat: 'brackets' });
-  }
-  return request;
-});
+// api.interceptors.request.use((request) => {
+//   if (request.data && request.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+//     request.data = qs.stringify(request.data, { encode: false, arrayFormat: 'brackets' });
+//   }
+//   return request;
+// });
 
 api.interceptors.request.use(req => {
   progress.start();
@@ -41,7 +41,7 @@ api.interceptors.response.use(res => {
 
 export default api;
 
-// window.api = api;
+window.api = api;
 // window.progress = progress;
 
 // (async function () {
