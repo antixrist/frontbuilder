@@ -40,14 +40,3 @@ api.interceptors.response.use(res => {
 });
 
 export default api;
-
-window.api = api;
-// window.progress = progress;
-
-// (async function () {
-//   const { data, status, statusText, headers, config, request } = await window.api.post('/login', { login: 'test', password: 'B4mGld' });
-//
-//   const { data: { api_token } } = data;
-//   console.log(data, api_token);
-//
-// })().catch(err => console.log(err));

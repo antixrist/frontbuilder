@@ -11,11 +11,6 @@ if ('addEventListener' in document) {
   document.addEventListener('DOMContentLoaded', () => FastClick.attach(document.body), false);
 }
 
-import api from './app/api';
-import { ls } from './app/services';
-
-window.api = api;
-
-if (!ls.enabled) {
-  throw new Error('LocalStorage не доступен. Пожалуйста, выйдите из приватного режима Safari');
+if (process.env.NODE_ENV == 'development') {
+  window.app = app;
 }
