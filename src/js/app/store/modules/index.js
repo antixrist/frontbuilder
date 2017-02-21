@@ -1,5 +1,5 @@
-const modules = {
-  
-};
+import account from './account';
 
-export default modules;
+export default {
+  account
+};

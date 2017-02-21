@@ -17,27 +17,15 @@ if (!services.ls.enabled) {
 
 
 /** Роутер */
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.authRequired)) {
-    // этот путь требует авторизации, проверяем залогинен ли
-    // пользователь, и если нет, перенаправляем на страницу логина
-    // if (!auth.loggedIn()) {
-    if (random()) {
-      return next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      });
-    }
-  }
-
-  return next();
-});
-
 sync(store, router);
 
 
 /** Api */
 Vue.prototype.$api = api;
+
+
+/** Bus */
+Vue.prototype.$bus = services.bus;
 
 
 /** Инcтанс */

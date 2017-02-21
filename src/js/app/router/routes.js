@@ -2,20 +2,13 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    meta: {
-      authRequired: true
-    },
-    component: require('../views/logged/index.vue')
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: require('../views/login/index.vue')
+    // component: require.ensure([], () => require('../views/logged/index.vue'))
+    component: require('../views/home/index.vue')
   },
   {
     path: '/logout',
     name: 'logout',
-    component: require('../views/logout/index.vue')
+    component: require('../views/logout.vue')
   },
   {
     path: '/*',
