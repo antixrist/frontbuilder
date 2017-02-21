@@ -1,4 +1,4 @@
-modal: .panel.login(:class="{ 'is-loading': loading }")
+modal: .panel.login.is-loading-block(:class="{ '-loading': loading }")
     .panel-header.login-header(layout="row center-justify")
       div(self="size-x1")
         i.panel-icon.icon-tasks

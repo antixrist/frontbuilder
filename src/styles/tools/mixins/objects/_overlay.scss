@@ -47,7 +47,7 @@
   //text-decoration: none;
   //max-width: 100%;
 
-  &:after {
+  &:before {
     @include pseudo;
     @include stretch;
     @include icon-base;
