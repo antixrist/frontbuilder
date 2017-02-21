@@ -1,26 +1,14 @@
-<template src="./tpl.pug" lang="pug"></template>
-<style lang="scss" rel="stylesheet/scss"></style>
+<template>
+  <transition>
+    <router-view></router-view>
+  </transition>
+</template>
 
 <script>
   import Vue from 'vue';
-  Vue.component('login',           require('./components/login/index.vue'));
-  Vue.component('projects-list',   require('./components/projects-list/index.vue'));
-  Vue.component('contact-list',    require('./components/contact-list/index.vue'));
-  Vue.component('search-block',    require('./components/search-block/index.vue'));
-  Vue.component('layers-checkers', require('./components/layers-checkers/index.vue'));
-  Vue.component('task-details',    require('./components/task-details/index.vue'));
-  Vue.component('create-task',     require('./components/create-task/index.vue'));
-  Vue.component('create-project',  require('./components/create-project/index.vue'));
-  Vue.component('create-contact',  require('./components/create-contact/index.vue'));
-  
-  export default {
-    data () {
-      return {
-        layout: {
-          leftSideOpened: true,
-          activeSidebar: 'projects'
-        }
-      };
-    }
-  };
+  /** Общие для всего приложения UI-компоненты */
+  Vue.component('modal',     require('./ui/modal/index.vue'));
+  Vue.component('check-box', require('./ui/check-box/index.vue'));
+
+  export default {  };
 </script>

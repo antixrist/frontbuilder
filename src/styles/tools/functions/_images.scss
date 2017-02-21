@@ -3,6 +3,7 @@
 // (делает он это только внутри декларации `url()`), а потом эта конструкция с зарезолвленным урлом
 // будет очищаться в методе `customizeUrl` форкнутого `postcss-assets`-плагина (см. файл в корне postcss.config.js)
 @function img-size ($url, $factor: 1) {
+  @debug('size(url(#{$url}), #{$factor})');
   @return unquote('size(url(#{$url}), #{$factor})');
 }
 

@@ -1,0 +1,5 @@
+.is-loading {
+  @include block-loader ('../../img/loader.gif', 3) {
+    background-color: rgba(#fff, .7);
+  }
+}

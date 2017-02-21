@@ -6,7 +6,7 @@
           div: check-box.layout-burger-toggle.top-menu-link.is-active.-square(v-model="layout.leftSideOpened")
             i.top-menu-item-icon.icon-angle-double-right
           div(self="size-x1")
-          div: a.top-menu-link.is-active(href="#") Выход #[i.top-menu-item-icon.icon-logout]
+          div: router-link.top-menu-link.is-active(to="logout", exact) Выход #[i.top-menu-item-icon.icon-logout]
 
         .layout-content-inner(layout="column top-stretch")
           div(self="size-x1")
@@ -18,7 +18,6 @@
                 .panel.float-buttons.-y
                   button.btn.-inner: span.inner.-circle +
                   button.btn.-inner.-inner-sm: span.inner.-circle &ndash;
-
           div
             p
             div(layout="row top-right")
@@ -28,7 +27,6 @@
                   span.counter 13
             p
             task-details
-
 
   aside.layout-left
     .layout-header(layout="row stretch-justify")
@@ -41,9 +39,9 @@
           a.top-menu-link(:class="{'is-active': layout.activeSidebar == 'contacts'}", @click="layout.activeSidebar = 'contacts'")
             | #[i.top-menu-item-icon.icon-phone-squared] Номера
       div
-          a.top-menu-link.-square(:class="{'is-active': layout.activeSidebar == 'trash'}", @click="layout.activeSidebar = 'trash'")
-            i.top-menu-item-icon.icon-trash
-            span.counter 10
+        a.top-menu-link.-square(:class="{'is-active': layout.activeSidebar == 'trash'}", @click="layout.activeSidebar = 'trash'")
+          i.top-menu-item-icon.icon-trash
+          span.counter 10
 
     .panel
       .layout-left-content

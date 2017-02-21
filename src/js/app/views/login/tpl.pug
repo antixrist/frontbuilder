@@ -1,0 +1,17 @@
+modal: .panel.login(:class="{ 'is-loading': loading }")
+    .panel-header.login-header(layout="row center-justify")
+      div(self="size-x1")
+        i.panel-icon.icon-tasks
+        | &nbsp; Авторизация
+      //div
+      //  a.closer(href="#"): i.i.-times
+    .panel-box
+      .panel-y-sections
+        .form-group
+          label Логин:
+          input.input.-size-sm.-wide(placeholder="Введите ваш логин")
+        .form-group
+          label Пароль:
+          input.input.-size-sm.-wide(placeholder="Введите ваш пароль", type="password")
+    .actions: .u-text-center
+      button.btn.-size-sm.-primary(@click.prevent="loginTry") Войти

@@ -1,31 +1,28 @@
+/**
+ * Здесь настраиваем все части приложения и соединяем их между собой
+ */
+
+import { random } from 'lodash'
 import Vue from 'vue'
-import { sync } from 'vuex-router-sync'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import api from './api';
 import * as services from './services';
-
-/**
- * Здесь настраиваем все части приложения и соединяем их между собой
- */
+import { sync } from 'vuex-router-sync'
 
 if (!services.ls.enabled) {
   throw new Error('LocalStorage не доступен. Пожалуйста, выйдите из приватного режима Safari');
 }
 
-/** Общие для всего приложения UI-компоненты */
-/** todo: перенести куда-то */
-Vue.component('check-box', require('./ui/check-box/index.vue'));
-Vue.component('modal', require('./ui/modal/index.vue'));
 
 /** Роутер */
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.some(record => record.meta.authRequired)) {
     // этот путь требует авторизации, проверяем залогинен ли
     // пользователь, и если нет, перенаправляем на страницу логина
     // if (!auth.loggedIn()) {
-    if (false) {
+    if (random()) {
       return next({
         path: '/login',
         query: { redirect: to.fullPath }
@@ -37,6 +34,7 @@ router.beforeEach((to, from, next) => {
 });
 
 sync(store, router);
+
 
 /** Api */
 Vue.prototype.$api = api;
@@ -52,4 +50,4 @@ const app = new Vue({
 
 
 /** выплёвываем наружу (монтирование приложение снаружи, надо оно или не надо - всё там) */
-export { app, router, store, api, services};
+export { app, router, store, api, services };

@@ -42,17 +42,17 @@
 
 @mixin block-loader ($image, $factor: 1) {
   position: relative;
-  display: inline-block;
-  border: none;
-  text-decoration: none;
-  max-width: 100%;
+  //display: inline-block;
+  //border: none;
+  //text-decoration: none;
+  //max-width: 100%;
 
   &:after {
     @include pseudo;
     @include stretch;
     @include icon-base;
     @include img-icon($image, $factor);
-    @include bg-size($image, $factor);
+    @include bg-size-image($image, $factor);
 
     width: auto;
     height: auto;
