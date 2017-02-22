@@ -12,8 +12,8 @@ const isProduction   = process.env.NODE_ENV == 'production';
 const isDevelopment  = process.env.NODE_ENV == 'development';
 
 // относительный путь от корня проекта
-config({path: `tools/constants/.env.${NODE_ENV}`});
-config({path: `tools/constants/.env.default`});
+config({path: `.env.${NODE_ENV}`});
+config({path: `.env.default`});
 
 const DISABLE_HMR    = process.env.DISABLE_HMR && (process.env.DISABLE_HMR === '1' || process.env.DISABLE_HMR === 'true');
 const EXTRACT_STYLES = process.env.EXTRACT_STYLES && (process.env.EXTRACT_STYLES === '1' || process.env.EXTRACT_STYLES === 'true');
