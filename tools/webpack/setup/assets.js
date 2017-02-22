@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { isDevelopment, pathes } from '../../config';
 import { extractFromConfigSafely } from '../utils';
 
+/** todo: image-webpack-loader */
 export default function (webpackConfig) {
   const { rules, plugins } = extractFromConfigSafely(webpackConfig);
 
