@@ -8,8 +8,8 @@ import store from './store';
 import api, { reportError } from './api';
 import { sync } from 'vuex-router-sync';
 import { assert } from '../utils';
-import * as services from './services';
-const { ls, http, progress, bus, StackProgress } = services;
+import * as services from '../services';
+const { ls, http, progress, bus, ProgressStack } = services;
 
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой
@@ -18,7 +18,7 @@ const { ls, http, progress, bus, StackProgress } = services;
 /** Роутер */
 sync(store, router);
 
-/** обработка ошибок */
+/** Глобальная обработка необработанных ошибок */
 window.onerror = async function (msg, file, line, col, err) {
   let error = err;
   let stackframes = [];
@@ -58,11 +58,16 @@ window.onerror = async function (msg, file, line, col, err) {
 /** Проверяем работоспособность LocalStorage'а */
 assert(ls.enabled, 'Пожалуйста, выйдите из приватного режима Safari. Стабильность работы приложения не гарантируется');
 
-const apiRequestsProgress = new StackProgress();
+/** Прогресс для запросов к api */
+const apiRequestsProgress = new ProgressStack();
 apiRequestsProgress.setProgress(progress);
 
 api.interceptors.request.use((config) => {
-  apiRequestsProgress.add(config);
+  /**
+   * если передать { silent: true } в параметрах запроса,
+   * то прогресс для этого запроса показан не будет
+   */
+  !config.silent && apiRequestsProgress.add(config);
 
   return config;
 }, err => {

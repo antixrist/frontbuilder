@@ -1,5 +1,5 @@
 import { API_URL } from '../../config';
-import { progress, http } from '../services';
+import { http } from '../../services';
 // import qs from 'qs';
 
 const api = http.factory({
@@ -29,5 +29,5 @@ export const reportError = async function reportError (data) {
     location: location.href,
   });
 
-  await api.post('/report-error', data);
+  await api.post('/report-error', data, {silent: true});
 };

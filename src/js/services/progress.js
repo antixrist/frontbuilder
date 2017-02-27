@@ -1,16 +1,30 @@
 import _ from 'lodash';
+import NProgress from 'nprogress';
+
+NProgress.configure({
+  speed: 500,
+  easing: 'ease-out',
+  showSpinner: false
+});
+
+NProgress.factory = function factory (opts = {}) {
+  return NProgress.configure(opts);
+};
+
+export default NProgress;
+
+/** Статусбар для запросов к апи */
 
 const noopProgress = { start: _.noop, done: _.noop };
 
-/** Статусбар для запросов к апи */
-export default class StackProgress {
+export class ProgressStack {
 
-  constructor (...args) {
+  constructor () {
     this.requests = [];
     this.setProgress();
   }
 
-  setProgress (progress = noopProgress) {
+  setProgress (progress = NProgress) {
     this.progress = progress;
   }
 
