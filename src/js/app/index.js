@@ -20,7 +20,6 @@ if (!services.ls.enabled) {
 sync(store, router);
 
 
-/** Api */
 Object.defineProperties(Vue.prototype, {
   $api: {
     get () { return api; }
