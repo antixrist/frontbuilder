@@ -1,6 +1,6 @@
-<template></template>
+<template lang="pug" src="./tpl.pug"></template>
 
-<script>
+<script type="text/babel">
   import { mapActions } from 'vuex';
   
   export default {
@@ -9,11 +9,10 @@
       return {  };
     },
     methods: {
-      ...mapActions('account', ['logout'])
+      ...mapActions({ logout: 'account/logout' })
     },
     async mounted () {
       await this.logout();
-
       this.$router.push({ name: 'home' });
     }
   };

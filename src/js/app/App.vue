@@ -14,8 +14,9 @@
   import { mapGetters } from 'vuex';
   
   /** Общие для всего приложения UI-компоненты */
-  Vue.component('modal',     require('./ui/modal/index.vue'));
-  Vue.component('check-box', require('./ui/check-box/index.vue'));
+  Vue.component('modal',        require('./ui/modal/index.vue'));
+  Vue.component('check-box',    require('./ui/check-box/index.vue'));
+  Vue.component('notification', require('./ui/notifications/notification.vue'));
   
   export default {
     components: {

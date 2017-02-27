@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/logout',
     name: 'logout',
-    component: require('../views/logout.vue')
+    component: require('../views/logout/index.vue')
   },
   {
     path: '/*',
