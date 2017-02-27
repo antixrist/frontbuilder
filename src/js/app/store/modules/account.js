@@ -23,12 +23,21 @@ const getters = {
   }
 };
 
+// const Promise = require('bluebird');
+
 const actions = {
   // dispatch('account/login')
   async login ({ commit, dispatch }, { login, password }) {
     // todo: обработка ошибок запросов и ответов
 
     const { status, data: res } = await api.post('/login', { login, password });
+
+    // await Promise.all([
+    //   api.post('/login', { login, password }),
+    //   Promise.delay(100).then(() => api.post('/login', { login, password })).then(() => Promise.delay(100)),
+    //   Promise.delay(200).then(() => api.post('/login', { login, password })).then(() => Promise.delay(250)),
+    //   Promise.delay(300).then(() => api.post('/login', { login, password })).then(() => Promise.delay(500))
+    // ]);
 
     if (status == 200) {
       const { success, data } = res;

@@ -29,5 +29,5 @@ export const reportError = async function reportError (data) {
     location: location.href,
   });
 
-  await api.post('/report-error', data, {silent: true});
+  await api.post('/report-error', data, { silent: true });
 };
