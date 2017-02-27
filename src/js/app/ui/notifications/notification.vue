@@ -5,16 +5,14 @@
 </style>
 
 <template>
-  <div v-if="showed" class="notification">
-    <slot :title="title" :content="content" :closer="closer" :close="close">
+  <div class="alert">
+    <slot :content="content" :close="close">
       <slot name="closer">
-        <button v-if="closer" type="button" @click="close">&times;</button>
-      </slot>
-      <slot name="title">
-        <div v-if="title" v-html="title"></div>
+        <button type="button" @click="close">&times;</button>
       </slot>
       <slot name="content">
-        <div v-if="content" v-html="content"></div>
+        <h3 v-if="content.title" v-html="content.title"></h3>
+        <div v-if="content.text" v-html="content.text"></div>
       </slot>
     </slot>
   </div>
@@ -46,7 +44,6 @@
     },
     data () {
       return {
-        showed: true,
         timer: 0
       };
     },
@@ -57,12 +54,10 @@
     },
     methods: {
       open () {
-        this.showed = true;
         this.$emit('open', this);
       },
       
       close () {
-        this.showed = false;
         this.timer && clearTimeout(this.timer);
         this.$emit('close', this);
       }

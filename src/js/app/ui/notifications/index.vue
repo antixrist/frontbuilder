@@ -16,10 +16,16 @@
 <script>
   import Notification from './notification.vue';
   
+  const defaults = {};
+  
   export default {
     components: { Notification },
     
     props: {
+      queue: {
+        type: Array,
+        default: []
+      },
       duration: {
         type: Number,
         default: 0
@@ -28,13 +34,13 @@
         type: String,
         default: ''
       },
+      registerGlobal: {
+        type: [ Boolean, String ],
+        default: true
+      }
     },
     data () {
-      return {
-        queue: [],
-        showed: false,
-        active: false
-      };
+      return {};
     },
     watch: {  },
     
@@ -43,12 +49,23 @@
     },
     
     methods: {
-      push () {
-        
+      unshift (item) { this.queue.unshift(item); },
+      
+      push (item) { this.queue.push(item); },
+      
+      success (item) {
+        item.type = 'success';
+        this.push(item);
       },
 
-      unshift () {
-        
+      warning (item) {
+        item.type = 'warning';
+        this.push(item);
+      },
+
+      danger (item) {
+        item.type = 'danger';
+        this.push(item);
       },
     },
     

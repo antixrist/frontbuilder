@@ -1,9 +1,10 @@
+import { API_URL } from '../../config';
 import { progress, http } from '../services';
 // import qs from 'qs';
 
 const api = http.factory({
   method: 'post',
-  baseURL: process.env.API_URL,
+  baseURL: API_URL,
   // withCredentials: true,
   headers: {
     'Accept': 'application/json',

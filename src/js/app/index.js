@@ -21,16 +21,26 @@ sync(store, router);
 
 
 /** Api */
-Vue.prototype.$api = api;
-
-
-/** Bus */
-Vue.prototype.$bus = services.bus;
-
+Object.defineProperties(Vue.prototype, {
+  $api: {
+    get () { return api; }
+  },
+  $http: {
+    get () { return services.http; }
+  },
+  $bus: {
+    get () { return services.bus; }
+  },
+  $ls: {
+    get () { return services.ls; }
+  },
+  $progress: {
+    get () { return services.progress; }
+  }
+});
 
 /** Инcтанс */
 const app = new Vue({
-  api,
   router,
   store,
   ...App
