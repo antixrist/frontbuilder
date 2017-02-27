@@ -21,23 +21,13 @@ const api = http.factory({
 //   return request;
 // });
 
-api.interceptors.request.use(req => {
-  progress.start();
-
-  return req;
-}, err => {
-  progress.done(true);
-
-  return Promise.reject(err);
-});
-api.interceptors.response.use(res => {
-  progress.done(true);
-
-  return res;
-}, err => {
-  progress.done(true);
-
-  return Promise.reject(err);
-});
-
 export default api;
+
+export const reportError = async function reportError (data) {
+  Object.assign(data, {
+    userAgent: navigator.userAgent,
+    location: location.href,
+  });
+
+  await api.post('/report-error', data);
+};

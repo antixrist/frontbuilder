@@ -23,9 +23,13 @@
       login: require('./views/login/index.vue')
     },
     computed: {
-      ...mapGetters('account', {
-        userLogged: 'isLogged'
+      ...mapGetters({
+        userLogged: 'account/isLogged'
       })
+    },
+    created () {
     }
+    
+    // todo: показывать нотификации
   };
 </script>
