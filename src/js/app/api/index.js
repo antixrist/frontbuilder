@@ -26,7 +26,7 @@ export default api;
 export const reportError = async function reportError (data) {
   Object.assign(data, {
     userAgent: navigator.userAgent,
-    location: location.href,
+    location: document.location.href,
   });
 
   await api.post('/report-error', data, { silent: true });

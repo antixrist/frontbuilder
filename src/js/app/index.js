@@ -7,9 +7,11 @@ import router from './router';
 import store from './store';
 import api, { reportError } from './api';
 import { sync } from 'vuex-router-sync';
-import { assert } from '../utils';
+import { assert, asd } from '../utils';
 import * as services from '../services';
 const { ls, http, progress, bus, ProgressStack } = services;
+
+console.log('asd', asd);
 
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой
