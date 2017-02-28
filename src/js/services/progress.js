@@ -16,22 +16,6 @@ export default NProgress;
 
 /** Статусбар для запросов к апи */
 
-const noopProgress = { start: _.noop, done: _.noop };
-
-// export const ProgressStack = Vue.extend({
-//   data () {
-//     return {
-//       stack: [],
-//       progress: 0,
-//     };
-//   },
-//   computed: {
-//     progress () {
-//       return stack.length
-//     }
-//   }
-// });
-
 export class ProgressStack {
 
   constructor () {
@@ -55,7 +39,7 @@ export class ProgressStack {
 
     this.items.push(item);
 
-    console.log(`add. percent: ${this.percent}, max: %d, length: %d`, this.max, this.items.length);
+    // console.log(`add. percent: ${this.percent}, max: %d, length: %d`, this.max, this.items.length);
   }
 
   done (item) {
@@ -66,7 +50,7 @@ export class ProgressStack {
     }
     if (!removed.length) { return; }
 
-    console.log('done. length: %d', this.items.length);
+    // console.log('done. length: %d', this.items.length);
 
     if (!this.items.length) {
       this.percent = 1;
@@ -75,7 +59,7 @@ export class ProgressStack {
       this.percent = (this.max - this.items.length) / this.max;
     }
 
-    console.log(`done. percent: ${this.percent}, max: %d`, this.max);
+    // console.log(`done. percent: ${this.percent}, max: %d`, this.max);
 
     this.progress.set(this.percent);
   }
