@@ -5,13 +5,13 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import api, { reportError } from './api';
+import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
-import { assert, asd } from '../utils';
+import { assert, errors } from '../utils';
 import * as services from '../services';
 const { ls, http, progress, bus, ProgressStack } = services;
 
-console.log('asd', asd);
+console.log('errors.asd', errors.asd);
 
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой

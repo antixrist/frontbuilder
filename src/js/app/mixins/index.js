@@ -1,7 +1,3 @@
-import slots from './slots';
-import domIsVisible from './domIsVisibile';
-
-export {
-  slots,
-  domIsVisible
-};
+export slots from './slots';
+export toggleable from './toggleable';
+export domIsVisible from './domIsVisibile';

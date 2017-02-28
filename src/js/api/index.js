@@ -1,0 +1,70 @@
+import { API_URL } from '../config';
+import { http } from '../services';
+// import qs from 'qs';
+
+const api = http.factory({
+  method: 'post',
+  baseURL: API_URL,
+  // withCredentials: true,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+    // 'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data: {}
+});
+
+// api.interceptors.request.use((request) => {
+//   if (request.data && request.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+//     request.data = qs.stringify(request.data, { encode: false, arrayFormat: 'brackets' });
+//   }
+//   return request;
+// });
+
+export default api;
+
+export const reportError = async function reportError (data) {
+  Object.assign(data, {
+    userAgent: navigator.userAgent,
+    location: document.location.href,
+  });
+
+  await api.post('/report-error', data, { silent: true });
+};
+
+
+// let instance = axios.create({
+//   baseUrl: ''
+// });
+//
+// _.assign(instance.defaults.headers.common, {
+//   Accept: 'application/json',
+//   'Content-Type': 'application/json'
+// });
+//
+// instance.interceptors.request.use(req => {
+//   progress.start();
+//
+//   const token = ls.get('token') || 'blablablabla';
+//   token && (req.headers['X-HTTP-TOKEN'] = token);
+//
+//   return req;
+// }, err => {
+//   progress.done(true);
+//
+//   return Promise.reject(error)
+// });
+// instance.interceptors.response.use(res => {
+//   progress.done(true);
+//
+//   const token = res.headers['Authorization'] || res.data['token'];
+//   token && ls.set('token', token);
+//
+//   return res;
+// }, err => {
+//   progress.done(true);
+//
+//   return Promise.reject(err)
+// });
+//
+// export default instance;

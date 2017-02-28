@@ -1,8 +1,23 @@
-import mapProps from './map-props';
-import * as filters from './filters';
-export * from './errors';
+export * as filters from './filters';
+export mapProps from './map-props';
 
-export {
-  mapProps,
-  filters
-};
+/**
+ * @memberof Vue
+ */
+export function closestParentTag (tag) {
+  let parent = this.$parent;
+
+  while (parent) {
+    if (!parent.$options._componentTag) {
+      return null;
+    }
+
+    if (parent.$options._componentTag === tag) {
+      return parent;
+    }
+
+    parent = parent.$parent;
+  }
+
+  return null;
+}
