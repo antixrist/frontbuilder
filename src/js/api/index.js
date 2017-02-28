@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { API_URL } from '../config';
 import { http } from '../services';
 // import qs from 'qs';
@@ -23,14 +24,16 @@ const api = http.factory({
 
 export default api;
 
-export const reportError = async function reportError (data) {
+export async function reportError (data, opts = {}) {
   Object.assign(data, {
     userAgent: navigator.userAgent,
     location: document.location.href,
   });
 
-  await api.post('/report-error', data, { silent: true });
-};
+  await api.post('/report-error', data, _.merge({
+    silent: true
+  }, opts));
+}
 
 
 // let instance = axios.create({

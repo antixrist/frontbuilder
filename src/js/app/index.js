@@ -1,17 +1,13 @@
-import _ from 'lodash';
-import StackTrace from 'stacktrace-js';
-import StackFrame from 'stackframe';
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import { isDevelopment } from '../config';
 import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
-import { assert, errors } from '../utils';
+import { assert, uncaughtExceptionHandler } from '../utils';
 import * as services from '../services';
 const { ls, http, progress, bus, ProgressStack } = services;
-
-console.log('errors.asd', errors.asd);
 
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой
@@ -20,42 +16,22 @@ console.log('errors.asd', errors.asd);
 /** Роутер */
 sync(store, router);
 
+
 /** Глобальная обработка необработанных ошибок */
-window.onerror = async function (msg, file, line, col, err) {
-  let error = err;
-  let stackframes = [];
+window.onerror = uncaughtExceptionHandler(async err => {
+  bus.emit('uncaughtException', err);
 
-  try {
-    // err в разных браузерах может и не быть
-    if (error) {
-      stackframes = await StackTrace.fromError(error);
-    } else {
-      error = new Error(msg);
-      stackframes.push(new StackFrame({
-        fileName: file,
-        lineNumber: line,
-        columnNumber: col,
-      }));
-    }
-  } catch (err) {
-    error = err;
+  if (isDevelopment) {
+    console.group && console.group(`Error: ${err.message}`);
+    console.log(err.stack);
+    console.groupEnd && console.groupEnd();
+  } else {
+    await reportError({
+      message: err.message || '',
+      stack: err.stack || err.stackframes.map(sf => sf.toString()).join('\n') || '',
+    });
   }
-
-  stackframes = stackframes.length ? stackframes : await StackTrace.get();
-  error.stack = stackframes.map(sf => sf.toString()).join('\n');
-
-  console.group(error.message);
-  console.log(error.stack);
-  console.groupEnd();
-
-  bus.emit('uncaughtException', error);
-  await reportError({
-    message: error.message || '',
-    stack: error.stack || ''
-  });
-
-  return true;
-};
+});
 
 /** Проверяем работоспособность LocalStorage'а */
 assert(ls.enabled, 'Пожалуйста, выйдите из приватного режима Safari. Стабильность работы приложения не гарантируется');

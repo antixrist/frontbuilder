@@ -1,14 +1,24 @@
 /**
- * @return {boolean}
+ * @param {{}} [opts]
  * @link https://gist.github.com/jasonfarrell/3659166
+ * @returns {{}}
  */
-export default {
-  methods: {
-    isVisible () {
-      return domIsVisible(this.$el);
+export function factory (opts = {
+  methodName: 'isVisible'
+}) {
+  return {
+    methods: {
+      /**
+       * @returns {boolean}
+       */
+      [opts.methodName] () {
+        return domIsVisible(this.$el);
+      }
     }
   }
-};
+}
+
+export default factory();
 
 /**
  * Checks if a DOM element is visible. Takes into

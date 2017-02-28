@@ -1,21 +1,33 @@
-export default {
-  data () {
-    return {
-      isActive: this.value
-    }
-  },
+/**
+ * @param {{}} [opts]
+ * @returns {{}}
+ */
+export function factory (opts = {
+  dataProperty: 'isActive'
+}) {
+  const prop = opts.dataProperty;
 
-  props: {
-    value: Boolean
-  },
-
-  watch: {
-    value () {
-      this.isActive = this.value;
+  return {
+    data () {
+      return {
+        [prop]: this.value
+      }
     },
 
-    isActive () {
-      this.$emit('input', this.isActive);
+    props: {
+      value: Boolean
+    },
+
+    watch: {
+      value () {
+        this[prop] = this.value;
+      },
+
+      [prop] () {
+        this.$emit('input', this[prop]);
+      }
     }
-  }
-};
+  };
+}
+
+export default factory();
