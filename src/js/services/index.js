@@ -1,12 +1,5 @@
-import bus from './bus';
-import ls from './ls';
-import http from './http';
-import progress, { ProgressStack } from './progress';
-
-export {
-  bus,
-  ls,
-  http,
-  progress,
-  ProgressStack
-};
+export bus from './bus';
+export ls from './ls';
+export http from './http';
+export logger from './logger';
+export progress, { ProgressStack } from './progress';

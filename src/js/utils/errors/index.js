@@ -3,24 +3,21 @@ import StackTrace from 'stacktrace-js';
 import StackFrame from 'stackframe';
 
 /**
+ * @param {Error|{file: String, line: Number, column: Number}} err
  * @returns {[]}
  */
-export async function getErrorStackFrames (...args) {
+export async function getStackFrames (err) {
   let stackframes = [];
 
-  if (args.length == 1) {
+  if (err instanceof Error) {
     try {
-      stackframes = await StackTrace.fromError(args[0]);
+      stackframes = await StackTrace.fromError(err);
     } catch (err) {
       stackframes = [];
     }
   } else {
-    const [fileName, lineNumber, columnNumber] = args;
-    stackframes = [new StackFrame({
-      fileName,
-      lineNumber,
-      columnNumber,
-    })];
+    const { file, line, column } = err;
+    stackframes = [new StackFrame({ file, line, column, })];
   }
 
   return stackframes;
@@ -34,20 +31,20 @@ export function uncaughtExceptionHandler (cb = noop) {
   /**
    * @callback uncaughtExceptionCallback
    * @param {string} msg
-   * @param {string} fileName
-   * @param {number} lineNumber
-   * @param {number} columnNumber
+   * @param {string} file
+   * @param {number} line
+   * @param {number} column
    * @param {Error} [err]
    */
-  return function (msg, fileName, lineNumber, columnNumber, err) {
+  return function (msg, file, line, column, err) {
     setImmediate(async function () {
       let stackframes;
 
       if (err) {
-        stackframes = await getErrorStackFrames(err);
+        stackframes = await getStackFrames(err);
       } else {
         err = new Error(msg);
-        stackframes = await getErrorStackFrames(msg, fileName, lineNumber, columnNumber);
+        stackframes = await getStackFrames({ file, line, column });
       }
 
       err.stackframes = stackframes;
@@ -70,12 +67,12 @@ export function unhandledRejectionHandler (cb = noop) {
    */
   return function (event) {
     setImmediate(async function () {
-      const { reason, promise } = event;
+      const { reason } = event;
 
       let stackframes = [];
 
       if (reason instanceof Error) {
-        stackframes = await getErrorStackFrames(reason);
+        stackframes = await getStackFrames(reason);
       } else {
         event.reason = new Error(reason);
       }

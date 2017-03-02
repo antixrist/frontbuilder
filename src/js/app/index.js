@@ -5,7 +5,7 @@ import store from './store';
 import { isDevelopment } from '../config';
 import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
-import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
+import { assert, uncaughtExceptionHandler, unhandledRejectionHandler, logError } from '../utils';
 import * as services from '../services';
 const { ls, http, progress, bus, ProgressStack } = services;
 
@@ -22,9 +22,10 @@ window.onerror = uncaughtExceptionHandler(async err => {
   bus.emit('uncaughtException', { err });
 
   if (isDevelopment) {
-    console.group && console.group(`Error: ${err.message}`);
-    console.log(err.stack);
-    console.groupEnd && console.groupEnd();
+    logError(err);
+    // console.group && console.group(`Error: ${err.message}`);
+    // console.log(err.stack);
+    // console.groupEnd && console.groupEnd();
   } else {
     await reportError({
       message: err.message || '',
