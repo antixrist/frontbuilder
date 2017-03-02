@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { API_URL } from '../config';
 import { http } from '../services';
+import pathToRegexp from 'path-to-regexp';
 // import qs from 'qs';
 
 const api = http.factory({

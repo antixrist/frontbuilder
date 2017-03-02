@@ -5,7 +5,7 @@ import store from './store';
 import { isDevelopment } from '../config';
 import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
-import { assert, uncaughtExceptionHandler } from '../utils';
+import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
 import * as services from '../services';
 const { ls, http, progress, bus, ProgressStack } = services;
 
@@ -19,7 +19,24 @@ sync(store, router);
 
 /** Глобальная обработка необработанных ошибок */
 window.onerror = uncaughtExceptionHandler(async err => {
-  bus.emit('uncaughtException', err);
+  bus.emit('uncaughtException', { err });
+
+  if (isDevelopment) {
+    console.group && console.group(`Error: ${err.message}`);
+    console.log(err.stack);
+    console.groupEnd && console.groupEnd();
+  } else {
+    await reportError({
+      message: err.message || '',
+      stack: err.stack || err.stackframes.map(sf => sf.toString()).join('\n') || '',
+    });
+  }
+});
+
+window.onunhandledrejection = unhandledRejectionHandler(async event => {
+  bus.emit('unhandledRejection', event);
+
+  const { reason: err } = event;
 
   if (isDevelopment) {
     console.group && console.group(`Error: ${err.message}`);
@@ -47,9 +64,13 @@ api.interceptors.request.use((config) => {
    */
   !config.silent && apiRequestsProgress.add(config);
 
+  throw new Error('Errrooooorrr!!!');
+
   return config;
 }, err => {
   apiRequestsProgress.done(err.config);
+
+  console.error('err', err);
 
   return Promise.reject(err);
 });

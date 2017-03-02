@@ -19,15 +19,15 @@
       async loginTry () {
         this.loading = true;
 
-        try {
+//        try {
           const { login, password } = this;
           const res = await this.loginAction({ login, password });
           if (res.success) {
             this.$router.replace({ name: 'home' });
           }
-        } catch (err) {
-          console.error(err);
-        }
+//        } catch (err) {
+//          console.error(err);
+//        }
 
         this.loading = false;
       }

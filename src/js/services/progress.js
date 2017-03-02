@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import Vue from 'vue';
 import NProgress from 'nprogress';
 
 NProgress.configure({

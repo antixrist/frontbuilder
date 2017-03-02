@@ -33,3 +33,8 @@ export function addOnceEventListener (el, event, cb) {
 
   el.addEventListener(event, once, false)
 }
+
+/**
+ *
+ */
+export function noop () {}

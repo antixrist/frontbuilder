@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { noop } from '../';
 import StackTrace from 'stacktrace-js';
 import StackFrame from 'stackframe';
 
@@ -27,10 +27,18 @@ export async function getErrorStackFrames (...args) {
 }
 
 /**
- * @param cb
- * @returns {Function}
+ * @param {Function} cb
+ * @returns {uncaughtExceptionCallback}
  */
-export function uncaughtExceptionHandler (cb = _.noop) {
+export function uncaughtExceptionHandler (cb = noop) {
+  /**
+   * @callback uncaughtExceptionCallback
+   * @param {string} msg
+   * @param {string} fileName
+   * @param {number} lineNumber
+   * @param {number} columnNumber
+   * @param {Error} [err]
+   */
   return function (msg, fileName, lineNumber, columnNumber, err) {
     setImmediate(async function () {
       let stackframes;
@@ -45,6 +53,36 @@ export function uncaughtExceptionHandler (cb = _.noop) {
       err.stackframes = stackframes;
 
       cb(err);
+    });
+
+    return true;
+  };
+}
+
+/**
+ * @param {Function} cb
+ * @returns {unhandledRejectionCallback}
+ */
+export function unhandledRejectionHandler (cb = noop) {
+  /**
+   * @callback unhandledRejectionCallback
+   * @param {PromiseRejectionEvent|Event} event
+   */
+  return function (event) {
+    setImmediate(async function () {
+      const { reason, promise } = event;
+
+      let stackframes = [];
+
+      if (reason instanceof Error) {
+        stackframes = await getErrorStackFrames(reason);
+      } else {
+        event.reason = new Error(reason);
+      }
+
+      event.stackframes = stackframes;
+
+      cb(event);
     });
 
     return true;
