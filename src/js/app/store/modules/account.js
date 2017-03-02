@@ -1,9 +1,11 @@
 import _ from 'lodash';
+import { token } from '../../../services';
+import { API_TOKEN_NAME } from '../../../config';
 import api from '../../../api';
 
 const defaults = {
+  [API_TOKEN_NAME]: null,
   username: null,
-  api_token: null,
   roles: [],
   settings: {},
   acl: {}
@@ -14,7 +16,7 @@ const state = Object.assign({}, defaults);
 const getters = {
   // getters['account/isLogged']
   isLogged (state) {
-    return !!(state.username && state.api_token);
+    return !!(state.username && state[API_TOKEN_NAME]);
   },
 
   // getters['account/isAdmin']
@@ -44,15 +46,17 @@ const actions = {
 
   // dispatch('account/logout')
   async logout ({ commit, state }) {
-    await api.post('/logout', { api_token: state.api_token }).catch(err => console.log('catched err', err));
-
     commit('logout');
+    
+    return await api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] });
   }
 };
 
 const mutations = {
   // commit('account/login')
   login (state, data) {
+    token.save(data[API_TOKEN_NAME]);
+
     _.forEach(defaults, (val, key) => {
       if (_.isUndefined(data[key])) { return; }
 
@@ -62,6 +66,8 @@ const mutations = {
 
   // commit('account/logout')
   logout (state) {
+    token.remove();
+
     _.forEach(defaults, (val, key) => state[key] = defaults[key]);
   }
 };

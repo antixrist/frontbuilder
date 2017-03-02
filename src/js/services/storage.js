@@ -1,12 +1,12 @@
-import ls from 'store';
+import storage from 'store';
 
 // if (typeof localStorage === 'undefined' || localStorage === null) {
 //   var LocalStorage = require('node-localstorage').LocalStorage;
 //   global.localStorage = new LocalStorage('./scratch');
 // }
 
-ls.factory = function factory (opts = {}) {
-  return ls;
+storage.factory = function factory (...args) {
+  return storage;
 };
 
-export default ls;
+export default storage;

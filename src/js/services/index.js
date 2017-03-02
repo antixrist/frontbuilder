@@ -1,5 +1,5 @@
 export bus from './bus';
-export ls from './ls';
+export storage from './storage';
 export http from './http';
-export logger from './logger';
+export token from './auth-token';
 export progress, { ProgressStack } from './progress';

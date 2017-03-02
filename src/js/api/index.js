@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { API_URL } from '../config';
 import { http } from '../services';
+import { errorToJSON } from '../utils';
 import pathToRegexp from 'path-to-regexp';
 // import qs from 'qs';
 
@@ -26,12 +27,18 @@ const api = http.factory({
 export default api;
 
 export async function reportError (data, opts = {}) {
-  Object.assign(data, {
+  const { err } = data;
+  const errObj = errorToJSON(err);
+  delete data.err;
+
+  errObj.stackframes && errObj.stackframes.map(sf => sf.toString()).join('\n');
+
+  Object.assign(data, errObj, {
     userAgent: navigator.userAgent,
     location: document.location.href,
   });
 
-  await api.post('/report-error', data, _.merge({
+  await api.post('/report-error', data, Object.assign({
     silent: true
   }, opts));
 }

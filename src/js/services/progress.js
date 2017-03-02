@@ -7,8 +7,8 @@ NProgress.configure({
   showSpinner: false
 });
 
-NProgress.factory = function factory (opts = {}) {
-  return NProgress.configure(opts);
+NProgress.factory = function factory (...args) {
+  return NProgress.configure(...args);
 };
 
 export default NProgress;

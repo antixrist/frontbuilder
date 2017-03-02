@@ -1,9 +1,19 @@
-import { noop } from '../';
+import _ from 'lodash';
 import StackTrace from 'stacktrace-js';
 import StackFrame from 'stackframe';
 
 /**
- * @param {Error|{file: String, line: Number, column: Number}} err
+ * @param {Error} err
+ * @returns {{}}
+ */
+export function errorToJSON (err) {
+  const { name = '', message = '', stack } = err;
+
+  return Object.assign({}, { name, message, stack }, err);
+}
+
+/**
+ * @param {Error|Event} err
  * @returns {[]}
  */
 export async function getStackFrames (err) {
@@ -16,8 +26,8 @@ export async function getStackFrames (err) {
       stackframes = [];
     }
   } else {
-    const { file, line, column } = err;
-    stackframes = [new StackFrame({ file, line, column, })];
+    const { filename, lineno, colno } = err;
+    stackframes = [new StackFrame({ filename, lineno, colno, })];
   }
 
   return stackframes;
@@ -27,29 +37,28 @@ export async function getStackFrames (err) {
  * @param {Function} cb
  * @returns {uncaughtExceptionCallback}
  */
-export function uncaughtExceptionHandler (cb = noop) {
+export function uncaughtExceptionHandler (cb = _.noop) {
   /**
    * @callback uncaughtExceptionCallback
-   * @param {string} msg
-   * @param {string} file
-   * @param {number} line
-   * @param {number} column
+   * @param {ErrorEvent|Event} event
    * @param {Error} [err]
    */
-  return function (msg, file, line, column, err) {
+  return function (event) {
+    const { message, filename, lineno, colno } = event;
+
     setImmediate(async function () {
       let stackframes;
 
-      if (err) {
-        stackframes = await getStackFrames(err);
+      if (event.error instanceof Error) {
+        stackframes = await getStackFrames(event.error);
       } else {
-        err = new Error(msg);
-        stackframes = await getStackFrames({ file, line, column });
+        event.error = new Error(message);
+        stackframes = await getStackFrames({ filename, lineno, colno });
       }
 
-      err.stackframes = stackframes;
+      event.error.stackframes = stackframes;
 
-      cb(err);
+      cb(event);
     });
 
     return true;
@@ -60,7 +69,7 @@ export function uncaughtExceptionHandler (cb = noop) {
  * @param {Function} cb
  * @returns {unhandledRejectionCallback}
  */
-export function unhandledRejectionHandler (cb = noop) {
+export function unhandledRejectionHandler (cb = _.noop) {
   /**
    * @callback unhandledRejectionCallback
    * @param {PromiseRejectionEvent|Event} event
@@ -77,7 +86,7 @@ export function unhandledRejectionHandler (cb = noop) {
         event.reason = new Error(reason);
       }
 
-      event.stackframes = stackframes;
+      event.reason.stackframes = stackframes;
 
       cb(event);
     });

@@ -7,65 +7,49 @@ import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
 import { assert, uncaughtExceptionHandler, unhandledRejectionHandler, logError } from '../utils';
 import * as services from '../services';
-const { ls, http, progress, bus, ProgressStack } = services;
+const { storage, http, progress, bus, ProgressStack } = services;
 
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой
  */
+
 
 /** Роутер */
 sync(store, router);
 
 
 /** Глобальная обработка необработанных ошибок */
-window.onerror = uncaughtExceptionHandler(async err => {
-  bus.emit('uncaughtException', { err });
+window.addEventListener('error', uncaughtExceptionHandler(async event => {
+  bus.emit('uncaughtException', event);
 
-  if (isDevelopment) {
-    logError(err);
-    // console.group && console.group(`Error: ${err.message}`);
-    // console.log(err.stack);
-    // console.groupEnd && console.groupEnd();
-  } else {
-    await reportError({
-      message: err.message || '',
-      stack: err.stack || err.stackframes.map(sf => sf.toString()).join('\n') || '',
-    });
+  if (!isDevelopment) {
+    await reportError(event.error);
   }
-});
+}));
 
-window.onunhandledrejection = unhandledRejectionHandler(async event => {
+window.addEventListener('unhandledrejection', unhandledRejectionHandler(async event => {
   bus.emit('unhandledRejection', event);
 
-  const { reason: err } = event;
-
-  if (isDevelopment) {
-    console.group && console.group(`Error: ${err.message}`);
-    console.log(err.stack);
-    console.groupEnd && console.groupEnd();
-  } else {
-    await reportError({
-      message: err.message || '',
-      stack: err.stack || err.stackframes.map(sf => sf.toString()).join('\n') || '',
-    });
+  if (!isDevelopment) {
+    await reportError(event.reason);
   }
-});
+}));
 
 /** Проверяем работоспособность LocalStorage'а */
-assert(ls.enabled, 'Пожалуйста, выйдите из приватного режима Safari. Стабильность работы приложения не гарантируется');
+assert(storage.enabled, 'Пожалуйста, выйдите из приватного режима Safari. Стабильность работы приложения не гарантируется');
 
 /** Прогресс для запросов к api */
 const apiRequestsProgress = new ProgressStack();
 apiRequestsProgress.setProgress(progress);
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(config => {
   /**
    * если передать { silent: true } в параметрах запроса,
    * то прогресс для этого запроса показан не будет
    */
   !config.silent && apiRequestsProgress.add(config);
 
-  throw new Error('Errrooooorrr!!!');
+  // throw new Error('Errrooooorrr!!!');
 
   return config;
 }, err => {
@@ -98,7 +82,7 @@ Object.defineProperties(Vue.prototype, {
     get () { return bus; }
   },
   $ls: {
-    get () { return ls; }
+    get () { return storage; }
   },
   $progress: {
     get () { return progress; }

@@ -21,34 +21,6 @@ export function warn (condition = true, message = '') {
 }
 
 /**
- * @param {Error} err
- */
-export function logError (err) {
-  // #6d3400
-  const style = 'background: rgba(255, 255, 0, 0.04); color: red;';
-
-  if (!(err instanceof Error)) {
-    console.log(...arguments);
-    return;
-  }
-
-  const now = new Date;
-
-  let prefixes = [];
-  prefixes.push(`[${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }.${ now.getMilliseconds() }]`);
-  if (err.name) {
-    prefixes.push(`[${ err.name }]`);
-  }
-
-  prefixes = prefixes.join(' ');
-  prefixes = prefixes ? `${ prefixes }: ` : '';
-
-  console.group && console.group(`%c${ prefixes }${ err.message }`, style);
-  console.log(err.stack);
-  console.groupEnd && console.groupEnd();
-}
-
-/**
  * @param el
  * @param {string} event
  * @param {Function} cb
@@ -62,7 +34,35 @@ export function addOnceEventListener (el, event, cb) {
   el.addEventListener(event, once, false)
 }
 
-/**
- *
- */
-export function noop () {}
+// /**
+//  * @param {Error} err
+//  */
+// export function logError (err) {
+//   // #6d3400
+//   const style = 'background: rgba(255, 255, 0, 0.04); color: red;';
+//
+//   if (!(err instanceof Error)) {
+//     console.log(...arguments);
+//     return;
+//   }
+//
+//   const now = new Date;
+//
+//   let prefixes = [];
+//   prefixes.push(`[${[
+//     _.padStart(now.getHours(), 2, '0'),
+//     _.padStart(now.getMinutes(), 2, '0'),
+//     _.padStart(now.getSeconds(), 2, '0')
+//   ].join(':')}.${ now.getMilliseconds() }]`);
+//
+//   if (err.name) {
+//     prefixes.push(`[${ err.name }]`);
+//   }
+//
+//   prefixes = prefixes.join(' ');
+//   prefixes = prefixes ? `${ prefixes }: ` : '';
+//
+//   console.group && console.group(`%c${ prefixes }${ err.message }`, style);
+//   console.log(err.stack);
+//   console.groupEnd && console.groupEnd();
+// }
