@@ -47,7 +47,7 @@ const actions = {
   // dispatch('account/logout')
   async logout ({ commit, state }) {
     commit('logout');
-    
+
     return await api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] });
   }
 };

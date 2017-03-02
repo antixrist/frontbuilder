@@ -5,6 +5,19 @@ import { errorToJSON } from '../utils';
 import pathToRegexp from 'path-to-regexp';
 // import qs from 'qs';
 
+import { CancelToken } from 'axios';
+var cancel;
+
+axios.get('/user/12345', {
+  cancelToken: new CancelToken(function executor(c) {
+    // An executor function receives a cancel function as a parameter
+    cancel = c;
+  })
+});
+
+// cancel the request
+cancel();
+
 const api = http.factory({
   method: 'post',
   baseURL: API_URL,
@@ -38,7 +51,7 @@ export async function reportError (data, opts = {}) {
     location: document.location.href,
   });
 
-  await api.post('/report-error', data, Object.assign({
+  return await api.post('/report-error', data, Object.assign({
     silent: true
   }, opts));
 }
