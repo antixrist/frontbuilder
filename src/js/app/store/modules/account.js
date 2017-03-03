@@ -32,12 +32,16 @@ const actions = {
   async login ({ commit, dispatch }, { login, password }) {
     // todo: обработка ошибок запросов и ответов
 
-    const { status, data: res } = await api.post('/login', { login, password })
-            .then(res => {
-              console.log(res);
-              return res;
-            })
-      ;
+    const xhr = api.post('/login', { login, password })
+      .then(res => {
+        console.log(res);
+        return res;
+      })
+    ;
+
+    setTimeout(() => xhr.cancel(), 50);
+
+    const { status, data: res } = await xhr;
 
     if (status == 200) {
       const { success, data } = res;
@@ -53,12 +57,16 @@ const actions = {
   async logout ({ commit, state }) {
     commit('logout');
 
-    return await api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] })
+    const xhr = api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] })
       .then(res => {
         console.log(res);
         return res;
       })
-      ;
+    ;
+
+    setTimeout(() => xhr.cancel(), 50);
+
+    return await xhr;
   }
 };
 

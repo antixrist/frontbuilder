@@ -35,7 +35,7 @@ window.errorToJSON = errorToJSON;
 
 
 
-durationTime(api);
+// durationTime(api);
 easeCancelable(api);
 
 
