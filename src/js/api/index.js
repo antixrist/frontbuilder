@@ -5,18 +5,18 @@ import { errorToJSON } from '../utils';
 import pathToRegexp from 'path-to-regexp';
 // import qs from 'qs';
 
-import { CancelToken } from 'axios';
-var cancel;
-
-axios.get('/user/12345', {
-  cancelToken: new CancelToken(function executor(c) {
-    // An executor function receives a cancel function as a parameter
-    cancel = c;
-  })
-});
-
-// cancel the request
-cancel();
+// import { CancelToken } from 'axios';
+// var cancel;
+//
+// axios.get('/user/12345', {
+//   cancelToken: new CancelToken(function executor(c) {
+//     // An executor function receives a cancel function as a parameter
+//     cancel = c;
+//   })
+// });
+//
+// // cancel the request
+// cancel();
 
 const api = http.factory({
   method: 'post',
@@ -40,9 +40,9 @@ const api = http.factory({
 export default api;
 
 export async function reportError (data, opts = {}) {
-  const { err } = data;
-  const errObj = errorToJSON(err);
-  delete data.err;
+  const { error } = data;
+  const errObj = errorToJSON(error);
+  delete data.error;
 
   errObj.stackframes && errObj.stackframes.map(sf => sf.toString()).join('\n');
 
@@ -53,7 +53,7 @@ export async function reportError (data, opts = {}) {
 
   return await api.post('/report-error', data, Object.assign({
     silent: true
-  }, opts));
+  }, opts)).catch(err => console.error(err));
 }
 
 

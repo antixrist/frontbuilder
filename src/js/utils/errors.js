@@ -6,7 +6,7 @@ import StackFrame from 'stackframe';
  * @param {Error} err
  * @returns {{}}
  */
-export function errorToJSON (err) {
+export function errorToJSON (err = new Error) {
   const { name = '', message = '', stack } = err;
 
   return Object.assign({}, { name, message, stack }, err);
@@ -44,7 +44,7 @@ export function uncaughtExceptionHandler (cb = _.noop) {
    * @param {Error} [err]
    */
   return function (event) {
-    const { message, filename, lineno, colno } = event;
+    const { message } = event;
 
     setImmediate(async function () {
       let stackframes;
@@ -53,15 +53,13 @@ export function uncaughtExceptionHandler (cb = _.noop) {
         stackframes = await getStackFrames(event.error);
       } else {
         event.error = new Error(message);
-        stackframes = await getStackFrames({ filename, lineno, colno });
+        stackframes = await getStackFrames(event);
       }
 
       event.error.stackframes = stackframes;
 
       cb(event);
     });
-
-    return true;
   };
 }
 
@@ -90,7 +88,5 @@ export function unhandledRejectionHandler (cb = _.noop) {
 
       cb(event);
     });
-
-    return true;
   };
 }

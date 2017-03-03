@@ -5,7 +5,7 @@ import store from './store';
 import { isDevelopment } from '../config';
 import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
-import { assert, uncaughtExceptionHandler, unhandledRejectionHandler, logError } from '../utils';
+import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
 import * as services from '../services';
 const { storage, http, progress, bus, ProgressStack } = services;
 
@@ -20,18 +20,22 @@ sync(store, router);
 
 /** Глобальная обработка необработанных ошибок */
 window.addEventListener('error', uncaughtExceptionHandler(async event => {
+  const { error } = event;
+  
   bus.emit('uncaughtException', event);
 
   if (!isDevelopment) {
-    await reportError(event.error);
+    await reportError({ error });
   }
 }));
 
 window.addEventListener('unhandledrejection', unhandledRejectionHandler(async event => {
+  const { reason: error } = event;
+  
   bus.emit('unhandledRejection', event);
 
   if (!isDevelopment) {
-    await reportError(event.reason);
+    await reportError({ error });
   }
 }));
 
