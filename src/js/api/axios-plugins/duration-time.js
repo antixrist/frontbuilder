@@ -66,10 +66,13 @@ function responseInterceptorResolve (res) {
 }
 
 function responseInterceptorReject (err) {
-  const { config, response } = err;
-  response.startTime = config.startTime;
-  response.endTime = new Date;
-  response.duration = response.endTime - response.startTime;
+  const { config } = err;
+  
+  let obj = err.response || err;
+  
+  obj.startTime = config.startTime;
+  obj.endTime = new Date;
+  obj.duration = obj.endTime - obj.startTime;
   delete config.startTime;
 
   return Promise.reject(err);

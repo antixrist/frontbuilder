@@ -19,21 +19,24 @@ sync(store, router);
 
 
 /** Глобальная обработка необработанных ошибок */
+window.addEventListener('unhandledrejection', unhandledRejectionHandler(async event => {
+  // throw event.error || event.reason; // goto 'error' event listener
+  
+  // const { error } = event;
+  // bus.emit('unhandledRejection', event);
+  //
+  // if (!isDevelopment) {
+  //   await reportError({ error });
+  // }
+}));
+
 window.addEventListener('error', uncaughtExceptionHandler(async event => {
   const { error } = event;
   
-  bus.emit('uncaughtException', event);
-
-  if (!isDevelopment) {
-    await reportError({ error });
-  }
-}));
-
-window.addEventListener('unhandledrejection', unhandledRejectionHandler(async event => {
-  const { reason: error } = event;
+  console.log('error', error);
   
-  bus.emit('unhandledRejection', event);
-
+  bus.emit('uncaughtException', event);
+  
   if (!isDevelopment) {
     await reportError({ error });
   }

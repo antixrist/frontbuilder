@@ -3,13 +3,65 @@ import StackTrace from 'stacktrace-js';
 import StackFrame from 'stackframe';
 
 /**
+ * @param {Error|TypeError|SyntaxError|URIError|ReferenceError|RangeError|RangeError|EvalError} err - input err
+ * @returns {?String} err type
+ */
+function typeName (err) {
+  const found = _.find([
+    [TypeError, 'TypeError'],
+    [SyntaxError, 'SyntaxError'],
+    [ReferenceError, 'ReferenceError'],
+    [RangeError, 'RangeError'],
+    [URIError, 'URIError'],
+    [EvalError, 'EvalError'],
+    [Error, 'Error']
+  ], ([Ctor, name]) => err instanceof Ctor);
+  
+  return found ? found[1] : null;
+}
+
+/**
+ *
+ *
+ * @link https://github.com/kgryte/utils-error-to-json
  * @param {Error} err
  * @returns {{}}
  */
-export function errorToJSON (err = new Error) {
-  const { name = '', message = '', stack } = err;
-
-  return Object.assign({}, { name, message, stack }, err);
+export function errorToJSON (err) {
+  if (!(err instanceof Error)) {
+    throw new TypeError( 'invalid input argument. Must provide an error object. Value: `' + err + '`.' );
+  }
+  
+  const out = {};
+  
+  // Guaranteed properties:
+  out.type = typeName(err);
+  out.message = err.message;
+  
+  // Possible general error properties...
+  if (err.name) {
+    out.name = err.name;
+  }
+  if (err.stack) {
+    out.stack = err.stack;
+  }
+  // Possible Node.js (system error) properties...
+  if (err.code) {
+    out.code = err.code;
+  }
+  if (err.errno) {
+    out.errno = err.errno;
+  }
+  if (err.syscall) {
+    out.syscall = err.syscall;
+  }
+  
+  // Any properties...
+  _.keysIn(err).forEach(key => {
+    out[key] = err[key];
+  });
+  
+  return out;
 }
 
 /**
@@ -74,17 +126,18 @@ export function unhandledRejectionHandler (cb = _.noop) {
    */
   return function (event) {
     setImmediate(async function () {
-      const { reason } = event;
-
       let stackframes = [];
+      const { reason } = event;
+      
+      event.error = reason;
 
-      if (reason instanceof Error) {
+      if (event.error instanceof Error) {
         stackframes = await getStackFrames(reason);
       } else {
-        event.reason = new Error(reason);
+        event.error = new Error(reason);
       }
 
-      event.reason.stackframes = stackframes;
+      event.error.stackframes = stackframes;
 
       cb(event);
     });

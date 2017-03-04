@@ -31,15 +31,20 @@ const actions = {
   // dispatch('account/login')
   async login ({ commit, dispatch }, { login, password }) {
     // todo: обработка ошибок запросов и ответов
+  
+    // console.log('api.post', api.post);
 
     const xhr = api.post('/login', { login, password })
-      .then(res => {
-        console.log(res);
-        return res;
-      })
+      // .then(res => {
+      //   console.log('login res', res);
+      //   return res;
+      // })
     ;
-
-    setTimeout(() => xhr.cancel(), 50);
+  
+    // console.log('api.post xhr', xhr, Object.keys(xhr));
+    
+    // setTimeout(() => xhr.cancel(), 50);
+  
 
     const { status, data: res } = await xhr;
 
@@ -56,14 +61,18 @@ const actions = {
   // dispatch('account/logout')
   async logout ({ commit, state }) {
     commit('logout');
-
+    
+    // console.log('api.post', api.post);
+    
     const xhr = api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] })
       .then(res => {
-        console.log(res);
+        console.log('logout res', res);
         return res;
       })
     ;
-
+  
+    // console.log('api.post xhr', xhr, Object.keys(xhr));
+    
     setTimeout(() => xhr.cancel(), 50);
 
     return await xhr;

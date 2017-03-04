@@ -1,59 +1,53 @@
-import _ from 'lodash';
-import axios from 'axios';
-
-const { CancelToken, isCancel } = axios;
-
-const store = new Map();
-
 easeCancelable.destroy = destroy;
 
 /**
  * @param instance
+ * @param {{}} [opts]
  * @returns {*}
  */
-export default function easeCancelable (instance) {
+export default function easeCancelable (instance, opts = {
+  cancelMethodName: 'cancel',
+  isCanceledFlagName: 'isCanceled'
+}) {
   Object.defineProperties(instance, {
     easeCancelable: {
       enumerable: false,
       value: {}
     }
   });
-
-  instance.easeCancelable.original = {
-    request: instance.request,
-    delete: instance.delete,
-    get: instance.get,
-    head: instance.head,
-    post: instance.post,
-    put: instance.put,
-    patch: instance.patch
-  };
+  
   instance.easeCancelable.interceptors = {};
+  instance.easeCancelable.originalMethods = {};
+  ['request', 'delete', 'get', 'head', 'post', 'put', 'patch'].forEach(method => {
+    instance.easeCancelable.originalMethods[method] = instance[method];
+  });
 
-  // instance.easeCancelable.interceptors.request = instance.interceptors.request.use(
-  //   requestInterceptorResolve,
-  //   requestInterceptorReject
-  // );
+  instance.easeCancelable.interceptors.request = instance.interceptors.request.use(
+    requestInterceptorResolve,
+    requestInterceptorReject
+  );
 
-  // instance.easeCancelable.interceptors.response = instance.interceptors.response.use(
-  //   responseInterceptorResolve,
-  //   responseInterceptorReject
-  // );
+  instance.easeCancelable.interceptors.response = instance.interceptors.response.use(
+    responseInterceptorResolve,
+    responseInterceptorReject
+  );
 
   instance.request = function request (...args) {
-    console.log('request', ...args);
     let config = args[0];
     if (typeof config === 'string') {
       config = Object.assign({ url: args[0] }, args[1] || {});
     }
+    
+    let cancelFn = noop;
 
-    const { token, cancel } = CancelToken.source();
-    config.cancelToken = token;
+    if (!config.cancelToken) {
+      let { token, cancel } = CancelToken.source();
+      config.cancelToken = token;
+      cancelFn = cancel;
+    }
 
-    const xhr = instance.easeCancelable.original.request.call(instance, config);
-    store.set(token, xhr);
-
-    xhr.cancel = cancel;
+    const xhr = instance.easeCancelable.originalMethods.request.call(instance, config);
+    xhr[opts.cancelMethodName] = cancelFn;
 
     return xhr;
   };
@@ -78,87 +72,51 @@ export default function easeCancelable (instance) {
     };
   });
 
-  instance.interceptors.request.use(function (config) {
-    console.log('config', _.merge({}, config));
-    console.log('store.get(cancelToken)', cancelToken, store.get(cancelToken));
-
-    return config;
-  }, function (err) {
-    console.log('err', err);
-    // cleanupConfig(err.config);
-    err.isCanceled = isCancel(err);
-
-    return Promise.reject(err);
-  });
-  instance.interceptors.response.use(function (res) {
-    console.log('response', _.merge({}, res));
-    // cleanupConfig(res.config);
-
-
-    // console.log('keys', store.keys());
-
-    return res;
-  }, function (err) {
-    console.log('response err', err);
-
-    // cleanupConfig(err.config);
-    err.isCanceled = isCancel(err);
-
-    // console.log('keys', store.keys());
-
-    return Promise.reject(err);
-  });
-
   return instance;
-}
-
-function cleanupConfig (config) {
-  const { cancelToken = null } = config;
-
-  console.log('store.get(cancelToken)', cancelToken, store.get(cancelToken));
-
-  if (cancelToken && store.has(cancelToken)) {
-    const xhr = store.get(cancelToken);
-
-    delete xhr.cancel;
-    store.delete(cancelToken);
+  
+  function requestInterceptorResolve (config) {
+    return config;
+  }
+  
+  function requestInterceptorReject (err) {
+    writeIsCanceledFlag(err, opts.isCanceledFlagName);
+    
+    return Promise.reject(err);
+  }
+  
+  function responseInterceptorResolve (res) {
+    return res;
+  }
+  
+  function responseInterceptorReject (err) {
+    writeIsCanceledFlag(err, opts.isCanceledFlagName);
+    
+    return Promise.reject(err);
   }
 }
 
 export function destroy (instance) {
-  // if (!instance.easeCancelable) { return instance; }
-  //
-  // instance.request = instance.easeCancelable.originalRequest;
-  //
-  // instance.interceptors.request.eject(instance.easeCancelable.interceptors.request);
-  // instance.interceptors.response.eject(instance.easeCancelable.interceptors.response);
-  //
-  // delete instance.easeCancelable;
-  //
-  // return instance;
+  if (!instance.easeCancelable) { return instance; }
+  
+  ['request', 'delete', 'get', 'head', 'post', 'put', 'patch'].forEach(method => {
+    instance[method] = instance.easeCancelable.originalMethods[method];
+  });
+  
+  instance.interceptors.request.eject(instance.easeCancelable.interceptors.request);
+  instance.interceptors.response.eject(instance.easeCancelable.interceptors.response);
+
+  delete instance.easeCancelable;
+
+  return instance;
 }
 
-// function requestInterceptorResolve (config) {
-//
-// }
-//
-// function requestInterceptorReject (err) {
-//   cleanupConfig(err.config);
-//   err.isCanceled = isCancel(err);
-// }
-//
-// function responseInterceptorResolve (res) {
-//   cleanupConfig(res.config);
-// }
-//
-// function responseInterceptorReject (err) {
-//   cleanupConfig(err.config);
-//   err.isCanceled = isCancel(err);
-// }
-//
-// function makeCancelable (config) {
-//   const { token, cancel } = CancelToken.source();
-//   config.cancelToken = token;
-//
-//   return cancel;
-// }
+function writeIsCanceledFlag (err, flagName) {
+  flagName && Object.defineProperties(err, {
+    [flagName]: {
+      writable: false,
+      value: isCancel(err)
+    }
+  });
+}
+
+function noop () {}

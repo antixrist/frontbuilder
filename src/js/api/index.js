@@ -7,6 +7,8 @@ import { errorToJSON } from '../utils';
 import pathToRegexp from 'path-to-regexp';
 // import qs from 'qs';
 
+export const { CancelToken, isCancel } = axios;
+
 const defaults = {
   method: 'post',
   baseURL: API_URL,
@@ -35,7 +37,7 @@ window.errorToJSON = errorToJSON;
 
 
 
-// durationTime(api);
+durationTime(api);
 easeCancelable(api);
 
 
