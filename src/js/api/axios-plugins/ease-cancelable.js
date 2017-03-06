@@ -1,3 +1,5 @@
+import { CancelToken } from 'axios';
+
 easeCancelable.destroy = destroy;
 
 /**
@@ -6,8 +8,7 @@ easeCancelable.destroy = destroy;
  * @returns {*}
  */
 export default function easeCancelable (instance, opts = {
-  cancelMethodName: 'cancel',
-  isCanceledFlagName: 'isCanceled'
+  cancelMethodName: 'cancel'
 }) {
   Object.defineProperties(instance, {
     easeCancelable: {
@@ -73,26 +74,22 @@ export default function easeCancelable (instance, opts = {
   });
 
   return instance;
-  
-  function requestInterceptorResolve (config) {
-    return config;
-  }
-  
-  function requestInterceptorReject (err) {
-    writeIsCanceledFlag(err, opts.isCanceledFlagName);
-    
-    return Promise.reject(err);
-  }
-  
-  function responseInterceptorResolve (res) {
-    return res;
-  }
-  
-  function responseInterceptorReject (err) {
-    writeIsCanceledFlag(err, opts.isCanceledFlagName);
-    
-    return Promise.reject(err);
-  }
+}
+
+function requestInterceptorResolve (config) {
+  return config;
+}
+
+function requestInterceptorReject (err) {
+  return Promise.reject(err);
+}
+
+function responseInterceptorResolve (res) {
+  return res;
+}
+
+function responseInterceptorReject (err) {
+  return Promise.reject(err);
 }
 
 export function destroy (instance) {
@@ -108,15 +105,6 @@ export function destroy (instance) {
   delete instance.easeCancelable;
 
   return instance;
-}
-
-function writeIsCanceledFlag (err, flagName) {
-  flagName && Object.defineProperties(err, {
-    [flagName]: {
-      writable: false,
-      value: isCancel(err)
-    }
-  });
 }
 
 function noop () {}

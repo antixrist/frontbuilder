@@ -34,13 +34,18 @@ const actions = {
   
     // console.log('api.post', api.post);
 
-    const xhr = api.post('/login', { login, password }) // проверить catch с await'ом
+    // проверить catch с await'ом
+    const xhr = api.post('/login', { login, password })
+            .catch(err => console.log(err))
+
       // .then(res => {
       //   console.log('login res', res);
       //   return res;
       // })
     ;
-  
+
+    console.log('xhr cancel', typeof xhr.cancel);
+
     // console.log('api.post xhr', xhr, Object.keys(xhr));
     
     // setTimeout(() => xhr.cancel(), 50);

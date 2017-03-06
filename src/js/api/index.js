@@ -1,11 +1,16 @@
 import _ from 'lodash';
 import { API_URL } from '../config';
 import axios from 'axios';
-import { durationTime, easeCancelable } from './axios-plugins';
+import { durationTime, easeCancelable, canceledProperty } from './axios-plugins';
 import { http } from '../services';
 import { errorToJSON } from '../utils';
+import errors from './errors';
 import pathToRegexp from 'path-to-regexp';
 // import qs from 'qs';
+
+const { NotFound } = errors;
+
+console.log('errors NotFound', NotFound);
 
 export const { CancelToken, isCancel } = axios;
 
@@ -38,6 +43,7 @@ window.errorToJSON = errorToJSON;
 
 
 durationTime(api);
+canceledProperty(api);
 easeCancelable(api);
 
 

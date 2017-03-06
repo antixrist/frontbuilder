@@ -77,9 +77,12 @@ normalizeErrors.destroy = destroy;
 
 /**
  * @param instance
+ * @param {{}} opts
  * @returns {*}
  */
-export default function normalizeErrors (instance) {
+export default function normalizeErrors (instance, opts = {
+  throwOnCancel: false
+}) {
   Object.defineProperties(instance, {
     normalizeErrors: {
       enumerable: false,
