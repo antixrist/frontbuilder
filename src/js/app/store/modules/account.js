@@ -34,7 +34,7 @@ const actions = {
   
     // console.log('api.post', api.post);
 
-    const xhr = api.post('/login', { login, password })
+    const xhr = api.post('/login', { login, password }) // проверить catch с await'ом
       // .then(res => {
       //   console.log('login res', res);
       //   return res;
