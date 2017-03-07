@@ -1,9 +1,32 @@
-import { inherits } from 'util';
+import inherits from 'inherits';
 import statuses from 'statuses';
 import createErrors from 'create-error';
 import ExtendableError from 'es6-error';
+import setPrototypeOf from 'setprototypeof';
+
+
+const ErrorSubclass = function ErrorSubclass(message) {
+  Error.call(this, message);
+
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, this.constructor);
+  } else {
+    Object.defineProperty(this, 'stack', {value: (new Error()).stack});
+  }
+
+  Object.defineProperty(this, 'message', {value: message});
+  Object.defineProperty(this, 'name', {value: this.constructor.name});
+};
+
+ErrorSubclass.prototype = Object.create(Error.prototype);
+ErrorSubclass.prototype.toString = function toString() {
+  return `${this.name}: ${this.message}`;
+};
+
+inherits(ErrorSubclass, Error);
 
 window.ExtendableError = ExtendableError;
+window.ErrorSubclass = ErrorSubclass;
 
 /**
  * Heavy inspired by `http-errors`
@@ -14,6 +37,68 @@ class NetworkError extends ExtendableError {
     super(message);
   }
 }
+
+function HttpError (message) {
+  message = message || 'Default message';
+  ExtendableError.call(this, message);
+}
+inherits(HttpError, ExtendableError);
+
+function ServerError (message) {
+  message = message || 'Default message';
+  ExtendableError.call(this, message);
+}
+inherits(ServerError, HttpError);
+
+function ClientError (message) {
+  message = message || 'Default message';
+  ExtendableError.call(this, message);
+}
+inherits(ClientError, HttpError);
+
+
+function createErrorConstructor (HttpError, name, code) {
+  const className = name.match(/Error$/) ? name : name + 'Error';
+
+  function ClientError (message) {
+    // create the error object
+    const msg = message != null ? message : statuses[code];
+    const err = new Error(msg);
+
+    // capture a stack trace to the construction point
+    Error.captureStackTrace(err, ClientError);
+
+    // adjust the [[Prototype]]
+    setPrototypeOf(err, ClientError.prototype);
+
+    // redefine the error message
+    Object.defineProperty(err, 'message', {
+      enumerable: true,
+      configurable: true,
+      value: msg,
+      writable: true
+    });
+
+    // redefine the error name
+    Object.defineProperty(err, 'name', {
+      enumerable: false,
+      configurable: true,
+      value: className,
+      writable: true
+    });
+
+    return err;
+  }
+
+  inherits(ClientError, HttpError);
+
+  ClientError.prototype.status = code;
+  ClientError.prototype.statusCode = code;
+
+  return ClientError;
+}
+
+
 
 window.NetworkError = NetworkError;
 window.CustomError = CustomError;
@@ -62,7 +147,7 @@ PropertyError.prototype.name = 'PropertyError';
  */
 
 var deprecate = require('depd')('http-errors');
-var setPrototypeOf = require('setprototypeof');
+// var setPrototypeOf = require('setprototypeof');
 
 const errors = {};
 

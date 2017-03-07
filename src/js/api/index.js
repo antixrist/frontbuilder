@@ -10,8 +10,6 @@ import pathToRegexp from 'path-to-regexp';
 
 const { NotFound } = errors;
 
-console.log('errors NotFound', NotFound);
-
 export const { CancelToken, isCancel } = axios;
 
 const defaults = {
