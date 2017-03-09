@@ -1,6 +1,5 @@
 import 'babel-polyfill';
 import _ from 'lodash';
-import Promise from 'bluebird';
 import FastClick from 'fastclick';
 import '../styles/main.scss';
 import { app, router, store } from './app';

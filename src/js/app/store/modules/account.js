@@ -25,8 +25,6 @@ const getters = {
   }
 };
 
-// const Promise = require('bluebird');
-
 const actions = {
   // dispatch('account/login')
   async login ({ commit, dispatch }, { username, password }) {
