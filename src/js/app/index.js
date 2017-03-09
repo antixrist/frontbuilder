@@ -8,6 +8,8 @@ import { sync } from 'vuex-router-sync';
 import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
 import * as services from '../services';
 import { HttpError } from '../services/http';
+import NProgress from 'vue-nprogress';
+
 const { storage, http, progress, bus, ProgressStack } = services;
 
 /**
@@ -21,6 +23,7 @@ sync(store, router);
 /** Глобальная обработка необработанных ошибок */
 window.addEventListener('error', uncaughtExceptionHandler(({ error }) => globalErrorsHandler(error)));
 window.addEventListener('unhandledrejection', unhandledRejectionHandler(({ error }) => globalErrorsHandler(error)));
+Vue.config.errorHandler = globalErrorsHandler;
 
 async function globalErrorsHandler (err) {
   // console.error('[app]', err);
@@ -85,14 +88,29 @@ Object.defineProperties(Vue.prototype, {
   $ls: {
     get () { return storage; }
   },
-  $progress: {
-    get () { return progress; }
+  // $progress: {
+  //   get () { return progress; }
+  // }
+});
+
+Vue.prototype.$reset = function () {
+  const data = this.$options.data();
+  Object.keys(data).forEach(key => this[key] = data[key]);
+};
+
+Vue.use(NProgress);
+const nprogress = new NProgress();
+
+Vue.mixin({
+  beforeCreate () {
+    this._qweqwe = function fnName () {};
+    console.log('beforeCreate', this, this === this.$root);
   }
 });
 
-
 /** Инcтанс */
 const app = new Vue({
+  nprogress,
   router,
   store,
   ...App
