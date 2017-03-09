@@ -29,38 +29,40 @@ const getters = {
 
 const actions = {
   // dispatch('account/login')
-  async login ({ commit, dispatch }, { login, password }) {
+  async login ({ commit, dispatch }, { username, password }) {
     // todo: обработка ошибок запросов и ответов
   
     // console.log('api.post', api.post);
 
-    // проверить catch с await'ом
-    const xhr = api.post('/login', { login, password })
-            .catch(err => console.log(err))
+    try {
+      // проверить catch с await'ом
+      const res = await api.post('/login', { login: username/*, password*/ });
 
-      // .then(res => {
-      //   console.log('login res', res);
-      //   return res;
-      // })
-    ;
+      console.log('res', res);
 
-    console.log('xhr cancel', typeof xhr.cancel);
+      // commit('login', { username: login, ...data });
 
-    // console.log('api.post xhr', xhr, Object.keys(xhr));
-    
-    // setTimeout(() => xhr.cancel(), 50);
-  
-
-    const { status, data: res } = await xhr;
-
-    if (status == 200) {
-      const { success, data } = res;
-      if (success) {
-        commit('login', { username: login, ...data });
+    } catch (err) {
+      console.log('catch in action');
+      if (err.CLIENT_ERROR && err.code == 422) {
+        const { response } = err;
+        console.log(response.message, response.data);
       }
     }
 
-    return res;
+
+    // console.log('api.post xhr', xhr, Object.keys(xhr));
+    
+    // setTimeout(() => xhr.cancel('Cancel message'), 50);
+
+    // const { status, data: res } = await xhr;
+    //
+    // if (status == 200) {
+    //   const { success, data } = res;
+    //   if (success) {
+    //     commit('login', { username: login, ...data });
+    //   }
+    // }
   },
 
   // dispatch('account/logout')
@@ -70,15 +72,15 @@ const actions = {
     // console.log('api.post', api.post);
     
     const xhr = api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] })
-      .then(res => {
-        console.log('logout res', res);
-        return res;
-      })
+      // .then(res => {
+      //   console.log('logout res', res);
+      //   return res;
+      // })
     ;
   
     // console.log('api.post xhr', xhr, Object.keys(xhr));
     
-    setTimeout(() => xhr.cancel(), 50);
+    // setTimeout(() => xhr.cancel(), 50);
 
     return await xhr;
   }

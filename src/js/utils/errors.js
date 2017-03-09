@@ -29,7 +29,11 @@ function typeName (err) {
  */
 export function errorToJSON (err) {
   if (!(err instanceof Error)) {
-    throw new TypeError( 'invalid input argument. Must provide an error object. Value: `' + err + '`.' );
+    if (_.isObjectLike(err) && !_.isArray(err)) {
+      return _.assignIn({}, err);
+    } else {
+      throw new TypeError( 'invalid input argument. Must provide an error object. Value: `' + err + '`.' );
+    }
   }
   
   const out = {};
@@ -57,9 +61,7 @@ export function errorToJSON (err) {
   }
   
   // Any properties...
-  _.keysIn(err).forEach(key => {
-    out[key] = err[key];
-  });
+  _.assignIn(out, err);
   
   return out;
 }

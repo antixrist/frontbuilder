@@ -8,26 +8,27 @@
     data () {
       return {
         loading: false,
-        login: 'test',
+        username: 'test',
         password: 'B4mGld'
       };
     },
     methods: {
       ...mapActions({
-        loginAction: 'account/login'
+        login: 'account/login'
       }),
       async loginTry () {
         this.loading = true;
 
-//        try {
-          const { login, password } = this;
-          const res = await this.loginAction({ login, password });
-          if (res.success) {
-            this.$router.replace({ name: 'home' });
-          }
-//        } catch (err) {
+        try {
+          const { username, password } = this;
+          const res = await this.login({ username, password });
+//          if (res.success) {
+//            this.$router.replace({ name: 'home' });
+//          }
+        } catch (err) {
+          console.log('catch in methods');
 //          console.error(err);
-//        }
+        }
 
         this.loading = false;
       }

@@ -1,38 +1,35 @@
+import d from 'd';
 import { CancelToken } from 'axios';
 
 easeCancelable.destroy = destroy;
 
 /**
- * @param instance
+ * @param {AxiosInstance} instance
  * @param {{}} [opts]
  * @returns {*}
  */
 export default function easeCancelable (instance, opts = {
   cancelMethodName: 'cancel'
 }) {
-  Object.defineProperties(instance, {
-    easeCancelable: {
-      enumerable: false,
-      value: {}
-    }
-  });
-  
-  instance.easeCancelable.interceptors = {};
-  instance.easeCancelable.originalMethods = {};
+  Object.defineProperty(instance, 'easeCancelable', d('', {}));
+
+  const { easeCancelable } = instance;
+
+  easeCancelable.interceptors = {};
+  easeCancelable.originalMethods = {};
+
   ['request', 'delete', 'get', 'head', 'post', 'put', 'patch'].forEach(method => {
-    instance.easeCancelable.originalMethods[method] = instance[method];
+    easeCancelable.originalMethods[method] = instance[method];
   });
 
-  instance.easeCancelable.interceptors.request = instance.interceptors.request.use(
-    requestInterceptorResolve,
-    requestInterceptorReject
-  );
+  // easeCancelable.interceptors = {
+  //   request:  instance.interceptors.request.use(requestInterceptorResolve, requestInterceptorReject),
+  //   response: instance.interceptors.response.use(responseInterceptorResolve, responseInterceptorReject)
+  // };
 
-  instance.easeCancelable.interceptors.response = instance.interceptors.response.use(
-    responseInterceptorResolve,
-    responseInterceptorReject
-  );
-
+  /**
+   * Вешаем на инстанс свои методы
+   */
   instance.request = function request (...args) {
     let config = args[0];
     if (typeof config === 'string') {
@@ -47,7 +44,7 @@ export default function easeCancelable (instance, opts = {
       cancelFn = cancel;
     }
 
-    const xhr = instance.easeCancelable.originalMethods.request.call(instance, config);
+    const xhr = easeCancelable.originalMethods.request.call(instance, config);
     xhr[opts.cancelMethodName] = cancelFn;
 
     return xhr;
@@ -76,35 +73,41 @@ export default function easeCancelable (instance, opts = {
   return instance;
 }
 
-function requestInterceptorResolve (config) {
-  return config;
-}
-
-function requestInterceptorReject (err) {
-  return Promise.reject(err);
-}
-
-function responseInterceptorResolve (res) {
-  return res;
-}
-
-function responseInterceptorReject (err) {
-  return Promise.reject(err);
-}
-
+/**
+ * @param {AxiosInstance} instance
+ * @returns {*}
+ */
 export function destroy (instance) {
   if (!instance.easeCancelable) { return instance; }
-  
+
+  const { easeCancelable } = instance;
+
   ['request', 'delete', 'get', 'head', 'post', 'put', 'patch'].forEach(method => {
-    instance[method] = instance.easeCancelable.originalMethods[method];
+    instance[method] = easeCancelable.originalMethods[method];
   });
-  
-  instance.interceptors.request.eject(instance.easeCancelable.interceptors.request);
-  instance.interceptors.response.eject(instance.easeCancelable.interceptors.response);
+
+  // instance.interceptors.request.eject(easeCancelable.interceptors.request);
+  // instance.interceptors.response.eject(easeCancelable.interceptors.response);
 
   delete instance.easeCancelable;
 
   return instance;
 }
+
+// function requestInterceptorResolve (config) {
+//   return config;
+// }
+//
+// function requestInterceptorReject (err) {
+//   return Promise.reject(err);
+// }
+//
+// function responseInterceptorResolve (res) {
+//   return res;
+// }
+//
+// function responseInterceptorReject (err) {
+//   return Promise.reject(err);
+// }
 
 function noop () {}

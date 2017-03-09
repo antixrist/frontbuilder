@@ -7,6 +7,7 @@ import api, { reportError } from '../api';
 import { sync } from 'vuex-router-sync';
 import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
 import * as services from '../services';
+import { HttpError } from '../services/http';
 const { storage, http, progress, bus, ProgressStack } = services;
 
 /**
@@ -17,30 +18,23 @@ const { storage, http, progress, bus, ProgressStack } = services;
 /** Роутер */
 sync(store, router);
 
-
 /** Глобальная обработка необработанных ошибок */
-window.addEventListener('unhandledrejection', unhandledRejectionHandler(async event => {
-  // throw event.error || event.reason; // goto 'error' event listener
-  
-  // const { error } = event;
-  // bus.emit('unhandledRejection', event);
-  //
-  // if (!isDevelopment) {
-  //   await reportError({ error });
-  // }
-}));
+window.addEventListener('error', uncaughtExceptionHandler(({ error }) => globalErrorsHandler(error)));
+window.addEventListener('unhandledrejection', unhandledRejectionHandler(({ error }) => globalErrorsHandler(error)));
 
-window.addEventListener('error', uncaughtExceptionHandler(async event => {
-  const { error } = event;
-  
-  console.log('error', error);
-  
-  bus.emit('uncaughtException', event);
-  
-  if (!isDevelopment) {
-    await reportError({ error });
+async function globalErrorsHandler (err) {
+  // console.error('[app]', err);
+
+  if (!(err instanceof HttpError && err.isCanceled)) {
+    // console.error('[app]', err);
+
+    bus.emit('uncaughtException', err);
+
+    if (!isDevelopment) {
+      await reportError({ err });
+    }
   }
-}));
+}
 
 /** Проверяем работоспособность LocalStorage'а */
 assert(storage.enabled, 'Пожалуйста, выйдите из приватного режима Safari. Стабильность работы приложения не гарантируется');
@@ -62,7 +56,7 @@ api.interceptors.request.use(config => {
 }, err => {
   apiRequestsProgress.done(err.config);
 
-  console.error('err', err);
+  // console.error('err', err);
 
   return Promise.reject(err);
 });
