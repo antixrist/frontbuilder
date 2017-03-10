@@ -26,16 +26,19 @@ window.addEventListener('unhandledrejection', unhandledRejectionHandler(({ error
 Vue.config.errorHandler = globalErrorsHandler;
 
 async function globalErrorsHandler (err) {
+  const isHttpError = (err instanceof HttpError);
+  const isConnectionError = isHttpError && err.CONNECTION_ERROR;
+
+  if (err instanceof HttpError) {
+    if (err.isCanceled) { return; }
+
+  }
+
   // console.error('[app]', err);
+  bus.emit('uncaughtException', err);
 
-  if (!(err instanceof HttpError && err.isCanceled)) {
-    // console.error('[app]', err);
-
-    bus.emit('uncaughtException', err);
-
-    if (!isDevelopment) {
-      await reportError({ err });
-    }
+  if (!isDevelopment && !isConnectionError) {
+    await reportError({ err });
   }
 }
 
@@ -88,29 +91,36 @@ Object.defineProperties(Vue.prototype, {
   $ls: {
     get () { return storage; }
   },
-  // $progress: {
-  //   get () { return progress; }
-  // }
-});
-
-Vue.prototype.$reset = function () {
-  const data = this.$options.data();
-  Object.keys(data).forEach(key => this[key] = data[key]);
-};
-
-Vue.use(NProgress);
-const nprogress = new NProgress();
-
-Vue.mixin({
-  beforeCreate () {
-    this._qweqwe = function fnName () {};
-    console.log('beforeCreate', this, this === this.$root);
+  $progress: {
+    get () { return progress; }
   }
 });
 
+/**
+ * если вызвать этот метод внутри компонента `this.$reset()`,
+ * то внутри компонента все данные будут установлены в init-данные,
+ * при условии, что `data` была определена как функция (иначе сброса не будет)
+ */
+Vue.prototype.$reset = function () {
+  const dataFn = typeof this.$options.data == 'function' ? this.$options.data : () => this.$options.data;
+  const data = dataFn();
+
+  Object.keys(data).forEach(key => this[key] = data[key]);
+};
+
+// Vue.use(NProgress);
+// const nprogress = new NProgress();
+
+// Vue.mixin({
+//   beforeCreate () {
+//     this._qweqwe = function fnName () {};
+//     console.log('beforeCreate', this, this === this.$root);
+//   }
+// });
+
 /** Инcтанс */
 const app = new Vue({
-  nprogress,
+  // nprogress,
   router,
   store,
   ...App
