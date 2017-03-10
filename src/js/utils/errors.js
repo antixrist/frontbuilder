@@ -91,29 +91,16 @@ export async function getStackFrames (err) {
  * @param {Function} cb
  * @returns {uncaughtExceptionCallback}
  */
-export function uncaughtExceptionHandler (cb = _.noop) {
+export function getErrorFromUncaughtException (cb = _.noop) {
   /**
    * @callback uncaughtExceptionCallback
    * @param {ErrorEvent|Event} event
    * @param {Error} [err]
    */
   return function (event) {
-    const { message } = event;
+    const { message = '' } = event;
 
-    setImmediate(async function () {
-      let stackframes;
-
-      if (event.error instanceof Error) {
-        stackframes = await getStackFrames(event.error);
-      } else {
-        event.error = new Error(message);
-        stackframes = await getStackFrames(event);
-      }
-
-      event.error.stackframes = stackframes;
-
-      cb(event);
-    });
+    return (event.error instanceof Error) ? event.error : new Error(message);
   };
 }
 
@@ -121,27 +108,14 @@ export function uncaughtExceptionHandler (cb = _.noop) {
  * @param {Function} cb
  * @returns {unhandledRejectionCallback}
  */
-export function unhandledRejectionHandler (cb = _.noop) {
+export function getErrorFromUnhandledRejection (cb = _.noop) {
   /**
    * @callback unhandledRejectionCallback
    * @param {PromiseRejectionEvent|Event} event
    */
   return function (event) {
-    setImmediate(async function () {
-      let stackframes = [];
-      const { reason } = event;
-      
-      event.error = reason;
+    const { reason: message } = event;
 
-      if (event.error instanceof Error) {
-        stackframes = await getStackFrames(reason);
-      } else {
-        event.error = new Error(reason);
-      }
-
-      event.error.stackframes = stackframes;
-
-      cb(event);
-    });
+    return (event.error instanceof Error) ? event.error : new Error(message);
   };
 }

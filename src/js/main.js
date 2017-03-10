@@ -9,24 +9,22 @@ import _ from 'lodash';
 import Vue from 'vue';
 import FastClick from 'fastclick';
 import { isDevelopment } from './config';
-import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from './utils';
+import { assert, getErrorFromUncaughtException, getErrorFromUnhandledRejection } from './utils';
 import { HttpError, RequestError, ResponseError } from './factory/http/errors';
 import { reportError } from './service/api';
-
-import '../styles/main.scss';
 import app from './app';
 
-/** Все кастомные ошибки лучше выкинуть глобально */
-window.HttpError     = HttpError;
-window.RequestError  = RequestError;
-window.ResponseError = ResponseError;
+/** Все кастомные ошибки можно выкинуть глобально. Но можно и не выкидывать */
+// window.HttpError     = HttpError;
+// window.RequestError  = RequestError;
+// window.ResponseError = ResponseError;
 
 /**
  * Ловим все возможные необработанные ошибки
  * и отправляем каждую в свой обработчик
  */
-window.addEventListener('error', uncaughtExceptionHandler(({ error }) => globalErrorsHandler(error)));
-window.addEventListener('unhandledrejection', unhandledRejectionHandler(({ error }) => globalErrorsHandler(error)));
+window.addEventListener('error', getErrorFromUncaughtException(({ error }) => globalErrorsHandler(error)));
+window.addEventListener('unhandledrejection', getErrorFromUnhandledRejection(({ error }) => globalErrorsHandler(error)));
 Vue.config.errorHandler = globalErrorsHandler;
 
 /** тот самый обработчик необработанных ошибок */

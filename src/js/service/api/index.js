@@ -1,7 +1,13 @@
+import statuses from 'statuses';
 import { API_URL } from '../../config';
+import bus from '../bus';
+import store from '../store';
 import progress from '../progress';
+import { errorToJSON, getStackFrames } from '../../utils';
 import { http } from '../../factory';
-import { errorToJSON } from '../../utils';
+import { ResponseError } from '../../factory/http/errors';
+import createError from 'axios/lib/core/createError';
+import { enhanceResponseError } from '../../factory/http/axios-plugins/normalize-errors';
 
 const api = http({
   method: 'post',
@@ -12,10 +18,22 @@ const api = http({
   },
 });
 
-/**
- * Прогресс для запросов к api
- */
+/** Подставим api_token во все запросы к api */
+api.interceptors.request.use(config => {
+  const token = store.getters['account/token'];
 
+  console.log('interceptors.request token', token);
+
+  if (token) {
+    config.data.api_token = token;
+  }
+
+  return config;
+}, err => Promise.reject(err));
+
+/**
+ * Прогресс-бар для запросов к api
+ */
 api.interceptors.request.use(
   config => {
     /**
@@ -40,68 +58,135 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   res => {
     const { config } = res;
-    !config.silent && progress.requestStart();
+    !config.silent && progress.requestDone();
 
     return res;
   },
   err => {
-    if (!err.isCanceled) {
-      const { config } = err;
-      if (!config || !config.silent) {
-        progress.requestDone();
-      }
+    const { isCanceled, config } = err;
+
+    if (!config || !config.silent) {
+      progress.requestDone();
     }
 
-    let retVal;
-    if (err.CLIENT_ERROR) {
-      const { response: { data } } = err;
-
-      switch (err.code) {
-        // case 401:
-        //   break;
-        // case 403:
-        //   break;
-        // case 404:
-        //   break;
-        // case 500:
-        //   break;
-        // case 800: // wtf?
-        //   break;
-
-        // ошибки валидации
-        case 422:
-          retVal = {
-            data,
-            success: false,
-            message: err.message,
-            code: err.code
-          };
-        break;
-      }
-    }
-
-    return retVal ? retVal : Promise.reject(err);
+    return Promise.reject(err);
   }
 );
 
-export default api;
+/**
+ * Сервер всегда присылает ответ в виде:
+ * `{ success: true, data: {} }`
+ * `{ success: false, code: 401, message: '' }`
+ *
+ * Но есть соглашение - при `success: false` в `code` будет http-код, например 401, 404 и т.п.
+ * А сам http-ответ всегда будет с кодом 200.
+ */
+api.interceptors.response.use(res => {
+  /**
+   * поэтому здесь любой неудачный ответ завернём в ошибку.
+   * и сделаем это нативной для axios'а функцией `createError`
+   * и нашим улучшателем ошибок ответа сервера
+   */
+  if (res.data) {
+    const { success, code, message, config } = res.data;
+    if (typeof success != 'undefined' && !success) {
+      const err = createError(message || statuses.codes[code] || '', config, code, res);
+      enhanceResponseError(err);
+
+      return Promise.reject(err);
+    }
+  }
+
+  return res;
+}, err => Promise.reject(err));
+
+
+/**
+ * А здесь поработаем с приходяще-уходящими данными
+ */
+api.interceptors.response.use(res => res, err => {
+  let retVal;
+  if (err.code) {
+
+    /** немножко провалидируем и подчистим данные */
+    const { response = {} } = err;
+    const { data: originalData = {}, headers = {} } = response;
+
+    let data = {
+      success: false,
+      code: originalData.code || err.code,
+      message: originalData.message || err.message,
+    };
+
+    if (typeof originalData.data == 'undefined') {
+      data = Object.assign({}, data, { data: originalData });
+    } else {
+      data = Object.assign({}, originalData, data);
+    }
+
+    err.response.data = data;
+
+    /** а теперь можно обработать ошибки */
+    switch (err.code) {
+      case 401:
+        store.commit('account/logout');
+        break;
+      // case 403:
+      //   break;
+      // case 404:
+      //   break;
+      // case 500:
+      //   break;
+      // case 800: // wtf?
+      //   break;
+
+      // ошибки валидации
+      case 422:
+        // Object.assign({}, {
+        //   success: false,
+        //   // messages
+        //   data: response.data
+        // });
+        // retVal = response;
+        //
+        // retVal = {
+        //   data,
+        //   success: false,
+        //   message: err.message,
+        //   code: err.code
+        // };
+      break;
+    }
+  }
+
+  return retVal ? retVal : Promise.reject(err);
+});
+
 
 export async function reportError (data, opts = {}) {
   const { error } = data;
   const errObj = errorToJSON(error);
   delete data.error;
 
-  errObj.stackframes && errObj.stackframes.map(sf => sf.toString()).join('\n');
+  try {
+    const stackframes = await getStackFrames(error);
+    errObj.stackframes = stackframes.map(sf => sf.toString()).join('\n');
+  } catch (err) {
+    console.error(err);
+  }
 
   Object.assign(data, errObj, {
     userAgent: navigator.userAgent,
     location: document.location.href,
   });
 
-  return await api.post('/report-error', data, Object.assign({
-    silent: true
-  }, opts)).catch(err => console.error(err));
+  return await api
+    .post('/report-error', data, Object.assign({silent: true}, opts))
+    .catch(err => console.error(err))
+  ;
 }
+
+export default api;
 
 
 // http.interceptors.response.use(

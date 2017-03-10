@@ -13,6 +13,11 @@ const defaults = {
 const state = Object.assign({}, defaults);
 
 const getters = {
+  // getters['account/token']
+  token (state) {
+    return state[API_TOKEN_NAME];
+  },
+
   // getters['account/isLogged']
   isLogged (state) {
     return !!(state.username && state[API_TOKEN_NAME]);

@@ -44,6 +44,24 @@ function requestInterceptorResolve (config) {
 }
 
 function requestInterceptorReject (err) {
+  enhanceRequestError(err);
+  return Promise.reject(err);
+}
+
+function responseInterceptorResolve (res) {
+  const transcriptions = getResponseTranscription(res);
+
+  Object.keys(transcriptions).forEach(key => Object.defineProperty(res, key, d('e', transcriptions[key])));
+
+  return res;
+}
+
+function responseInterceptorReject (err) {
+  enhanceResponseError(err);
+  return Promise.reject(err);
+}
+
+export function enhanceRequestError (err) {
   const transcriptions = getRequestErrorTranscription(err);
   // если в `transcriptions` ни один из флагов не является `true`,
   // то это какая-то неведомая бубуйня.
@@ -71,19 +89,9 @@ function requestInterceptorReject (err) {
     REQUEST_ERROR: d('e', true),
     UNKNOWN_ERROR: d('e', UNKNOWN_ERROR)
   });
-
-  return Promise.reject(err);
 }
 
-function responseInterceptorResolve (res) {
-  const transcriptions = getResponseTranscription(res);
-
-  Object.keys(transcriptions).forEach(key => Object.defineProperty(res, key, d('e', transcriptions[key])));
-
-  return res;
-}
-
-function responseInterceptorReject (err) {
+export function enhanceResponseError (err) {
   const transcriptions = getResponseErrorTranscription(err);
   // если в `transcriptions` ни один из флагов не является `true`,
   // то это какая-то неведомая бубуйня.
@@ -120,10 +128,7 @@ function responseInterceptorReject (err) {
       statusCode: d('e', response.status)
     });
   }
-  
-  return Promise.reject(err);
 }
-
 
 /**
  * @typedef {{}} RequestErrorTranscription
@@ -136,7 +141,7 @@ function responseInterceptorReject (err) {
  * @param {Error} err
  * @returns {RequestErrorTranscription}
  */
-function getRequestErrorTranscription (err) {
+export function getRequestErrorTranscription (err) {
   const { message = '', code = '' } = err;
 
   return {
@@ -168,7 +173,7 @@ function getRequestErrorTranscription (err) {
  * @param {{}} [err.response]
  * @returns {ResponseErrorTranscription}
  */
-function getResponseErrorTranscription (err) {
+export function getResponseErrorTranscription (err) {
   const { message = '' } = err;
   
   const transcriptions = {
@@ -208,7 +213,7 @@ function getResponseErrorTranscription (err) {
  * @param {Number} [res.status=0]
  * @returns {ResponseTranscription}
  */
-function getResponseTranscription (res = {}) {
+export function getResponseTranscription (res = {}) {
   const { status = 0 } = res;
 
   return {

@@ -8,9 +8,7 @@ import App from './App.vue';
 import router from './router';
 import { sync } from 'vuex-router-sync';
 import * as services from '../service';
-
-console.log('services', services);
-window.services = services;
+import '../../styles/main.scss';
 
 const { storage, store, api, http, progress, bus } = services;
 
