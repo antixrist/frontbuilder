@@ -4,6 +4,7 @@
 
 import Vue from 'vue';
 import Vuex from 'vuex';
+import Router from 'vue-router';
 import App from './App.vue';
 import router from './router';
 import { sync } from 'vuex-router-sync';
@@ -15,6 +16,8 @@ const { storage, store, api, http, progress, bus } = services;
 
 /** Стор и роутер */
 Vue.use(Vuex);
+Vue.use(Router);
+
 sync(store, router);
 
 /** Прогресс для запросов к api */
