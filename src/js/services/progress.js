@@ -1,65 +1,55 @@
-import _ from 'lodash';
-import NProgress from 'nprogress';
-
-NProgress.configure({
-  speed: 500,
-  easing: 'ease-out',
-  showSpinner: false
-});
-
-NProgress.factory = function factory (...args) {
-  return NProgress.configure(...args);
-};
-
-export default NProgress;
+import _NProgress from 'nprogress';
 
 /** Статусбар для запросов к апи */
 
-export class ProgressStack {
+/**
+ * @augments NProgress
+ */
+export default class NProgressStack {
+  static get defaults () {
+    return {
+      latencyThreshold: 100,
+      speed: 500,
+      easing: 'ease-out',
+      showSpinner: false
+    };
+  };
 
-  constructor () {
-    this.items   = [];
-    this.percent = 0;
-    this.max     = 0;
+  constructor (opts = {}) {
+    opts = Object.assign({}, NProgressStack.defaults, opts);
 
-    this.setProgress();
+    this.configure(opts);
+
+    this.requestsTotal = 0;
+    this.requestsCompleted = 0;
   }
 
-  setProgress (progress = NProgress) {
-    this.progress = progress;
+  complete () {
+    this.requestsTotal = 0;
+    this.requestsCompleted = 0;
+    this.done();
   }
 
-  add (item) {
-    this.max++;
-    if (!this.items.length) {
-      this.percent = 0;
-      this.progress.set(this.percent);
+  requestStart () {
+    if (0 === this.requestsTotal) {
+      setTimeout(() => this.start(), this.latencyThreshold);
     }
 
-    this.items.push(item);
-
-    // console.log(`add. percent: ${this.percent}, max: %d, length: %d`, this.max, this.items.length);
+    this.requestsTotal++;
+    this.set(this.requestsCompleted / this.requestsTotal);
   }
 
-  done (item) {
-    let removed = [];
-    const idx = this.items.indexOf(item);
-    if (!!~idx) {
-      removed = _.pullAt(this.items, idx);
-    }
-    if (!removed.length) { return; }
-
-    // console.log('done. length: %d', this.items.length);
-
-    if (!this.items.length) {
-      this.percent = 1;
-      this.max = 0;
-    } else {
-      this.percent = (this.max - this.items.length) / this.max;
-    }
-
-    // console.log(`done. percent: ${this.percent}, max: %d`, this.max);
-
-    this.progress.set(this.percent);
+  requestDone () {
+    // Finish progress bar 50 ms later
+    setTimeout(() => {
+      ++this.requestsCompleted;
+      if (this.requestsCompleted >= this.requestsTotal) {
+        this.complete();
+      } else {
+        this.set((this.requestsCompleted / this.requestsTotal) - 0.1);
+      }
+    }, this.latencyThreshold + 50)
   }
 }
+
+Object.assign(NProgressStack.prototype, _NProgress);

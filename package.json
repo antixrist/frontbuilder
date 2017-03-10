@@ -81,7 +81,6 @@
     "vue-head": "^2.0.10",
     "vue-helmet": "^1.1.5",
     "vue-lazyload": "^1.0.0-rc9",
-    "vue-nprogress": "^0.1.5",
     "vue-resize-directive": "^1.0.0",
     "vue-resizesensor": "^0.1.0",
     "vue-router": "^2.3.0",

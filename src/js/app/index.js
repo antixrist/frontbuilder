@@ -8,9 +8,8 @@ import { sync } from 'vuex-router-sync';
 import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
 import * as services from '../services';
 import { HttpError } from '../services/http';
-import NProgress from 'vue-nprogress';
 
-const { storage, http, progress, bus, ProgressStack } = services;
+const { storage, http, progress, bus } = services;
 
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой
@@ -19,31 +18,6 @@ const { storage, http, progress, bus, ProgressStack } = services;
 
 /** Роутер */
 sync(store, router);
-
-/** Глобальная обработка необработанных ошибок */
-window.addEventListener('error', uncaughtExceptionHandler(({ error }) => globalErrorsHandler(error)));
-window.addEventListener('unhandledrejection', unhandledRejectionHandler(({ error }) => globalErrorsHandler(error)));
-Vue.config.errorHandler = globalErrorsHandler;
-
-async function globalErrorsHandler (err) {
-  const isHttpError = (err instanceof HttpError);
-  const isConnectionError = isHttpError && err.CONNECTION_ERROR;
-
-  if (err instanceof HttpError) {
-    if (err.isCanceled) { return; }
-
-  }
-
-  // console.error('[app]', err);
-  bus.emit('uncaughtException', err);
-
-  if (!isDevelopment && !isConnectionError) {
-    await reportError({ err });
-  }
-}
-
-/** Проверяем работоспособность LocalStorage'а */
-assert(storage.enabled, 'Пожалуйста, выйдите из приватного режима Safari. Стабильность работы приложения не гарантируется');
 
 /** Прогресс для запросов к api */
 const apiRequestsProgress = new ProgressStack();
@@ -88,7 +62,7 @@ Object.defineProperties(Vue.prototype, {
   $bus: {
     get () { return bus; }
   },
-  $ls: {
+  $storage: {
     get () { return storage; }
   },
   $progress: {
@@ -108,40 +82,12 @@ Vue.prototype.$reset = function () {
   Object.keys(data).forEach(key => this[key] = data[key]);
 };
 
-// Vue.use(NProgress);
-// const nprogress = new NProgress();
-
-// Vue.mixin({
-//   beforeCreate () {
-//     this._qweqwe = function fnName () {};
-//     console.log('beforeCreate', this, this === this.$root);
-//   }
-// });
-
 /** Инcтанс */
 const app = new Vue({
-  // nprogress,
   router,
   store,
   ...App
 });
 
-/** todo: удалить */
-function sdfsdf () {
-  throw new Error('Test Error');
-}
-
-function zxczxc () {
-  sdfsdf();
-}
-
-function asdasd () {
-  zxczxc();
-}
-
-setTimeout(function qsweqweqwe () {
-  asdasd();
-}, 100);
-
 /** выплёвываем наружу (монтирование приложения снаружи, надо оно или не надо - всё там) */
-export { app, router, store, api, services };
+export default app;
