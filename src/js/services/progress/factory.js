@@ -5,7 +5,7 @@ import _NProgress from 'nprogress';
 /**
  * @augments NProgress
  */
-export default class NProgressStack {
+class NProgressStack {
   static get defaults () {
     return {
       latencyThreshold: 100,
@@ -53,3 +53,5 @@ export default class NProgressStack {
 }
 
 Object.assign(NProgressStack.prototype, _NProgress);
+
+export default NProgressStack;

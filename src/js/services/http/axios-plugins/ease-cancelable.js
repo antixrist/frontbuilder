@@ -22,14 +22,7 @@ export default function easeCancelable (instance, opts = {
     easeCancelable.originalMethods[method] = instance[method];
   });
 
-  // easeCancelable.interceptors = {
-  //   request:  instance.interceptors.request.use(requestInterceptorResolve, requestInterceptorReject),
-  //   response: instance.interceptors.response.use(responseInterceptorResolve, responseInterceptorReject)
-  // };
-
-  /**
-   * Вешаем на инстанс свои методы
-   */
+  /** Вешаем на инстанс свои методы */
   instance.request = function request (...args) {
     let config = args[0];
     if (typeof config === 'string') {
@@ -86,28 +79,9 @@ export function destroy (instance) {
     instance[method] = easeCancelable.originalMethods[method];
   });
 
-  // instance.interceptors.request.eject(easeCancelable.interceptors.request);
-  // instance.interceptors.response.eject(easeCancelable.interceptors.response);
-
   delete instance.easeCancelable;
 
   return instance;
 }
-
-// function requestInterceptorResolve (config) {
-//   return config;
-// }
-//
-// function requestInterceptorReject (err) {
-//   return Promise.reject(err);
-// }
-//
-// function responseInterceptorResolve (res) {
-//   return res;
-// }
-//
-// function responseInterceptorReject (err) {
-//   return Promise.reject(err);
-// }
 
 function noop () {}

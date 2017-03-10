@@ -1,7 +1,4 @@
+/** это нодовый эвент-эмиттер. он функциональнее того, что предлагает vue */
 import EE from 'events';
-
-EE.factory = function factory (...args) {
-  return new EE(...args);
-};
 
 export default new EE;

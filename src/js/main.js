@@ -11,7 +11,7 @@ import FastClick from 'fastclick';
 import { isDevelopment } from './config';
 import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from './utils';
 import { HttpError, RequestError, ResponseError } from './services/http';
-import { reportError } from './api';
+import { reportError } from './services/api';
 
 import '../styles/main.scss';
 import app from './app';
@@ -37,6 +37,8 @@ async function globalErrorsHandler (err) {
   if (isHttpError) {
     // если это отменённый запрос, то делать, в принципе, ничего не надо
     if (err.isCanceled) { return; }
+  } else {
+
   }
 
   // прокидываем ошибку в приложение

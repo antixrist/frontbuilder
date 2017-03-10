@@ -81,7 +81,7 @@ function responseInterceptorReject (err) {
 function writeDurationTime (obj, start, end) {
   Object.defineProperties(obj, {
     startTime: d('e', start),
-    endTime: d('e', end),
-    duration: d('e', end - start),
+    endTime:   d('e', end),
+    duration:  d('e', end - start),
   });
 }

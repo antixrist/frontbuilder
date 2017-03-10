@@ -1,54 +1,52 @@
-import Vue from 'vue';
-import App from './App.vue';
-import router from './router';
-import store from './store';
-import { isDevelopment } from '../config';
-import api, { reportError } from '../api';
-import { sync } from 'vuex-router-sync';
-import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from '../utils';
-import * as services from '../services';
-import { HttpError } from '../services/http';
-
-const { storage, http, progress, bus } = services;
-
 /**
  * Здесь настраиваем все части приложения и соединяем их между собой
  */
 
+import Vue from 'vue';
+import Vuex from 'vuex';
+import App from './App.vue';
+import router from './router';
+import { sync } from 'vuex-router-sync';
+import * as services from '../services';
 
-/** Роутер */
+console.log('services', services);
+
+const { storage, store, api, http, progress, bus } = services;
+
+/** Стор и роутер */
+Vue.use(Vuex);
 sync(store, router);
 
 /** Прогресс для запросов к api */
-const apiRequestsProgress = new ProgressStack();
-apiRequestsProgress.setProgress(progress);
-
-api.interceptors.request.use(config => {
-  /**
-   * если передать { silent: true } в параметрах запроса,
-   * то прогресс для этого запроса показан не будет
-   */
-  !config.silent && apiRequestsProgress.add(config);
-
-  // throw new Error('Errrooooorrr!!!');
-
-  return config;
-}, err => {
-  apiRequestsProgress.done(err.config);
-
-  // console.error('err', err);
-
-  return Promise.reject(err);
-});
-api.interceptors.response.use(res => {
-  apiRequestsProgress.done(res.config);
-
-  return res;
-}, err => {
-  apiRequestsProgress.done(err.config);
-
-  return Promise.reject(err);
-});
+// const apiRequestsProgress = new ProgressStack();
+// apiRequestsProgress.setProgress(progress);
+//
+// api.interceptors.request.use(config => {
+//   /**
+//    * если передать { silent: true } в параметрах запроса,
+//    * то прогресс для этого запроса показан не будет
+//    */
+//   !config.silent && apiRequestsProgress.add(config);
+//
+//   // throw new Error('Errrooooorrr!!!');
+//
+//   return config;
+// }, err => {
+//   apiRequestsProgress.done(err.config);
+//
+//   // console.error('err', err);
+//
+//   return Promise.reject(err);
+// });
+// api.interceptors.response.use(res => {
+//   apiRequestsProgress.done(res.config);
+//
+//   return res;
+// }, err => {
+//   apiRequestsProgress.done(err.config);
+//
+//   return Promise.reject(err);
+// });
 
 
 /** Внедряем сервисы */
@@ -89,5 +87,5 @@ const app = new Vue({
   ...App
 });
 
-/** выплёвываем наружу (монтирование приложения снаружи, надо оно или не надо - всё там) */
+/** выплёвываем его наружу (монтирование приложения снаружи, надо оно или не надо - всё там) */
 export default app;

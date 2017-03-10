@@ -5,8 +5,4 @@ import storage from 'store';
 //   global.localStorage = new LocalStorage('./scratch');
 // }
 
-storage.factory = function factory (...args) {
-  return storage;
-};
-
 export default storage;

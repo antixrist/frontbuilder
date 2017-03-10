@@ -1,7 +1,6 @@
 import _ from 'lodash';
-import { token } from '../../../services';
 import { API_TOKEN_NAME } from '../../../config';
-import api from '../../../api';
+import { api } from '../../../services';
 
 const defaults = {
   [API_TOKEN_NAME]: null,
@@ -87,7 +86,7 @@ const actions = {
 const mutations = {
   // commit('account/login')
   login (state, data) {
-    token.save(data[API_TOKEN_NAME]);
+    // token.save(data[API_TOKEN_NAME]);
 
     _.forEach(defaults, (val, key) => {
       if (_.isUndefined(data[key])) { return; }
@@ -98,7 +97,7 @@ const mutations = {
 
   // commit('account/logout')
   logout (state) {
-    token.remove();
+    // token.remove();
 
     _.forEach(defaults, (val, key) => state[key] = defaults[key]);
   }

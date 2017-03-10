@@ -5,11 +5,6 @@ import { errorToJSON } from '../../../utils';
 import { HttpError, RequestError, ResponseError } from '../errors';
 import statuses from 'statuses';
 
-/**
- * todo: Переписывать ошибки запросов/ответов с `Error` на какие-нибудь `HttpError` или `RequestError`,
- * чтобы в глобальном обработчике ошибок можно было такие ошибки распознать
- */
-
 normalizeErrors.destroy = destroy;
 
 /**

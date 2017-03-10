@@ -1,82 +1,87 @@
-import _ from 'lodash';
-import { API_URL } from '../config';
-import { http } from '../services';
-import { errorToJSON } from '../utils';
-import progress, { ProgressStack } from '../services/progress';
+import { API_URL } from '../../config';
+import { progress, http } from '../';
+import { errorToJSON } from '../../utils';
 
 const api = http.create({
   method: 'post',
   baseURL: API_URL,
   headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'Accept':       'application/json',
+    'Content-Type': 'application/json',
   },
-  data: {}
 });
 
-/** Прогресс для запросов к api */
-const apiRequestsProgress = new ProgressStack();
-apiRequestsProgress.setProgress(progress);
+/**
+ * Прогресс для запросов к api
+ */
 
-api.interceptors.request.use(config => {
-  /**
-   * если передать { silent: true } в параметрах запроса,
-   * то прогресс для этого запроса показан не будет
-   */
-  // !config.silent && apiRequestsProgress.add(config);
+api.interceptors.request.use(
+  config => {
+    /**
+     * если передать { silent: true } в параметрах запроса,
+     * то прогресс для этого запроса показан не будет
+     */
+    !config.silent && progress.requestStart();
 
-  return config;
-}, err => {
-  // apiRequestsProgress.done(err.config);
+    return config;
+  },
+  err => {
+    const { isCanceled, config } = err;
 
-  return Promise.reject(err);
-});
-api.interceptors.response.use(res => {
-  // apiRequestsProgress.done(res.config);
-
-  return res;
-}, err => {
-  // apiRequestsProgress.done(err.config);
-
-  // глушим ошибки, если запрос был отменён токеном отмены
-  if (err.isCanceled) { return true; }
-
-  let retVal;
-  if (err.CLIENT_ERROR) {
-    const { response: { data } } = err;
-
-    switch (err.code) {
-      // case 401:
-      //   break;
-      // case 403:
-      //   break;
-      // case 404:
-      //   break;
-      // case 500:
-      //   break;
-      // case 800: // wtf?
-      //   break;
-
-      // ошибки валидации
-      case 422:
-        retVal = {
-          data,
-          success: false,
-          message: err.message,
-          code: err.code
-        };
-      break;
+    if (!config || !config.silent) {
+      progress.requestDone();
     }
+
+    return Promise.reject(err);
   }
+);
 
-  return retVal ? retVal : Promise.reject(err);
-});
+api.interceptors.response.use(
+  res => {
+    const { config } = res;
+    !config.silent && progress.requestStart();
 
+    return res;
+  },
+  err => {
+    if (!err.isCanceled) {
+      const { config } = err;
+      if (!config || !config.silent) {
+        progress.requestDone();
+      }
+    }
 
+    let retVal;
+    if (err.CLIENT_ERROR) {
+      const { response: { data } } = err;
 
+      switch (err.code) {
+        // case 401:
+        //   break;
+        // case 403:
+        //   break;
+        // case 404:
+        //   break;
+        // case 500:
+        //   break;
+        // case 800: // wtf?
+        //   break;
 
-window.api = api;
-window.errorToJSON = errorToJSON;
+        // ошибки валидации
+        case 422:
+          retVal = {
+            data,
+            success: false,
+            message: err.message,
+            code: err.code
+          };
+        break;
+      }
+    }
+
+    return retVal ? retVal : Promise.reject(err);
+  }
+);
 
 export default api;
 
