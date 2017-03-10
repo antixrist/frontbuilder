@@ -10,8 +10,8 @@ import Vue from 'vue';
 import FastClick from 'fastclick';
 import { isDevelopment } from './config';
 import { assert, uncaughtExceptionHandler, unhandledRejectionHandler } from './utils';
-import { HttpError, RequestError, ResponseError } from './services/http';
-import { reportError } from './services/api';
+import { HttpError, RequestError, ResponseError } from './factory/http/errors';
+import { reportError } from './service/api';
 
 import '../styles/main.scss';
 import app from './app';

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { API_TOKEN_NAME } from '../../../config';
-import { api } from '../../../services';
+import api from '../../api';
 
 const defaults = {
   [API_TOKEN_NAME]: null,

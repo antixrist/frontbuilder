@@ -1,23 +1,20 @@
 /**
- * Здесь настраиваем все части приложения и соединяем их между собой
+ * Здесь собираем в кучу и настраиваем все части приложения, соединяем их между собой.
+ * обращений к window здесь быть не должно
  */
 
 import Vue from 'vue';
-import Vuex from 'vuex';
-import Router from 'vue-router';
 import App from './App.vue';
 import router from './router';
 import { sync } from 'vuex-router-sync';
-import * as services from '../services';
+import * as services from '../service';
 
 console.log('services', services);
+window.services = services;
 
 const { storage, store, api, http, progress, bus } = services;
 
 /** Стор и роутер */
-Vue.use(Vuex);
-Vue.use(Router);
-
 sync(store, router);
 
 /** Прогресс для запросов к api */

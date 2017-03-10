@@ -1,8 +1,9 @@
 import { API_URL } from '../../config';
-import { progress, http } from '../';
+import progress from '../progress';
+import { http } from '../../factory';
 import { errorToJSON } from '../../utils';
 
-const api = http.create({
+const api = http({
   method: 'post',
   baseURL: API_URL,
   headers: {

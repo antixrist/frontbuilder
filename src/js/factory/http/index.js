@@ -2,6 +2,9 @@ import _ from 'lodash'
 import qs from 'qs'
 import axios from 'axios'
 import { durationTime, easeCancelable, normalizeErrors } from './axios-plugins';
+import { HttpError, RequestError, ResponseError } from './errors';
+
+const { CancelToken, isCancel } = axios;
 
 const defaults = {
   headers: {
@@ -37,4 +40,18 @@ export default function factory (opts = {}) {
   normalizeErrors(instance);
 
   return instance;
+};
+
+export {
+  // errors
+  HttpError, RequestError, ResponseError,
+
+  // cancellations
+  CancelToken,
+  isCancel,
+
+  // plugins
+  durationTime,
+  easeCancelable,
+  normalizeErrors
 };
