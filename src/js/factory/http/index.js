@@ -38,13 +38,33 @@ export default function factory (opts = {}) {
 
   durationTime(instance);
   easeCancelable(instance);
-
   normalizeErrors(instance);
-  instance.interceptors.response.use((res) => {
-    Object.assign(res, getResponseTranscription(res));
 
-    return res;
-  });
+  /** расширим объект ответа */
+  instance.interceptors.response.use(
+    res => Object.assign({}, res, getResponseTranscription(res)),
+    err => Promise.reject(err)
+  );
+
+  /** Переименуем `response.data` на `response.body`, чтобы не было `response.data.data` */
+  instance.interceptors.response.use(
+    response => {
+      if (response.data) {
+        response.body = response.data;
+        delete response.data;
+      }
+
+      return response;
+    },
+    err => {
+      if (err.response && err.response.data) {
+        err.response.body = err.response.data;
+        delete err.response.data;
+      }
+
+      return Promise.reject(err);
+    }
+  );
 
   return instance;
 };

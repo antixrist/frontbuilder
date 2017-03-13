@@ -1,6 +1,6 @@
 <template src="./tpl.pug" lang="pug"></template>
 
-<script>
+<script type="text/ecmascript-6">
   import { mapActions } from 'vuex';
   
   export default {
@@ -21,13 +21,11 @@
 
         try {
           const { username, password } = this;
-          const res = await this.login({ username, password });
-//          if (res.success) {
-//            this.$router.replace({ name: 'home' });
-//          }
+          await this.login({ username, password });
+          this.$router.replace({ name: 'home' });
         } catch (err) {
-          console.log('catch in methods');
-//          console.error(err);
+          console.log('catch in methods', err);
+          throw err;
         }
 
         this.loading = false;

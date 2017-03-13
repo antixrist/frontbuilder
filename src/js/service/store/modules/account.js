@@ -36,17 +36,22 @@ const actions = {
     // todo: обработка ошибок запросов и ответов
 
     try {
-      const res = await api.post('/login', { login: username/*, password*/ });
+      // commit('login', true);
+      const res = await api.post('/login', { login: username, password });
 
       console.log('res', res);
 
-      // commit('login', { username: login, ...data });
+      commit('login', { username, ...res.body.data }z);
+
+      return res;
 
     } catch (err) {
       console.log('catch in action', errorToJSON(err));
       if (err.CLIENT_ERROR && err.code == 422) {
         const { response } = err;
         console.log(response.message, response.body);
+      } else {
+        throw err;
       }
     }
 

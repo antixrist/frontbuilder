@@ -8,7 +8,7 @@ import { errorToJSON, getStackFrames } from '../../utils';
 import { http } from '../../factory';
 import { ResponseError } from '../../factory/http/errors';
 import createError from 'axios/lib/core/createError';
-import { enhanceResponseError } from '../../factory/http/axios-plugins/normalize-errors';
+import { enhanceResponseError, getResponseTranscription } from '../../factory/http/axios-plugins/normalize-errors';
 
 const api = http({
   method: 'post',
@@ -41,26 +41,6 @@ const api = http({
 //     return Promise.reject(err);
 //   }
 // );
-
-/** Переименуем `response.data` на `response.body`, чтобы не было `response.data.data` */
-api.interceptors.response.use(
-  response => {
-    if (response.data) {
-      response.body = response.data;
-      delete response.data;
-    }
-
-    return response;
-  },
-  err => {
-    if (err.response && err.response.data) {
-      err.response.body = err.response.data;
-      delete err.response.data;
-    }
-
-    return Promise.reject(err);
-  }
-);
 
 /** Подставим api_token во все запросы к api */
 api.interceptors.request.use(config => {
@@ -115,6 +95,30 @@ api.interceptors.response.use(
   }
 );
 
+function isInvalidResponseBody (res) {
+  return typeof res.body.success == 'undefined';
+}
+
+function formatInvalidResponseBody (res) {
+  const { body, config } = res;
+
+  const code = typeof body.code != 'undefined' ? body.code : status;
+  // проверка на success - прямиком из `axios/lib/core/settle`
+  const success = (!code || !config.validateStatus || config.validateStatus(code));
+  const message = typeof body.message != 'undefined' ? body.message : '';
+  const data = _.omit(body, ['success', 'code', 'message']);
+
+  res.body = { success, code, message, data };
+  // подчистим `undefined` пропертя
+  Object.keys(res.body).forEach(prop => {
+    if (typeof res.body[prop] == 'undefined') {
+      delete res.body[prop];
+    }
+  });
+
+  return res;
+}
+
 /**
  * Сервер всегда присылает ответ в виде:
  * `{ success: true, data: {} }`
@@ -124,43 +128,40 @@ api.interceptors.response.use(
  * А сам http-ответ всегда будет с кодом 200.
  */
 api.interceptors.response.use(res => {
-  if (res.body) { return res; }
+  if (!res.body) { return res; }
 
   /**
-   * поэтому здесь любой неудачный ответ завернём в ошибку.
-   * и сделаем это нативной для axios'а функцией `createError`
-   * и нашим улучшателем ошибок ответа сервера
+   * так же ответ может приходить таким, что он не соответствует принятой схеме.
+   * обработаем этот момент.
    */
 
-
-  const requiredTopLevelProps = ['success', 'code', 'message', 'data'];
-
-  if (res.is2xx && res.body && typeof res.body.success == 'undefined') {
-    const newBody = { success: true };
-
-    Object.assign(newBody, _.pick(res.body, ['code', 'message', 'data']));
-    Object.assign(newBody, { data: _.omit(res.body, ['code', 'message', 'data']) });
-
-
-    res.body = newBody;
+  if (isInvalidResponseBody(res)) {
+    res = formatInvalidResponseBody(res);
   }
 
-  const { body } = res;
-  if (typeof body.success == 'undefined') {
-
-  }
-
-  const { success, code, message, config } = res.body;
-
-
-  if (typeof success != 'undefined' && !success) {
-    const err = createError(message || '', config, code, res);
+  if (!res.body.success) {
+    /**
+     * здесь любой неудачный ответ завернём в инстанс ошибки.
+     * сделаем это родной для axios'а функцией `createError`
+     * и нашим улучшателем ошибок ответа сервера
+     */
+    const err = createError(res.body.message || '', res.config, res.status, res);
 
     return Promise.reject(enhanceResponseError(err));
   }
 
   return res;
-}, err => Promise.reject(err));
+}, err => {
+  const { res } = err;
+
+  if (res) {
+    if (isInvalidResponseBody(res)) {
+      err.response = formatInvalidResponseBody(res);
+    }
+  }
+
+  return Promise.reject(err);
+});
 
 
 /**
@@ -194,34 +195,18 @@ api.interceptors.response.use(res => res, err => {
    */
   switch (err.code) {
     case 401:
-      store.dispatch('account/logout');
+      // store.dispatch('account/logout');
       break;
-    // case 403:
-    //   break;
-    // case 404:
-    //   break;
-    // case 500:
-    //   break;
-    // case 800: // wtf?
-    //   break;
-
+    case 403:
+      break;
+    case 404:
+      break;
+    case 500:
+      break;
     case 800: // объект уже существует
-
+      break;
     case 422: // ошибка валидации
-      // Object.assign({}, {
-      //   success: false,
-      //   // messages
-      //   data: response.data
-      // });
-      // retVal = response;
-      //
-      // retVal = {
-      //   data,
-      //   success: false,
-      //   message: err.message,
-      //   code: err.code
-      // };
-    break;
+      break;
   }
 
   return retVal ? retVal : Promise.reject(err);

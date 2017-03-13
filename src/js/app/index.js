@@ -15,39 +15,15 @@ const { storage, store, api, http, progress, bus } = services;
 /** Стор и роутер */
 sync(store, router);
 
-/** Прогресс для запросов к api */
-// const apiRequestsProgress = new ProgressStack();
-// apiRequestsProgress.setProgress(progress);
-//
-// api.interceptors.request.use(config => {
-//   /**
-//    * если передать { silent: true } в параметрах запроса,
-//    * то прогресс для этого запроса показан не будет
-//    */
-//   !config.silent && apiRequestsProgress.add(config);
-//
-//   // throw new Error('Errrooooorrr!!!');
-//
-//   return config;
-// }, err => {
-//   apiRequestsProgress.done(err.config);
-//
-//   // console.error('err', err);
-//
-//   return Promise.reject(err);
-// });
-// api.interceptors.response.use(res => {
-//   apiRequestsProgress.done(res.config);
-//
-//   return res;
-// }, err => {
-//   apiRequestsProgress.done(err.config);
-//
-//   return Promise.reject(err);
-// });
-
-
 /** Внедряем сервисы */
+// Object.keys(services).forEach(service => {
+//   if (service == 'store') { return; }
+//
+//   Object.defineProperty(Vue.prototype, `$${service}`, {
+//     get () { return services[service]; }
+//   });
+// });
+
 Object.defineProperties(Vue.prototype, {
   $api: {
     get () { return api; }
