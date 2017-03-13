@@ -41,7 +41,7 @@ const actions = {
 
       console.log('res', res);
 
-      commit('login', { username, ...res.body.data }z);
+      commit('login', { username, ...res.body.data });
 
       return res;
 
