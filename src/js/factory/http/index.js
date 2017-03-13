@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import qs from 'qs'
 import axios from 'axios'
-import { durationTime, easeCancelable, normalizeErrors } from './axios-plugins';
+import { durationTime, easeCancelable } from './axios-plugins';
+import normalizeErrors, { getResponseTranscription } from './axios-plugins/normalize-errors';
 import { HttpError, RequestError, ResponseError } from './errors';
 
 const { CancelToken, isCancel } = axios;
@@ -37,7 +38,13 @@ export default function factory (opts = {}) {
 
   durationTime(instance);
   easeCancelable(instance);
+
   normalizeErrors(instance);
+  instance.interceptors.response.use((res) => {
+    Object.assign(res, getResponseTranscription(res));
+
+    return res;
+  });
 
   return instance;
 };

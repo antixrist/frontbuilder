@@ -44,8 +44,7 @@ function requestInterceptorResolve (config) {
 }
 
 function requestInterceptorReject (err) {
-  enhanceRequestError(err);
-  return Promise.reject(err);
+  return Promise.reject(enhanceRequestError(err));
 }
 
 function responseInterceptorResolve (res) {
@@ -57,8 +56,7 @@ function responseInterceptorResolve (res) {
 }
 
 function responseInterceptorReject (err) {
-  enhanceResponseError(err);
-  return Promise.reject(err);
+  return Promise.reject(enhanceResponseError(err));
 }
 
 export function enhanceRequestError (err) {
@@ -89,6 +87,8 @@ export function enhanceRequestError (err) {
     REQUEST_ERROR: d('e', true),
     UNKNOWN_ERROR: d('e', UNKNOWN_ERROR)
   });
+
+  return err;
 }
 
 export function enhanceResponseError (err) {
@@ -126,8 +126,9 @@ export function enhanceResponseError (err) {
       code:       d('e', response.status),
       statusCode: d('e', response.status)
     });
-    console.log('err', err, err.code, err.statusCode);
   }
+
+  return err;
 }
 
 /**

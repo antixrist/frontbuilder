@@ -1500,6 +1500,12 @@ clean-css@3.4.x, clean-css@^3.1.9, clean-css@^3.3.0:
     commander "2.8.x"
     source-map "0.4.x"
 
+clean-css@^4.0.7:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.0.8.tgz#063dfd593404d3a3d1db494d4b6d0f378b0781b6"
+  dependencies:
+    source-map "0.5.x"
+
 cli-boxes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-1.0.0.tgz#4fa917c3e59c94a004cd61f8ee509da651687143"
@@ -2010,7 +2016,7 @@ cssesc@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/cssesc/-/cssesc-0.1.0.tgz#c814903e45623371a0477b40109aaafbeeaddbb4"
 
-"cssnano@>=2.6.1 <4", cssnano@^3.10.0:
+"cssnano@>=2.6.1 <4", cssnano@^3.0.0, cssnano@^3.10.0:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/cssnano/-/cssnano-3.10.0.tgz#4f38f6cea2b9b17fa01490f23f1dc68ea65c1c38"
   dependencies:
@@ -3318,6 +3324,15 @@ gulp-changed@^2.0.0:
     gulp-util "^3.0.0"
     through2 "^2.0.0"
 
+gulp-clean-css@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/gulp-clean-css/-/gulp-clean-css-3.0.3.tgz#dcd6767413d51a9de9e4bc47b8ae7e02b43b1c4a"
+  dependencies:
+    clean-css "^4.0.7"
+    gulp-util "^3.0.8"
+    through2 "^2.0.3"
+    vinyl-sourcemaps-apply "^0.2.1"
+
 gulp-cli@^1.0.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/gulp-cli/-/gulp-cli-1.2.2.tgz#7392def6316c6e7939a4f296f3f540151ae3a275"
@@ -3340,6 +3355,15 @@ gulp-cli@^1.0.0:
     v8flags "^2.0.9"
     wreck "^6.3.0"
     yargs "^3.28.0"
+
+gulp-cssnano@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/gulp-cssnano/-/gulp-cssnano-2.1.2.tgz#e08a09771ec5454a549f1a005bdd256cb8e5e0a3"
+  dependencies:
+    cssnano "^3.0.0"
+    gulp-util "^3.0.6"
+    object-assign "^4.0.1"
+    vinyl-sourcemaps-apply "^0.2.1"
 
 gulp-csso@^2.0.0:
   version "2.0.0"

@@ -44,6 +44,8 @@
     "flexiblegs-scss-plus": "^5.5.3",
     "font-awesome": "^4.7.0",
     "function-done": "^2.1.1",
+    "gulp-clean-css": "^3.0.3",
+    "gulp-cssnano": "^2.1.2",
     "html5-boilerplate": "^0.0.1",
     "include-media": "^1.4.9",
     "ismobilejs": "^0.4.0",

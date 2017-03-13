@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { API_TOKEN_NAME } from '../../../config';
+import { errorToJSON } from '../../../utils';
 import api from '../../api';
 
 const defaults = {
@@ -33,11 +34,8 @@ const actions = {
   // dispatch('account/login')
   async login ({ commit, dispatch }, { username, password }) {
     // todo: обработка ошибок запросов и ответов
-  
-    // console.log('api.post', api.post);
 
     try {
-      // проверить catch с await'ом
       const res = await api.post('/login', { login: username/*, password*/ });
 
       console.log('res', res);
@@ -45,10 +43,10 @@ const actions = {
       // commit('login', { username: login, ...data });
 
     } catch (err) {
-      console.log('catch in action');
+      console.log('catch in action', errorToJSON(err));
       if (err.CLIENT_ERROR && err.code == 422) {
         const { response } = err;
-        console.log(response.message, response.data);
+        console.log(response.message, response.body);
       }
     }
 
