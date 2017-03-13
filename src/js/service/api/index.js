@@ -177,7 +177,9 @@ api.interceptors.response.use(res => res, err => {
 
     /** немножко провалидируем и подчистим данные */
     if (typeof response.body != 'undefined') {
-      const { body: { code, message } } = response;
+      const { body: { code, message } = {} } = response;
+
+      console.log('body', body);
 
       Object.assign(body, {
         success: false,
