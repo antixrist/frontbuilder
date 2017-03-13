@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import statuses from 'statuses';
 import { API_URL } from '../../config';
 import bus from '../bus';
@@ -18,149 +19,172 @@ const api = http({
   },
 });
 
-/** Подставим api_token во все запросы к api */
-api.interceptors.request.use(config => {
-  const token = store.getters['account/token'];
-
-  console.log('interceptors.request token', token);
-
-  if (token) {
-    config.data.api_token = token;
-  }
-
-  return config;
-}, err => Promise.reject(err));
-
-/**
- * Прогресс-бар для запросов к api
- */
 api.interceptors.request.use(
   config => {
-    /**
-     * если передать { silent: true } в параметрах запроса,
-     * то прогресс для этого запроса показан не будет
-     */
-    !config.silent && progress.requestStart();
-
+    console.log('interceptors request', _.cloneDeep(config));
     return config;
   },
   err => {
-    const { isCanceled, config } = err;
-
-    if (!config || !config.silent) {
-      progress.requestDone();
-    }
-
+    console.log('interceptors request err', errorToJSON(err), err);
     return Promise.reject(err);
   }
 );
 
 api.interceptors.response.use(
   res => {
-    const { config } = res;
-    !config.silent && progress.requestDone();
-
+    console.log('interceptors response', _.cloneDeep(res));
     return res;
   },
   err => {
-    const { isCanceled, config } = err;
-
-    if (!config || !config.silent) {
-      progress.requestDone();
-    }
-
+    console.log('interceptors response err', errorToJSON(err), err, err.code);
     return Promise.reject(err);
   }
 );
 
-/**
- * Сервер всегда присылает ответ в виде:
- * `{ success: true, data: {} }`
- * `{ success: false, code: 401, message: '' }`
- *
- * Но есть соглашение - при `success: false` в `code` будет http-код, например 401, 404 и т.п.
- * А сам http-ответ всегда будет с кодом 200.
- */
-api.interceptors.response.use(res => {
-  /**
-   * поэтому здесь любой неудачный ответ завернём в ошибку.
-   * и сделаем это нативной для axios'а функцией `createError`
-   * и нашим улучшателем ошибок ответа сервера
-   */
-  if (res.data) {
-    const { success, code, message, config } = res.data;
-    if (typeof success != 'undefined' && !success) {
-      const err = createError(message || statuses.codes[code] || '', config, code, res);
-      enhanceResponseError(err);
 
-      return Promise.reject(err);
-    }
-  }
-
-  return res;
-}, err => Promise.reject(err));
-
+/** Подставим api_token во все запросы к api */
+// api.interceptors.request.use(config => {
+//   const token = store.getters['account/token'];
+//
+//   console.log('interceptors.request token', token);
+//
+//   if (token) {
+//     config.data.api_token = token;
+//   }
+//
+//   return config;
+// }, err => Promise.reject(err));
 
 /**
- * А здесь поработаем с приходяще-уходящими данными
+ * Прогресс-бар для запросов к api
  */
-api.interceptors.response.use(res => res, err => {
-  let retVal;
-  if (err.code) {
+// api.interceptors.request.use(
+//   config => {
+//     /**
+//      * если передать { silent: true } в параметрах запроса,
+//      * то прогресс для этого запроса показан не будет
+//      */
+//     !config.silent && progress.requestStart();
+//
+//     return config;
+//   },
+//   err => {
+//     const { isCanceled, config } = err;
+//
+//     if (!config || !config.silent) {
+//       progress.requestDone();
+//     }
+//
+//     return Promise.reject(err);
+//   }
+// );
+//
+// api.interceptors.response.use(
+//   res => {
+//     const { config } = res;
+//     !config.silent && progress.requestDone();
+//
+//     return res;
+//   },
+//   err => {
+//     const { isCanceled, config } = err;
+//
+//     if (!config || !config.silent) {
+//       progress.requestDone();
+//     }
+//
+//     return Promise.reject(err);
+//   }
+// );
 
-    /** немножко провалидируем и подчистим данные */
-    const { response = {} } = err;
-    const { data: originalData = {}, headers = {} } = response;
-
-    let data = {
-      success: false,
-      code: originalData.code || err.code,
-      message: originalData.message || err.message,
-    };
-
-    if (typeof originalData.data == 'undefined') {
-      data = Object.assign({}, data, { data: originalData });
-    } else {
-      data = Object.assign({}, originalData, data);
-    }
-
-    err.response.data = data;
-
-    /** а теперь можно обработать ошибки */
-    switch (err.code) {
-      case 401:
-        store.commit('account/logout');
-        break;
-      // case 403:
-      //   break;
-      // case 404:
-      //   break;
-      // case 500:
-      //   break;
-      // case 800: // wtf?
-      //   break;
-
-      // ошибки валидации
-      case 422:
-        // Object.assign({}, {
-        //   success: false,
-        //   // messages
-        //   data: response.data
-        // });
-        // retVal = response;
-        //
-        // retVal = {
-        //   data,
-        //   success: false,
-        //   message: err.message,
-        //   code: err.code
-        // };
-      break;
-    }
-  }
-
-  return retVal ? retVal : Promise.reject(err);
-});
+// /**
+//  * Сервер всегда присылает ответ в виде:
+//  * `{ success: true, data: {} }`
+//  * `{ success: false, code: 401, message: '' }`
+//  *
+//  * Но есть соглашение - при `success: false` в `code` будет http-код, например 401, 404 и т.п.
+//  * А сам http-ответ всегда будет с кодом 200.
+//  */
+// api.interceptors.response.use(res => {
+//   /**
+//    * поэтому здесь любой неудачный ответ завернём в ошибку.
+//    * и сделаем это нативной для axios'а функцией `createError`
+//    * и нашим улучшателем ошибок ответа сервера
+//    */
+//   if (res.data) {
+//     const { success, code, message, config } = res.data;
+//     if (typeof success != 'undefined' && !success) {
+//       const err = createError(message || statuses.codes[code] || '', config, code, res);
+//       enhanceResponseError(err);
+//
+//       return Promise.reject(err);
+//     }
+//   }
+//
+//   return res;
+// }, err => Promise.reject(err));
+//
+//
+// /**
+//  * А здесь поработаем с приходяще-уходящими данными
+//  */
+// api.interceptors.response.use(res => res, err => {
+//   let retVal;
+//   if (err.code) {
+//
+//     /** немножко провалидируем и подчистим данные */
+//     const { response = {} } = err;
+//     const { data: originalData = {}, headers = {} } = response;
+//
+//     let data = {
+//       success: false,
+//       code: originalData.code || err.code,
+//       message: originalData.message || err.message,
+//     };
+//
+//     if (typeof originalData.data == 'undefined') {
+//       data = Object.assign({}, data, { data: originalData });
+//     } else {
+//       data = Object.assign({}, originalData, data);
+//     }
+//
+//     err.response.data = data;
+//
+//     /** а теперь можно обработать ошибки */
+//     switch (err.code) {
+//       case 401:
+//         store.commit('account/logout');
+//         break;
+//       // case 403:
+//       //   break;
+//       // case 404:
+//       //   break;
+//       // case 500:
+//       //   break;
+//       // case 800: // wtf?
+//       //   break;
+//
+//       // ошибки валидации
+//       case 422:
+//         // Object.assign({}, {
+//         //   success: false,
+//         //   // messages
+//         //   data: response.data
+//         // });
+//         // retVal = response;
+//         //
+//         // retVal = {
+//         //   data,
+//         //   success: false,
+//         //   message: err.message,
+//         //   code: err.code
+//         // };
+//       break;
+//     }
+//   }
+//
+//   return retVal ? retVal : Promise.reject(err);
+// });
 
 
 export async function reportError (data, opts = {}) {

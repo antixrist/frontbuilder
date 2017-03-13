@@ -118,15 +118,15 @@ export function enhanceResponseError (err) {
     UNKNOWN_ERROR:  d('e', UNKNOWN_ERROR)
   });
 
-  const { response = null } = err;
+  const { response } = err;
   if (response) {
     const transcriptions = getResponseTranscription(response);
-
     Object.keys(transcriptions).forEach(key => Object.defineProperty(response, key, d('e', transcriptions[key])));
     Object.defineProperties(err, {
       code:       d('e', response.status),
       statusCode: d('e', response.status)
     });
+    console.log('err', err, err.code, err.statusCode);
   }
 }
 

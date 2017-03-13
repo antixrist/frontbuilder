@@ -4,6 +4,8 @@ import path from 'path';
 import once from 'once';
 import gulp from 'gulp';
 import csso from 'gulp-csso';
+import cleanCSS from 'gulp-clean-css';
+import cssnano from 'gulp-cssnano';
 import changed from 'gulp-changed';
 import imagemin from 'gulp-imagemin';
 import webpack from 'webpack';
@@ -146,11 +148,15 @@ gulp.task('minify:styles', done => {
 
   return gulp
     .src(source +'/**/*.css')
+    // https://luisant.ca/remynifier
+    // cssnano -> csso -> cleancss
+    // .pipe(cssnano({})) // cssnano уже используется в сборке webpack'ом
     .pipe(csso({
       debug: false,
       sourceMap: true,
       restructure: true,
     }))
+    .pipe(cleanCSS({ compatibility: 'ie8' }))
     .pipe(gulp.dest(source))
   ;
 });

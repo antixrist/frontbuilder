@@ -62,7 +62,7 @@ module.exports = function (ctx) {
           method: 'copy'
         }),
         /** todo: `oldie` - с этим плагином надо генерировать отдельный файл для старых ишаков */
-        require('cssnano', {
+        require('cssnano')({
           autoprefixer: false
         }),
       ]
