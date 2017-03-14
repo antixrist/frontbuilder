@@ -40,8 +40,7 @@ async function globalErrorsHandler (err) {
   }
 
   // прокидываем ошибку в приложение
-  // app.$bus.emit('uncaughtException', err);
-  console.error(err);
+  app.$bus.emit('uncaughtException', err);
 
   // если у нас продакшн и это не ошибка сети
   if (!isDevelopment && !isConnectionError) {

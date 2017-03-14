@@ -58,7 +58,6 @@
           switch (err.code) {
             case 401:
               // 'Авторизуйтесь'
-//              this.$store.
               this.logout();
               break;
             case 403:
@@ -76,6 +75,8 @@
               break;
           }
         }
+
+        console.error(err);
       });
     },
     async mounted () {
