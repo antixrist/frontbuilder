@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import Vue from 'vue';
 import { API_TOKEN_NAME } from '../../../config';
+import { errorToJSON } from '../../../utils';
 import api from '../../api';
 
 const defaults = {
@@ -21,30 +22,29 @@ const state = _.assign({}, defaults);
 const mutations = {
   // commit('account/loginInProgress')
   loginInProgress (state, data) {
-    state.meta.status = 'progress';
-    state.meta.message = '';
-    state.meta.errors = null;
-    // _.assign(state.meta, { status: 'progress', message: '', errors: null });
+    // state.meta.status = 'progress';
+    // state.meta.message = '';
+    // state.meta.errors = null;
+    _.assign(state.meta, { status: 'progress', message: '', errors: null });
   },
 
   // commit('account/loginSuccess')
   loginSuccess (state, data) {
-    state.meta.status = 'success';
-    state.meta.message = '';
-    state.meta.errors = null;
+    // state.meta.status = 'success';
+    // state.meta.message = '';
+    // state.meta.errors = null;
+    _.assign(state.meta, { status: 'success', message: '', errors: null });
 
-    // _.assign(state.meta, { status: 'success', message: '', errors: null });
-    // state.username = data.username;
-    // state[API_TOKEN_NAME] = data[API_TOKEN_NAME];
-    Object.keys(data).forEach(key => state[key] = data[key]);
+    // Object.keys(data).forEach(key => state[key] = data[key]);
+    _.merge(state, data);
   },
 
   // commit('account/loginFailure')
   loginFailure (state, { message, errors }) {
-    state.meta.status = 'error';
-    state.meta.message = message;
-    state.meta.errors = errors;
-    // _.assign(state.meta, { status: 'error', message, errors });
+    // state.meta.status = 'error';
+    // state.meta.message = message;
+    // state.meta.errors = errors;
+    _.assign(state.meta, { status: 'error', message, errors });
   },
 
   // commit('account/logout')
@@ -60,13 +60,17 @@ const actions = {
   // dispatch('account/login')
   async login ({ commit, dispatch }, { username, password }) {
     commit('loginInProgress');
+    // todo: token
 
     try {
-      const res = await api.post('/login', { login: username/*, password*/ });
+      const res = await api.post('/login', { login: username, password });
 
       commit('loginSuccess', { username, ...res.body.data });
     } catch (err) {
-      if (err.code == 422) {
+      console.log('catch in action', err, errorToJSON(err));
+      console.log('err.code', err.code, err.code == 401);
+
+      if (err.code == 422 || err.code == 401) {
         const { response } = err;
         const { message, data: errors = {} } = response.body;
 
@@ -77,7 +81,7 @@ const actions = {
 
         commit('loginFailure', { message, errors });
       } else {
-        // throw err;
+        throw err;
       }
     }
   },

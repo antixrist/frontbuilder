@@ -30,6 +30,7 @@
     },
     created () {
       this.$bus.on('uncaughtException', err => {
+        console.log('err in app uncaughtException handler', err.code);
         if (err instanceof HttpError) {
           switch (err.code) {
             case 401:

@@ -123,8 +123,8 @@ export function enhanceResponseError (err) {
     const transcriptions = getResponseTranscription(response);
     Object.keys(transcriptions).forEach(key => Object.defineProperty(response, key, d('e', transcriptions[key])));
     Object.defineProperties(err, {
-      code:       d('e', response.status),
-      statusCode: d('e', response.status)
+      code:       d('we', response.status),
+      statusCode: d('we', response.status)
     });
   }
 

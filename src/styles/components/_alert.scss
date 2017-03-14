@@ -1,0 +1,21 @@
+$alert-box: .5em 1em !default;
+
+@include c(alert) {
+  @include box($alert-box);
+
+  &.-danger {
+    color: #fff;
+    background: $color-danger;
+  }
+
+  &.-success {
+    color: #fff;
+    background: $color-success;
+  }
+
+  &.-primary {
+    color: #fff;
+    background: $color-primary;
+  }
+
+}

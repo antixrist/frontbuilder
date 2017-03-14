@@ -46,6 +46,7 @@ const api = http({
 api.interceptors.request.use(config => {
   const token = store.getters['account/token'];
 
+  // todo: token
   console.log('interceptors.request token', token);
 
   if (token) {
@@ -109,7 +110,7 @@ function formatInvalidResponseBody (res) {
   const data = _.omit(body, ['success', 'code', 'message']);
 
   res.body = { success, code, message, data };
-  // подчистим `undefined` пропертя
+  // подчистим только что установленные, но `undefined` пропертя
   Object.keys(res.body).forEach(prop => {
     if (typeof res.body[prop] == 'undefined') {
       delete res.body[prop];
@@ -117,6 +118,28 @@ function formatInvalidResponseBody (res) {
   });
 
   return res;
+}
+
+function isApiError (res) {
+  return typeof res.body != 'undefined' && typeof res.body.success != 'undefined' && !res.body.success;
+}
+
+function formatApiErrorResponseBody (res) {
+  Object.assign(res.body, res.body.error || {});
+  delete res.body.error;
+
+  if (res.body.code) {
+    res.body.code = parseInt(res.body.code, 10);
+  }
+}
+
+function formatApiResponse (res) {
+  if (isApiError(res)) {
+    formatApiErrorResponseBody(res);
+  } else
+  if (isInvalidResponseBody(res)) {
+    formatInvalidResponseBody(res);
+  }
 }
 
 /**
@@ -135,9 +158,7 @@ api.interceptors.response.use(res => {
    * обработаем этот момент.
    */
 
-  if (isInvalidResponseBody(res)) {
-    formatInvalidResponseBody(res);
-  }
+  formatApiResponse(res);
 
   if (!res.body.success) {
     /**
@@ -145,17 +166,16 @@ api.interceptors.response.use(res => {
      * сделаем это родной для axios'а функцией `createError`
      * и нашим улучшателем ошибок ответа сервера
      */
-    const err = createError(res.body.message || '', res.config, res.status, res);
-
+    const err = createError(res.body.message || '', res.config, res.body.code || res.status, res);
     return Promise.reject(enhanceResponseError(err));
   }
 
   return res;
 }, err => {
-  const { response } = err;
+  const { response: res } = err;
 
-  if (response && isInvalidResponseBody(response)) {
-    formatInvalidResponseBody(response);
+  if (res) {
+    formatApiResponse(res);
   }
 
   return Promise.reject(err);
@@ -176,10 +196,13 @@ api.interceptors.response.use(res => res, err => {
     /** немножко провалидируем и подчистим данные */
     if (typeof response.body != 'undefined') {
       const { code, message } = response.body;
+      const codeFinal = code || err.code;
+
+      err.code = err.statusCode = codeFinal;
 
       Object.assign(response.body, {
         success: false,
-        code: code || err.code,
+        code: codeFinal,
         message: message || err.message
       });
     }
@@ -191,7 +214,7 @@ api.interceptors.response.use(res => res, err => {
    */
   switch (err.code) {
     case 401:
-      store.dispatch('account/logout');
+      // store.dispatch('account/logout');
       break;
     case 403:
       break;

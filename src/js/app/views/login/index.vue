@@ -8,26 +8,26 @@
     data () {
       return {
         username: 'test',
-        password: 'B4mGld'
+        password: 'B4mGlds'
       };
     },
     computed: {
       ...mapState('account', {
-        loading: state => { console.log('state.meta.status', state.meta.status); return state.meta.status == 'progress' },
-        hasErrors: state => state.meta.status == 'error',
+        loading: state => state.meta.status == 'progress',
+        failed: state => state.meta.status == 'error',
+        hasErrors: state => !!state.meta.errors,
         message: state => state.meta.message,
         errors: state => state.meta.errors
       }),
-//      showFieldsError () {
-//        return !this.loading && this.hasErrors;
-//      }
+      showFieldsError () {
+        return this.failed && this.hasErrors;
+      }
     },
     methods: {
       ...mapActions({
         loginAction: 'account/login'
       }),
       allowShowErrorFor (field) {
-        return true;
         return this.showFieldsError && !!this.errors[field];
       },
       async login () {
@@ -36,7 +36,8 @@
           await this.loginAction({ username, password });
           this.$router.replace({ name: 'home' });
         } catch (err) {
-//          throw err;
+          console.log('catch in method');
+          throw err;
         }
       }
     }
