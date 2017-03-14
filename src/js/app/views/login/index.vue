@@ -1,34 +1,43 @@
 <template src="./tpl.pug" lang="pug"></template>
 
 <script type="text/ecmascript-6">
-  import { mapActions } from 'vuex';
+  import { mapActions, mapState } from 'vuex';
   
   export default {
     name: 'login',
     data () {
       return {
-        loading: false,
         username: 'test',
         password: 'B4mGld'
       };
     },
+    computed: {
+      ...mapState('account', {
+        loading: state => { console.log('state.meta.status', state.meta.status); return state.meta.status == 'progress' },
+        hasErrors: state => state.meta.status == 'error',
+        message: state => state.meta.message,
+        errors: state => state.meta.errors
+      }),
+//      showFieldsError () {
+//        return !this.loading && this.hasErrors;
+//      }
+    },
     methods: {
       ...mapActions({
-        login: 'account/login'
+        loginAction: 'account/login'
       }),
-      async loginTry () {
-        this.loading = true;
-
+      allowShowErrorFor (field) {
+        return true;
+        return this.showFieldsError && !!this.errors[field];
+      },
+      async login () {
         try {
           const { username, password } = this;
-          await this.login({ username, password });
+          await this.loginAction({ username, password });
           this.$router.replace({ name: 'home' });
         } catch (err) {
-          console.log('catch in methods', err);
-          throw err;
+//          throw err;
         }
-
-        this.loading = false;
       }
     }
   };

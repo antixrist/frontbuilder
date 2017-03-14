@@ -12,6 +12,19 @@
   white-space: nowrap !important;
 }
 
+@include u(text-xs) {
+  font-size: 80% !important;
+}
+@include u(text-sm) {
+  font-size: 90% !important;
+}
+@include u(text-lg) {
+  font-size: 110% !important;
+}
+@include u(text-xl) {
+  font-size: 120% !important;
+}
+
 @include u(text-left) {
   text-align: left !important;
 }

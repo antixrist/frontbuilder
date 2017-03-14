@@ -22,7 +22,7 @@ const store = new Vuex.Store({
   strict: isDevelopment,
   plugins: [
     ...(isDevelopment ? [createLogger()] : []),
-    createPersistedState()
+    // createPersistedState()
   ]
 });
 

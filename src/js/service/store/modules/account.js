@@ -1,6 +1,6 @@
 import _ from 'lodash';
+import Vue from 'vue';
 import { API_TOKEN_NAME } from '../../../config';
-import { errorToJSON } from '../../../utils';
 import api from '../../api';
 
 const defaults = {
@@ -8,10 +8,91 @@ const defaults = {
   username: null,
   roles: [],
   settings: {},
-  acl: {}
+  acl: {},
+  meta: {
+    status: 'init', // error || success || progress
+    message: '',
+    errors: {}
+  },
 };
 
-const state = Object.assign({}, defaults);
+const state = _.assign({}, defaults);
+
+const mutations = {
+  // commit('account/loginInProgress')
+  loginInProgress (state, data) {
+    state.meta.status = 'progress';
+    state.meta.message = '';
+    state.meta.errors = null;
+    // _.assign(state.meta, { status: 'progress', message: '', errors: null });
+  },
+
+  // commit('account/loginSuccess')
+  loginSuccess (state, data) {
+    state.meta.status = 'success';
+    state.meta.message = '';
+    state.meta.errors = null;
+
+    // _.assign(state.meta, { status: 'success', message: '', errors: null });
+    // state.username = data.username;
+    // state[API_TOKEN_NAME] = data[API_TOKEN_NAME];
+    Object.keys(data).forEach(key => state[key] = data[key]);
+  },
+
+  // commit('account/loginFailure')
+  loginFailure (state, { message, errors }) {
+    state.meta.status = 'error';
+    state.meta.message = message;
+    state.meta.errors = errors;
+    // _.assign(state.meta, { status: 'error', message, errors });
+  },
+
+  // commit('account/logout')
+  logout (state) {
+    // очистим локальный state
+    Object.keys(state).forEach(key => delete state[key]);
+    // забъём его данными по умолчанию
+    Object.keys(defaults).forEach(key => state[key] = defaults[key]);
+  }
+};
+
+const actions = {
+  // dispatch('account/login')
+  async login ({ commit, dispatch }, { username, password }) {
+    commit('loginInProgress');
+
+    try {
+      const res = await api.post('/login', { login: username/*, password*/ });
+
+      commit('loginSuccess', { username, ...res.body.data });
+    } catch (err) {
+      if (err.code == 422) {
+        const { response } = err;
+        const { message, data: errors = {} } = response.body;
+
+        if (errors.login) {
+          errors.username = errors.login;
+          delete errors.login;
+        }
+
+        commit('loginFailure', { message, errors });
+      } else {
+        // throw err;
+      }
+    }
+  },
+
+  // dispatch('account/logout')
+  async logout ({ commit, state }) {
+    commit('logout');
+
+    try {
+      return await api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] });
+    } catch (err) {
+      throw err;
+    }
+  }
+};
 
 const getters = {
   // getters['account/token']
@@ -30,86 +111,6 @@ const getters = {
   }
 };
 
-const actions = {
-  // dispatch('account/login')
-  async login ({ commit, dispatch }, { username, password }) {
-    // todo: обработка ошибок запросов и ответов
-
-    try {
-      // commit('login', true);
-      const res = await api.post('/login', { login: username, password });
-
-      console.log('res', res);
-
-      commit('login', { username, ...res.body.data });
-
-      return res;
-
-    } catch (err) {
-      console.log('catch in action', errorToJSON(err));
-      if (err.CLIENT_ERROR && err.code == 422) {
-        const { response } = err;
-        console.log(response.message, response.body);
-      } else {
-        throw err;
-      }
-    }
-
-
-    // console.log('api.post xhr', xhr, Object.keys(xhr));
-    
-    // setTimeout(() => xhr.cancel('Cancel message'), 50);
-
-    // const { status, data: res } = await xhr;
-    //
-    // if (status == 200) {
-    //   const { success, data } = res;
-    //   if (success) {
-    //     commit('login', { username: login, ...data });
-    //   }
-    // }
-  },
-
-  // dispatch('account/logout')
-  async logout ({ commit, state }) {
-    commit('logout');
-    
-    // console.log('api.post', api.post);
-    
-    const xhr = api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] })
-      // .then(res => {
-      //   console.log('logout res', res);
-      //   return res;
-      // })
-    ;
-  
-    // console.log('api.post xhr', xhr, Object.keys(xhr));
-    
-    // setTimeout(() => xhr.cancel(), 50);
-
-    return await xhr;
-  }
-};
-
-const mutations = {
-  // commit('account/login')
-  login (state, data) {
-    // token.save(data[API_TOKEN_NAME]);
-
-    _.forEach(defaults, (val, key) => {
-      if (_.isUndefined(data[key])) { return; }
-
-      state[key] = data[key];
-    });
-  },
-
-  // commit('account/logout')
-  logout (state) {
-    // token.remove();
-
-    _.forEach(defaults, (val, key) => state[key] = defaults[key]);
-  }
-};
 
 export default {
   namespaced: true,

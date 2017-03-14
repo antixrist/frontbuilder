@@ -1,17 +1,28 @@
-modal: form.panel.login.is-loading-block(:class="{ '-loading': loading }", @submit.prevent="loginTry")
+modal: form.panel.login.is-loading-block(:class="{ '-loading': loading }", @submit.prevent="login")
   .panel-header.login-header(layout="row center-justify")
     div(self="size-x1")
       i.panel-icon.icon-tasks
-      | &nbsp; Авторизация
-    //div
-    //  a.closer(href="#"): i.i.-times
+      | &nbsp; Авторизация {{ $store.state.account.meta.status }} {{ hasErrors }} {{ message }}
   .panel-box
     .panel-y-sections
       .form-group
         label Логин:
-        input.input.-size-sm.-wide(placeholder="Введите ваш логин", v-model="username")
+        input.input.-size-sm.-wide(
+          placeholder="Введите ваш логин",
+          v-model="username",
+          :class="{ '-danger': allowShowErrorFor('username') }"
+        )
+        div.errors(v-show="allowShowErrorFor('username')", :class="{ 'u-text-danger': allowShowErrorFor('username') }")
+          div.error.u-text-sm(v-for="error in errors['username']") {{ error }}
       .form-group
         label Пароль:
-        input.input.-size-sm.-wide(placeholder="Введите ваш пароль", v-model="password", type="password")
+        input.input.-size-sm.-wide(
+          placeholder="Введите ваш пароль",
+          v-model="password",
+          type="password",
+          :class="{ '-danger': allowShowErrorFor('password') }"
+        )
+        div.errors(v-show="allowShowErrorFor('password')", :class="{ 'u-text-danger': allowShowErrorFor('password') }")
+          div.error.u-text-sm(v-for="error in errors['password']") {{ error }}
   .actions: .u-text-center
     button.btn.-size-sm.-primary(type="submit") Войти

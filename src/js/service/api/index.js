@@ -100,11 +100,11 @@ function isInvalidResponseBody (res) {
 }
 
 function formatInvalidResponseBody (res) {
-  const { body, config } = res;
+  const { body, config, status } = res;
 
   const code = typeof body.code != 'undefined' ? body.code : status;
   // проверка на success - прямиком из `axios/lib/core/settle`
-  const success = (!code || !config.validateStatus || config.validateStatus(code));
+  const success = !code || !config.validateStatus || config.validateStatus(code);
   const message = typeof body.message != 'undefined' ? body.message : '';
   const data = _.omit(body, ['success', 'code', 'message']);
 
@@ -136,7 +136,7 @@ api.interceptors.response.use(res => {
    */
 
   if (isInvalidResponseBody(res)) {
-    res = formatInvalidResponseBody(res);
+    formatInvalidResponseBody(res);
   }
 
   if (!res.body.success) {
@@ -152,12 +152,10 @@ api.interceptors.response.use(res => {
 
   return res;
 }, err => {
-  const { res } = err;
+  const { response } = err;
 
-  if (res) {
-    if (isInvalidResponseBody(res)) {
-      err.response = formatInvalidResponseBody(res);
-    }
+  if (response && isInvalidResponseBody(response)) {
+    formatInvalidResponseBody(response);
   }
 
   return Promise.reject(err);
@@ -177,17 +175,13 @@ api.interceptors.response.use(res => res, err => {
 
     /** немножко провалидируем и подчистим данные */
     if (typeof response.body != 'undefined') {
-      const { body: { code, message } = {} } = response;
+      const { code, message } = response.body;
 
-      console.log('body', body);
-
-      Object.assign(body, {
+      Object.assign(response.body, {
         success: false,
         code: code || err.code,
         message: message || err.message
       });
-    } else {
-
     }
   }
 
@@ -197,7 +191,7 @@ api.interceptors.response.use(res => res, err => {
    */
   switch (err.code) {
     case 401:
-      // store.dispatch('account/logout');
+      store.dispatch('account/logout');
       break;
     case 403:
       break;
