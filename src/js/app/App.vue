@@ -23,11 +23,7 @@
   Vue.component('check-box',    require('./ui/check-box/index.vue'));
   Vue.component('notification', require('./ui/notifications/notification.vue'));
   Vue.directive('focus', {
-    // Когда привязанный элемент вставлен в DOM...
-    inserted (el) {
-      // Переключаем фокус на элемент
-      el.focus();
-    }
+    inserted (el) { el.focus(); }
   });
   
   export default {
