@@ -1,11 +1,17 @@
+import { api, storage } from '../';
+
 const actions = {
-  INCREMENT ({ commit }) {
-    commit('INCREMENT')
-  },
-  INCREMENT_ASYNC ({ commit }) {
-    setTimeout(() => {
-      commit('INCREMENT')
-    }, 1000)
+  async initApp ({ state, commit, dispatch }) {
+    let retVal;
+    const token = storage.get('token');
+
+    if (!token) {
+      retVal = await dispatch('account/logout');
+    } else {
+      retVal = await dispatch('account/get');
+    }
+
+    return retVal;
   }
 };
 

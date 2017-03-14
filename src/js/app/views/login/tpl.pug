@@ -1,17 +1,18 @@
-modal: form.panel.login.is-loading-block(:class="{ '-loading': loading }", @submit.prevent="login")
+form.panel.login.is-loading-block(:class="{ '-loading': loading }", @submit.prevent="login")
   .panel-header.login-header(layout="row center-justify")
     div(self="size-x1")
       i.panel-icon.icon-tasks
       | &nbsp; Авторизация
   .panel-box
     .panel-y-sections
-      div(v-if="failed && message")
+      div(v-if="showMessage")
         p.c-alert.-danger {{ message }}
       .form-group
         label Логин:
         input.input.-size-sm.-wide(
           placeholder="Введите ваш логин",
           v-model="username",
+          v-focus="",
           :class="{ '-danger': allowShowErrorFor('username') }"
         )
         div.errors(v-if="allowShowErrorFor('username')", :class="{ 'u-text-danger': allowShowErrorFor('username') }")

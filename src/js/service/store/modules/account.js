@@ -1,85 +1,91 @@
 import _ from 'lodash';
 import Vue from 'vue';
 import { API_TOKEN_NAME } from '../../../config';
-import { errorToJSON } from '../../../utils';
+import { storage } from '../../';
 import api from '../../api';
+import { resetState } from '../utils';
 
 const defaults = {
-  [API_TOKEN_NAME]: null,
   username: null,
-  roles: [],
-  settings: {},
-  acl: {},
   meta: {
-    status: 'init', // error || success || progress
-    message: '',
-    errors: {}
+    login: {
+      code: 0,
+      loading: false,
+      success: false,
+      message: '',
+      errors: {}
+    },
+    fetch: {
+      code: 0,
+      loading: false,
+      success: false,
+      message: '',
+      errors: {}
+    },
   },
 };
 
-const state = _.assign({}, defaults);
+const state = _.cloneDeep(defaults);
 
 const mutations = {
   // commit('account/loginInProgress')
-  loginInProgress (state, data) {
-    // state.meta.status = 'progress';
-    // state.meta.message = '';
-    // state.meta.errors = null;
-    _.assign(state.meta, { status: 'progress', message: '', errors: null });
+  resetLoginStatus (state) {
+    state.meta.login = _.merge({}, defaults.meta.login);
   },
 
-  // commit('account/loginSuccess')
-  loginSuccess (state, data) {
-    // state.meta.status = 'success';
-    // state.meta.message = '';
-    // state.meta.errors = null;
-    _.assign(state.meta, { status: 'success', message: '', errors: null });
-
-    // Object.keys(data).forEach(key => state[key] = data[key]);
-    _.merge(state, data);
+  setLoginStatus (state, data = {}) {
+    state.meta.login = _.merge({}, defaults.meta.login, data);
   },
 
-  // commit('account/loginFailure')
-  loginFailure (state, { message, errors }) {
-    // state.meta.status = 'error';
-    // state.meta.message = message;
-    // state.meta.errors = errors;
-    _.assign(state.meta, { status: 'error', message, errors });
+  resetFetchStatus (state) {
+    state.meta.fetch = _.merge({}, defaults.meta.fetch);
+  },
+
+  setFetchStatus (state, data) {
+    state.meta.fetch = _.merge({}, defaults.meta.fetch, data);
+  },
+
+  updateInfo (state, data) {
+    Object.keys(data).forEach(key => Vue.set(state, key, data[key]));
   },
 
   // commit('account/logout')
   logout (state) {
-    // очистим локальный state
-    Object.keys(state).forEach(key => delete state[key]);
-    // забъём его данными по умолчанию
-    Object.keys(defaults).forEach(key => state[key] = defaults[key]);
+    resetState(state, defaults);
   }
 };
 
 const actions = {
   // dispatch('account/login')
-  async login ({ commit, dispatch }, { username, password }) {
-    commit('loginInProgress');
-    // todo: token
+  async login ({ commit }, { username, password }) {
+    commit('setLoginStatus', { loading: true });
 
     try {
       const res = await api.post('/login', { login: username, password });
+      const { body } = res;
+      const { data } = res.body;
+      const token = data[API_TOKEN_NAME];
 
-      commit('loginSuccess', { username, ...res.body.data });
+      delete body.data;
+      delete data[API_TOKEN_NAME];
+
+      commit('setLoginStatus', { ...body, loading: false });
+      commit('updateInfo', { username, ...data });
+      storage.set('token', token);
+
     } catch (err) {
-      console.log('catch in action', err, errorToJSON(err));
-      console.log('err.code', err.code, err.code == 401);
-
       if (err.code == 422 || err.code == 401) {
         const { response } = err;
-        const { message, data: errors = {} } = response.body;
 
-        if (errors.login) {
-          errors.username = errors.login;
-          delete errors.login;
+        if (response.body && response.body.errors) {
+          const { errors } = response.body;
+          if (errors.login) {
+            errors.username = errors.login;
+            delete errors.login;
+          }
         }
 
-        commit('loginFailure', { message, errors });
+        commit('setLoginStatus', { ...response.body, loading: false });
       } else {
         throw err;
       }
@@ -88,31 +94,45 @@ const actions = {
 
   // dispatch('account/logout')
   async logout ({ commit, state }) {
+    commit('resetLoginStatus');
     commit('logout');
 
     try {
-      return await api.post('/logout', { [API_TOKEN_NAME]: state[API_TOKEN_NAME] });
+      await api.post('/logout');
+    } catch (err) { throw err; }
+
+    storage.remove('token', state[API_TOKEN_NAME]);
+  },
+
+  async fetch ({ commit, dispatch }) {
+    commit('setFetchStatus', { loading: true });
+
+    try {
+      const res = await api.post('/user/get');
+      const { body } = res;
+      const { data } = body;
+      delete body.data;
+
+      data.username = data.name;
+      delete data.name;
+
+      commit('setFetchStatus', { ...body, loading: false });
+      commit('updateInfo', data);
+
     } catch (err) {
+      const { body = { success: false } } = err.response;
+      commit('setFetchStatus', { ...body, loading: false });
+
       throw err;
     }
   }
 };
 
 const getters = {
-  // getters['account/token']
-  token (state) {
-    return state[API_TOKEN_NAME];
-  },
-
   // getters['account/isLogged']
   isLogged (state) {
-    return !!(state.username && state[API_TOKEN_NAME]);
+    return !!(state.username);
   },
-
-  // getters['account/isAdmin']
-  isAdmin (state) {
-    return state.roles.includes('admin');
-  }
 };
 
 

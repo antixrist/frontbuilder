@@ -8,37 +8,40 @@
     data () {
       return {
         username: 'test',
-        password: 'B4mGlds'
+        password: 'B4mGld'
       };
     },
     computed: {
       ...mapState('account', {
-        loading: state => state.meta.status == 'progress',
-        failed: state => state.meta.status == 'error',
-        hasErrors: state => !!state.meta.errors,
-        message: state => state.meta.message,
-        errors: state => state.meta.errors
+        code: state => state.meta.login.code,
+        loading: state => state.meta.login.loading,
+        failed: state => !state.meta.login.success,
+        errors: state => state.meta.login.errors,
+        message: state => state.meta.login.message,
       }),
-      showFieldsError () {
-        return this.failed && this.hasErrors;
-      }
+      hasErrors () {
+        return Object.keys(this.errors).length;
+      },
+      showErrors () {
+        return this.failed && this.code && !this.loading;
+      },
+      showMessage () {
+        return this.failed && this.message && !this.hasErrors;
+      },
     },
     methods: {
       ...mapActions({
         loginAction: 'account/login'
       }),
       allowShowErrorFor (field) {
-        return this.showFieldsError && !!this.errors[field];
+        return !!this.errors[field];
       },
       async login () {
         try {
           const { username, password } = this;
           await this.loginAction({ username, password });
           this.$router.replace({ name: 'home' });
-        } catch (err) {
-          console.log('catch in method');
-          throw err;
-        }
+        } catch (err) { throw err; }
       }
     }
   };
