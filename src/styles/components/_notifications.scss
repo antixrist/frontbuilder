@@ -1,0 +1,42 @@
+$panel-box: .5rem 1rem !default;
+$panel-box-bounds: get-bounds-map($panel-box); // without !default
+
+.notifications {
+  @include box($panel-box);
+
+  pointer-events: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  right: 0;
+  max-width: 100%;
+
+  .notification {
+    @include box($panel-box);
+    @include md-shadow(10);
+
+    position: relative;
+    width: 250px;
+    max-width: 100%;
+    background: #393d46;
+    color: #f2ebc7;
+
+    pointer-events: all;
+
+    margin-top: map-get($panel-box-bounds, y);
+    &:first-child { margin-top: 0; }
+
+    .closer {
+      @include box(10px);
+      @include opacity-states();
+      @include offset(0 0 auto auto, $type: absolute);
+
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .content {
+      padding-right: 15px;
+    }
+  }
+}

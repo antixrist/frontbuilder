@@ -56,11 +56,13 @@
          * а теперь можно систематизировать и захардкодить ошибки,
          * которые можно будет обрабатывать внутри приложения
          */
-        if (err instanceof HttpError) {
+        
+        if (!!err.HTTP_ERROR) {
           switch (err.code) {
             case 401:
-              // 'Авторизуйтесь'
-              this.logout();
+              this.showError({
+                title: err.message || 'Авторизуйтесь'
+              });
               break;
             case 403:
               this.showError({
@@ -80,6 +82,9 @@
             case 800: // объект уже существует
               break;
             case 422: // ошибка валидации
+              this.showError({
+                title: err.message || 'Ошибка валидации'
+              });
               break;
           }
         } else {

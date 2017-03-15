@@ -6,6 +6,7 @@ import { errorToJSON, getStackFrames } from '../../utils';
 import { http } from '../../factory';
 import createError from 'axios/lib/core/createError';
 import { enhanceResponseError } from '../../factory/http/axios-plugins/normalize-errors';
+import statuses from 'statuses';
 
 const api = http({
   method: 'post',
@@ -165,6 +166,7 @@ api.interceptors.response.use(res => {
      * сделаем это родной для axios'а функцией `createError`
      * и нашим улучшателем ошибок ответа сервера
      */
+
     const err = createError(res.body.message || '', res.config, res.body.code || res.status, res);
     return Promise.reject(enhanceResponseError(err));
   }

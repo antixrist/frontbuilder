@@ -100,7 +100,9 @@ export function getErrorFromUncaughtException (cb = _.noop) {
   return function (event) {
     const { message = '' } = event;
 
-    return (event.error instanceof Error) ? event.error : new Error(message);
+    const err = (event.error instanceof Error) ? event.error : new Error(message);
+
+    return _.isFunction(cb) ? cb(err) : err;
   };
 }
 
@@ -116,6 +118,8 @@ export function getErrorFromUnhandledRejection (cb = _.noop) {
   return function (event) {
     const { reason: message } = event;
 
-    return (event.error instanceof Error) ? event.error : new Error(message);
+    const err = (event.reason instanceof Error) ? event.reason : new Error(message);
+
+    return _.isFunction(cb) ? cb(err) : err;
   };
 }

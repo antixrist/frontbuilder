@@ -23,13 +23,13 @@ import app from './app';
  * Ловим все возможные необработанные ошибки
  * и отправляем каждую в свой обработчик
  */
-window.addEventListener('error', getErrorFromUncaughtException(({ error }) => globalErrorsHandler(error)));
-window.addEventListener('unhandledrejection', getErrorFromUnhandledRejection(({ error }) => globalErrorsHandler(error)));
+window.addEventListener('error', getErrorFromUncaughtException(err => globalErrorsHandler(err)));
+window.addEventListener('unhandledrejection', getErrorFromUnhandledRejection(err => globalErrorsHandler(err)));
 Vue.config.errorHandler = globalErrorsHandler;
 
 /** тот самый обработчик необработанных ошибок */
 async function globalErrorsHandler (err) {
-  const isHttpError       = (err instanceof HttpError);
+  const isHttpError       = !!err.HTTP_ERROR;
   const isConnectionError = isHttpError && err.CONNECTION_ERROR;
 
   if (isHttpError) {

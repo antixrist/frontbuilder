@@ -84,6 +84,7 @@ export function enhanceRequestError (err) {
   // назначим ошибке необходимые свойства
   Object.keys(transcriptions).forEach(key => Object.defineProperty(err, key, d('e', transcriptions[key])));
   Object.defineProperties(err, {
+    HTTP_ERROR:    d('e', true),
     REQUEST_ERROR: d('e', true),
     UNKNOWN_ERROR: d('e', UNKNOWN_ERROR)
   });
@@ -93,6 +94,7 @@ export function enhanceRequestError (err) {
 
 export function enhanceResponseError (err) {
   const transcriptions = getResponseErrorTranscription(err);
+  // console.log('transcriptions', transcriptions);
   // если в `transcriptions` ни один из флагов не является `true`,
   // то это какая-то неведомая бубуйня.
   const UNKNOWN_ERROR = !Object.keys(transcriptions).some(key => transcriptions[key]);
@@ -114,6 +116,7 @@ export function enhanceResponseError (err) {
   // назначим ошибке необходимые свойства
   Object.keys(transcriptions).forEach(key => Object.defineProperty(err, key, d('e', transcriptions[key])));
   Object.defineProperties(err, {
+    HTTP_ERROR:     d('e', true),
     RESPONSE_ERROR: d('e', true),
     UNKNOWN_ERROR:  d('e', UNKNOWN_ERROR)
   });
@@ -122,10 +125,10 @@ export function enhanceResponseError (err) {
   if (response) {
     const transcriptions = getResponseTranscription(response);
     Object.keys(transcriptions).forEach(key => Object.defineProperty(response, key, d('e', transcriptions[key])));
-    Object.defineProperties(err, {
-      code:       d('we', response.status),
-      statusCode: d('we', response.status)
-    });
+    // Object.defineProperties(err, {
+    //   code:       d('we', response.status),
+    //   statusCode: d('we', response.status)
+    // });
   }
 
   return err;

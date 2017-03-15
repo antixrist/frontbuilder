@@ -3,6 +3,7 @@ import Vue from 'vue';
 import { API_TOKEN_NAME } from '../../../config';
 import { storage } from '../../';
 import api from '../../api';
+import { HttpError } from '../../../factory/http';
 import { resetState } from '../utils';
 
 const defaults = {
@@ -120,6 +121,7 @@ const actions = {
       commit('updateInfo', data);
 
     } catch (err) {
+      console.log('err', err);
       const { body = { success: false } } = err.response;
       commit('setFetchStatus', { ...body, loading: false });
 

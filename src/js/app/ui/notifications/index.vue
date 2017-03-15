@@ -1,33 +1,37 @@
-<style lang="sass" rel="stylesheet/scss">
-  .notifications {
-    pointer-events: none;
-  
-    .notification {
-      pointer-events: all;
-      
-      outline: 1px solid red;
-      padding: .5em 1em;
-      margin-top: 1em;
-      
-      &:first-child {
-        margin-top: 0;
-      }
+<style lang="scss" rel="stylesheet/scss">
+  .notification {
+    $tr: .2s ease-out;
+    
+    &-enter-active,
+    &-leave-active {
+      transition: opacity $tr, transform $tr;
+    }
+    &-enter,
+    &-leave-to {
+      opacity: 0;
+      transform: translateX(100%);
     }
   }
 </style>
 
 <template>
-  <div class="notifications">
+  <transition-group name="notification" tag="div" class="notifications">
     <div v-for="item in queue"
          :key="item"
          :class="[`-${item.type}`]"
          class="notification"
     >
-      <button v-if="item.closer" @click="close(item)">&times;</button>
-      <h3 v-if="item.title" v-html="item.title"></h3>
-      <div v-if="item.content" v-html="item.content"></div>
+      <div class="closer"
+           v-if="item.closer"
+           @click="close(item)"
+      ><i class="i -notification-times"></i></div>
+      
+      <div class="content">
+        <h3 v-if="item.title" v-html="item.title"></h3>
+        <div v-if="item.content" v-html="item.content"></div>
+      </div>
     </div>
-  </div>
+  </transition-group>
 </template>
 
 <script>
@@ -54,10 +58,6 @@
     
     methods: {
       ...mapActions('messages', ['close']),
-    },
-    
-    mounted () {
-
     }
   };
 </script>
