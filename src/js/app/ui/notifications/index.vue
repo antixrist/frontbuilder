@@ -1,72 +1,59 @@
 <style lang="sass" rel="stylesheet/scss">
   .notifications {
     pointer-events: none;
+  
+    .notification {
+      pointer-events: all;
+      
+      outline: 1px solid red;
+      padding: .5em 1em;
+      margin-top: 1em;
+      
+      &:first-child {
+        margin-top: 0;
+      }
+    }
   }
 </style>
 
 <template>
   <div class="notifications">
-    <slot name="queue" scope="">
-      <span>сообщение от родителя</span>
-      <span>{{ props.text }}</span>
-    </slot>
+    <div v-for="item in queue"
+         :key="item"
+         :class="[`-${item.type}`]"
+         class="notification"
+    >
+      <button v-if="item.closer" @click="close(item)">&times;</button>
+      <h3 v-if="item.title" v-html="item.title"></h3>
+      <div v-if="item.content" v-html="item.content"></div>
+    </div>
   </div>
 </template>
 
 <script>
-  import Notification from './notification.vue';
-  
-  const defaults = {};
+  import { mapActions, mapGetters } from 'vuex';
   
   export default {
-    components: { Notification },
     
     props: {
-      queue: {
-        type: Array,
-        default: []
-      },
-      duration: {
-        type: Number,
-        default: 0
-      },
-      type: {
-        type: String,
-        default: ''
-      },
-      registerGlobal: {
-        type: [ Boolean, String ],
-        default: true
+      reverse: {
+        type: [Number, Boolean],
+        default: false,
       }
     },
-    data () {
-      return {};
-    },
-    watch: {  },
     
     computed: {
+      order () {
+        return !this.reverse ? 'asc' : 'desc';
+      },
+      queue () {
+        return this.$store.getters[`messages/${this.order}`];
+      },
       length () { return this.queue.length; }
     },
     
     methods: {
-      unshift (item) { this.queue.unshift(item); },
-      
-      push (item) { this.queue.push(item); },
-      
-      success (item) {
-        item.type = 'success';
-        this.push(item);
-      },
-
-      warning (item) {
-        item.type = 'warning';
-        this.push(item);
-      },
-
-      danger (item) {
-        item.type = 'danger';
-        this.push(item);
-      },
+      ...mapActions('messages', ['close']),
     },
     
     mounted () {

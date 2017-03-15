@@ -16,21 +16,18 @@ const state = {
 
 const getters = {
   asc (state) {
-    return _.orderBy(state.message, ['datetime'], ['asc']);
+    return _.orderBy(state.list, ['datetime'], ['asc']);
   },
 
   desc (state) {
-    return _.orderBy(state.message, ['datetime'], ['desc']);
+    return _.orderBy(state.list, ['datetime'], ['desc']);
   }
 };
 
 function formatMessage (msg, props = {}) {
-  return Object.assign(
-    {},
-    messageDefaults,
-    typeof msg == 'string' ? { content: msg } : msg,
-    props
-  );
+  msg = typeof msg == 'string' ? { content: msg } : msg;
+
+  return Object.assign({}, messageDefaults, msg, props);
 }
 
 const actions = {
@@ -46,7 +43,7 @@ const actions = {
   // dispatch('messages/error')
   error ({ dispatch }, msg) {
     const message = formatMessage(msg, {
-      type: 'danger'
+      type: 'error'
     });
 
     return dispatch('show', message);
@@ -69,10 +66,12 @@ const actions = {
     });
 
     if (message.timeout) {
-      message.timerId = setTimeout(() => dispatch('close'), message.timeout)
+      message.timerId = setTimeout((message) => dispatch('close', message), message.timeout, message);
     }
 
-    return commit('add', message);
+    commit('add', message);
+
+    return message;
   },
 
   // dispatch('messages/close')
@@ -81,19 +80,23 @@ const actions = {
       clearTimeout(message.timerId);
     }
 
-    return commit('remove', message);
+    commit('remove', message);
+
+    return message;
   }
 };
 
 const mutations = {
   // commit('messages/add')
   add (state, message) {
+    message.idx = state.list.length;
     state.list.push(message);
   },
 
   // commit('messages/remove')
   remove (state, message) {
-    state.list = _.without(state.list, message);
+    const idx = state.list.indexOf(message);
+    idx >= 0 && state.list.splice(idx, 1);
   }
 };
 
