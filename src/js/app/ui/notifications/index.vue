@@ -1,6 +1,6 @@
 <style lang="scss" rel="stylesheet/scss">
   .notification {
-    $tr: .2s ease-out;
+    $tr: .3s ease-out;
     
     &-enter-active,
     &-leave-active {
@@ -27,6 +27,7 @@
       ><i class="i -notification-times"></i></div>
       
       <div class="content">
+        {{ item.idx }}
         <h3 v-if="item.title" v-html="item.title"></h3>
         <div v-if="item.content" v-html="item.content"></div>
       </div>

@@ -9,7 +9,10 @@ $panel-box-bounds: get-bounds-map($panel-box); // without !default
   z-index: 9999;
   top: 0;
   right: 0;
+  bottom: 0;
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   .notification {
     @include box($panel-box);

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <notifications :reverse="true"></notifications>
+    <notifications :reverse="false"></notifications>
     <div v-if="!userLogged || loading">
       <modal>
         <login class="is-loading-block" :class="{ '-loading': loading }"></login>
@@ -50,7 +50,6 @@
       })
     },
     created () {
-      // todo: показывать нотификации
       this.$bus.on('uncaughtException', err => {
         /**
          * а теперь можно систематизировать и захардкодить ошибки,
@@ -58,35 +57,32 @@
          */
         
         if (!!err.HTTP_ERROR) {
+          let message;
+
           switch (err.code) {
             case 401:
-              this.showError({
-                title: err.message || 'Авторизуйтесь'
-              });
+              message = 'Авторизуйтесь';
               break;
             case 403:
-              this.showError({
-                title: err.message || 'Доступ запрещён'
-              });
+              message = 'Доступ запрещён';
               break;
             case 404:
-              this.showError({
-                title: err.message || 'Запрашиваемый адрес не существует'
-              });
+              message = 'Запрашиваемый адрес не существует';
               break;
             case 500:
-              this.showError({
-                title: err.message || 'Ошибка на сервере'
-              });
+              message = 'Ошибка на сервере';
               break;
-            case 800: // объект уже существует
+            case 800:
+              message = 'Объект уже существует';
               break;
-            case 422: // ошибка валидации
-              this.showError({
-                title: err.message || 'Ошибка валидации'
-              });
+            case 422:
+              message = 'Ошибка валидации';
               break;
           }
+
+          this.showError({
+            title: err.message || message
+          });
         } else {
           this.showError({
             title: err.message,

@@ -61,7 +61,6 @@ const actions = {
   // dispatch('messages/show')
   show ({ commit, dispatch }, msg) {
     const message = formatMessage(msg, {
-      timeout: 0,
       datetime: new Date
     });
 
@@ -86,10 +85,11 @@ const actions = {
   }
 };
 
+let idx = 0;
 const mutations = {
   // commit('messages/add')
   add (state, message) {
-    message.idx = state.list.length;
+    message.idx = idx++;
     state.list.push(message);
   },
 
