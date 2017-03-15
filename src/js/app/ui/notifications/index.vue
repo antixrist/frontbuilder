@@ -27,7 +27,6 @@
       ><i class="i -notification-times"></i></div>
       
       <div class="content">
-        {{ item.idx }}
         <h3 v-if="item.title" v-html="item.title"></h3>
         <div v-if="item.content" v-html="item.content"></div>
       </div>
