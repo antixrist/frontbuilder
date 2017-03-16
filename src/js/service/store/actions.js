@@ -85,7 +85,7 @@ export default actions;
         let meta = { loading: false, success: false };
 
         if (err.code == 422) {
-          const { response: body = {} } = err;
+          const { response: { body = {} } = {} } = err;
           handled = true;
           meta = Object.assign({}, body, meta);
         }

@@ -67,19 +67,19 @@ export function enhanceRequestError (err) {
   // axios к таким ошибкам коды не ставит и сообщения отдаёт как есть
   const UNKNOWN_ERROR = !Object.keys(transcriptions).some(key => transcriptions[key]);
 
-  // и вот если мы смогли охарактеризовать ошибку
-  if (!UNKNOWN_ERROR) {
-    // значит это 100% ошибка, связанная с запросом.
-    // заберём из неё все имеющиеся свойства, кроме сообщения и стека
-    let errJSON = errorToJSON(err);
-    errJSON = _.omit(errJSON, ['message', 'stack']);
-
-    // переинстанцируем её на наш кастомный класс ошибки, чтобы извне можно было проверять `instanceof`ом
-    err = new RequestError(err.message);
-
-    // и запишем в неё выдернутые свойства
-    Object.keys(errJSON).forEach(key => Object.defineProperty(err, key, d('e', errJSON[key])));
-  }
+  // // и вот если мы смогли охарактеризовать ошибку
+  // if (!UNKNOWN_ERROR) {
+  //   // значит это 100% ошибка, связанная с запросом.
+  //   // заберём из неё все имеющиеся свойства, кроме сообщения и стека
+  //   let errJSON = errorToJSON(err);
+  //   errJSON = _.omit(errJSON, ['message', 'stack']);
+  //
+  //   // переинстанцируем её на наш кастомный класс ошибки, чтобы извне можно было проверять `instanceof`ом
+  //   err = new RequestError(err.message);
+  //
+  //   // и запишем в неё выдернутые свойства
+  //   Object.keys(errJSON).forEach(key => Object.defineProperty(err, key, d('e', errJSON[key])));
+  // }
 
   // назначим ошибке необходимые свойства
   Object.keys(transcriptions).forEach(key => Object.defineProperty(err, key, d('e', transcriptions[key])));
@@ -99,19 +99,19 @@ export function enhanceResponseError (err) {
   // то это какая-то неведомая бубуйня.
   const UNKNOWN_ERROR = !Object.keys(transcriptions).some(key => transcriptions[key]);
 
-  // и вот если мы смогли охарактеризовать ошибку
-  if (!UNKNOWN_ERROR) {
-    // значит это 100% ошибка, связанная с запросом.
-    // заберём из неё все имеющиеся свойства, кроме сообщения и стека
-    let errJSON = errorToJSON(err);
-    errJSON = _.omit(errJSON, ['message', 'stack']);
-
-    // переинстанцируем её на наш кастомный класс ошибки, чтобы извне можно было проверять `instanceof`ом
-    err = new ResponseError(err.message);
-
-    // и запишем в неё выдернутые свойства
-    Object.keys(errJSON).forEach(key => Object.defineProperty(err, key, d('e', errJSON[key])));
-  }
+  // // и вот если мы смогли охарактеризовать ошибку
+  // if (!UNKNOWN_ERROR) {
+  //   // значит это 100% ошибка, связанная с запросом.
+  //   // заберём из неё все имеющиеся свойства, кроме сообщения и стека
+  //   let errJSON = errorToJSON(err);
+  //   errJSON = _.omit(errJSON, ['message', 'stack']);
+  //
+  //   // переинстанцируем её на наш кастомный класс ошибки, чтобы извне можно было проверять `instanceof`ом
+  //   err = new ResponseError(err.message);
+  //
+  //   // и запишем в неё выдернутые свойства
+  //   Object.keys(errJSON).forEach(key => Object.defineProperty(err, key, d('e', errJSON[key])));
+  // }
 
   // назначим ошибке необходимые свойства
   Object.keys(transcriptions).forEach(key => Object.defineProperty(err, key, d('e', transcriptions[key])));

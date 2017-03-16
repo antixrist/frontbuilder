@@ -84,12 +84,12 @@ const actions = {
       commit('SAVE', data);
     } catch (err) {
       let handled = false;
-      const meta = { loading: false, success: false };
+      let meta = { loading: false, success: false };
 
       if (err.code == 422) {
-        const { response: body = {} } = err;
+        const { response: { body = {} } = {} } = err;
         handled = true;
-        Object.assign(meta, body);
+        meta = Object.assign({}, body, meta);
       }
 
       commit('RESET_META', ['create', meta]);
@@ -109,12 +109,12 @@ const actions = {
       commit('SAVE', data);
     } catch (err) {
       let handled = false;
-      const meta = { loading: false, success: false };
+      let meta = { loading: false, success: false };
 
       if (err.code == 422) {
-        const { response: body = {} } = err;
+        const { response: { body = {} } = {} } = err;
         handled = true;
-        Object.assign(meta, body);
+        meta = Object.assign({}, body, meta);
       }
 
       commit('RESET_META', ['update', meta]);
@@ -134,12 +134,12 @@ const actions = {
       commit('SAVE', data);
     } catch (err) {
       let handled = false;
-      const meta = { loading: false, success: false };
+      let meta = { loading: false, success: false };
 
       if (err.code == 422) {
-        const { response: body = {} } = err;
+        const { response: { body = {} } = {} } = err;
         handled = true;
-        Object.assign(meta, body);
+        meta = Object.assign({}, body, meta);
       }
 
       commit('RESET_META', ['move', meta]);
@@ -159,12 +159,12 @@ const actions = {
       commit('DELETE', data);
     } catch (err) {
       let handled = false;
-      const meta = { loading: false, success: false };
+      let meta = { loading: false, success: false };
 
       if (err.code == 422) {
-        const { response: body = {} } = err;
+        const { response: { body = {} } = {} } = err;
         handled = true;
-        Object.assign(meta, body);
+        meta = Object.assign({}, body, meta);
       }
 
       commit('RESET_META', ['delete', meta]);

@@ -137,16 +137,19 @@ function formatApiErrorResponseBody (res) {
   if (res.body.code) {
     res.body.code = parseInt(res.body.code, 10);
   }
+
+  res.body.success = false;
 }
 
 function formatApiResponse (res) {
-  if (isApiError(res)) {
-    formatApiErrorResponseBody(res);
-  }
-
   if (isInvalidResponseBody(res)) {
     formatInvalidResponseBody(res);
   }
+
+  const isError = isApiError(res);
+
+  res.body.success = !isError;
+  isError && formatApiErrorResponseBody(res);
 }
 
 api.interceptors.response.use(res => {
@@ -171,46 +174,27 @@ api.interceptors.response.use(res => {
   }
 
   return res;
-}, err => {
+}, err => Promise.reject(err));
+
+api.interceptors.response.use(res => res, err => {
   const { response: res } = err;
 
   if (res) {
     formatApiResponse(res);
   }
 
-  return Promise.reject(err);
-});
+  const errCode = _.get(res, 'body.code') || res.status;
+  const errMessage = _.get(res, 'body.message') || err.message;
 
-
-/**
- * Здесь надо обрабатывать ошибки - какие-то зарубать здесь на месте,
- * какие-то переработать в другой формат.
- * Короче, здесь логика по работе с ответом конретного сервера и его форматом ответов.
- */
-api.interceptors.response.use(res => res, err => {
-  let retVal;
-
-  if (err.response) {
-    const { response } = err;
-
-    /** немножко провалидируем и подчистим данные */
-    if (typeof response.body != 'undefined') {
-      const { code, message } = response.body;
-      const codeFinal = code || err.code;
-
-      err.code = err.statusCode = codeFinal;
-
-      Object.assign(response.body, {
-        success: false,
-        code: codeFinal,
-        message: message || err.message
-      });
-    }
+  err.code = err.statusCode = errCode;
+  err.message = errMessage;
+  if (res.body) {
+    res.body.code = errCode;
+    res.body.message = errMessage;
   }
 
-  return retVal ? retVal : Promise.reject(err);
+  return Promise.reject(err);
 });
-
 
 export async function reportError (data, opts = {}) {
   const { error } = data;
