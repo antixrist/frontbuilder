@@ -62,4 +62,4 @@ const app = new Vue({
 });
 
 /** выплёвываем его наружу (монтирование приложения снаружи, надо оно или не надо - всё там) */
-export default app;
+export { app, store, router };

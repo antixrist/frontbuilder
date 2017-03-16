@@ -3,7 +3,6 @@ import Vue from 'vue';
 import { API_TOKEN_NAME } from '../../../config';
 import { storage } from '../../';
 import api from '../../api';
-import { HttpError } from '../../../factory/http';
 import { resetState } from '../utils';
 
 const defaults = {
@@ -26,7 +25,7 @@ const defaults = {
   },
 };
 
-const state = _.cloneDeep(defaults);
+const state = _.merge({}, defaults);
 
 const mutations = {
   // commit('account/loginInProgress')
@@ -75,6 +74,9 @@ const actions = {
       storage.set('token', token);
 
     } catch (err) {
+      let handled = false;
+      let meta = { loading: false, success: false };
+
       if (err.code == 422 || err.code == 401) {
         const { response } = err;
 
@@ -86,10 +88,12 @@ const actions = {
           }
         }
 
-        commit('setLoginStatus', { ...response.body, loading: false });
-      } else {
-        throw err;
+        handled = true;
+        meta = Object.assign({}, response.body, meta);
       }
+
+      commit('setLoginStatus', meta);
+      if (!handled) { throw err; }
     }
   },
 
@@ -121,7 +125,6 @@ const actions = {
       commit('updateInfo', data);
 
     } catch (err) {
-      console.log('err', err);
       const { body = { success: false } } = err.response;
       commit('setFetchStatus', { ...body, loading: false });
 

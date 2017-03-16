@@ -6,7 +6,6 @@ import { errorToJSON, getStackFrames } from '../../utils';
 import { http } from '../../factory';
 import createError from 'axios/lib/core/createError';
 import { enhanceResponseError } from '../../factory/http/axios-plugins/normalize-errors';
-import statuses from 'statuses';
 
 const api = http({
   method: 'post',

@@ -10,14 +10,8 @@ import Vue from 'vue';
 import FastClick from 'fastclick';
 import { isDevelopment } from './config';
 import { assert, getErrorFromUncaughtException, getErrorFromUnhandledRejection } from './utils';
-import { HttpError, RequestError, ResponseError } from './factory/http/errors';
 import { reportError } from './service/api';
-import app from './app';
-
-/** Все кастомные ошибки можно выкинуть глобально. Но можно и не выкидывать */
-// window.HttpError     = HttpError;
-// window.RequestError  = RequestError;
-// window.ResponseError = ResponseError;
+import { app, store, router } from './app';
 
 /**
  * Ловим все возможные необработанные ошибки
@@ -59,10 +53,23 @@ assert(app.$storage.enabled, 'Пожалуйста, выйдите из прив
  */
 document.addEventListener('DOMContentLoaded', () => FastClick.attach(document.body), false);
 
-/** Монтируем приложение */
-app.$mount('#app');
-
 /** А для разработки выкидываем его глобально */
 if (process.env.NODE_ENV == 'development') {
   window.app = app;
 }
+
+// prime the store with server-initialized state.
+// the state is determined during SSR and inlined in the page markup.
+if (window.__INITIAL_STATE__) {
+  store.replaceState(window.__INITIAL_STATE__)
+}
+
+/** Монтируем приложение */
+// wait until router has resolved all async before hooks
+// and async components...
+router.onReady(() => app.$mount('#app'));
+
+// // service worker
+// if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/service-worker.js')
+// }

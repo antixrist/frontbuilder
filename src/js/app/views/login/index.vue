@@ -1,24 +1,30 @@
 <template src="./tpl.pug" lang="pug"></template>
 
 <script type="text/ecmascript-6">
+  import { isDevelopment } from '../../../config';
   import { mapActions, mapState } from 'vuex';
+  
+  let wasAttempts = false;
   
   export default {
     name: 'login',
     data () {
-      return {
+      return isDevelopment ? {
         username: 'test',
-        password: 'B4mGld'
-      };
+        password: 'B4mGld',
+      } : {};
     },
     computed: {
       ...mapState('account', {
+        loadingFromState: state => state.meta.login.loading,
         code: state => state.meta.login.code,
-        loading: state => state.meta.login.loading,
         failed: state => !state.meta.login.success,
         errors: state => state.meta.login.errors,
         message: state => state.meta.login.message,
       }),
+      loading () {
+        return this.loadingFromState && wasAttempts;
+      },
       hasErrors () {
         return Object.keys(this.errors).length;
       },
@@ -38,6 +44,7 @@
       },
       async login () {
         try {
+          wasAttempts = true;
           const { username, password } = this;
           await this.loginAction({ username, password });
           this.$router.replace({ name: 'home' });

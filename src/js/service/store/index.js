@@ -13,17 +13,18 @@ import modules from './modules';
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
+  strict: isDevelopment,
+  plugins: [
+    ...(isDevelopment ? [createLogger()] : []),
+    // createPersistedState()
+  ],
+
   state,
   getters,
   actions,
   mutations,
   modules,
-  
-  strict: isDevelopment,
-  plugins: [
-    ...(isDevelopment ? [createLogger()] : []),
-    // createPersistedState()
-  ]
+
 });
 
 export default store;

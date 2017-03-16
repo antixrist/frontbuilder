@@ -1,7 +1,3 @@
-const mutations = {
-  INCREMENT (state) {
-    state.count++;
-  }
-};
+const mutations = {};
 
 export default mutations;
