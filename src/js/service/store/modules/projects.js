@@ -15,8 +15,7 @@ const defaultMeta = {
 };
 
 const defaults = {
-  ids: [],
-  byIds: {},
+  flatTree: [],
   newProject: {},
   editedProject: {},
 
@@ -29,6 +28,20 @@ const defaults = {
 };
 
 const state = _.cloneDeep(defaults);
+
+const getters = {
+  byId (state) {
+    return _.keyBy(state.flatTree, 'id');
+  },
+  minParentId (state) {
+    // todo: хардкооод!
+    return 1;
+    return _.minBy(state.flatTree, 'parent_id').parent_id;
+  },
+  rootItems (state, getters) {
+    return _.filter(state.flatTree, { parent_id: getters.minParentId });
+  }
+};
 
 const mutations = {
   // commit('projects/RESET_META')
@@ -46,27 +59,29 @@ const mutations = {
     state.editedProject = project;
   },
 
-  RESET_LIST (state, projects = []) {
-    const { ids, byIds } = projects.reduce((reducer, project) => {
-      reducer.ids.push(project.id);
-      reducer.byIds[project.id] = project;
+  RESET_LIST (state, list = []) {
+    const oldListById = _.keyBy(state.flatTree, 'id');
 
-      return reducer;
-    }, { ids: [], byIds: {} });
+    state.flatTree = list.map(item => {
+      const exists = oldListById[item.id] || null;
 
-    state.ids = ids;
-    state.byIds = byIds;
+      return _.merge(exists ? exists : {}, item);
+    });
   },
 
   SAVE (state, project) {
-    const exists = state.ids.indexOf(project.id) >= 0;
-    !exists && state.ids.push(project.id);
-    state.byIds = {...state.byIds, [project.id]: project};
+    const idx = _.findIndex(state.flatTree, { id: project.id });
+    if (idx >= 0) {
+      const exists = state.flatTree[idx];
+      state.flatTree.splice(idx, 1, _.merge(exists, project));
+    } else {
+      state.flatTree.push(project);
+    }
   },
 
   DELETE (state, project) {
-    _.pull(state.ids,  project.id);
-    delete state.byIds[project.id];
+    const exists = _.find(state.flatTree, { id: project.id });
+    exists && _.pull(state.flatTree, exists);
   }
 
 };
@@ -78,9 +93,11 @@ const actions = {
 
     try {
       const res = await api.post('/project/create', query);
-      const { data } = res.body;
+      const { body = { success: true } } = res;
+      const { data = {} } = body;
+      delete body.data;
 
-      commit('RESET_META', ['create', { loading: false }]);
+      commit('RESET_META', ['create', { ...body, loading: false }]);
       commit('SAVE', data);
     } catch (err) {
       let handled = false;
@@ -103,9 +120,11 @@ const actions = {
 
     try {
       const res = await api.post('/project/edit', query);
-      const { data } = res.body;
+      const { body = { success: true } } = res;
+      const { data = {} } = body;
+      delete body.data;
 
-      commit('RESET_META', ['update', { loading: false }]);
+      commit('RESET_META', ['update', { ...body, loading: false }]);
       commit('SAVE', data);
     } catch (err) {
       let handled = false;
@@ -123,14 +142,16 @@ const actions = {
   },
 
   // dispatch('projects/move')
-  async move ({ commit }, query = {}) {
+  async move ({ commit }, item = {}) {
     commit('RESET_META', ['move', { loading: true }]);
 
     try {
-      const res = await api.post('/project/move', query);
-      const { data } = res.body;
+      const res = await api.post('/project/move', item);
+      const { body = { success: true } } = res;
+      const { data = {} } = body;
+      delete body.data;
 
-      commit('RESET_META', ['move', { loading: false }]);
+      commit('RESET_META', ['move', { ...body, loading: false }]);
       commit('SAVE', data);
     } catch (err) {
       let handled = false;
@@ -148,15 +169,16 @@ const actions = {
   },
 
   // dispatch('projects/delete')
-  async delete ({ commit }, query = {}) {
+  async delete ({ commit }, item = {}) {
     commit('RESET_META', ['delete', { loading: true }]);
 
     try {
-      const res = await api.post('/project/delete', query);
-      const { data } = res.body;
+      const res = await api.post('/project/delete', item);
+      const { body = { success: true } } = res;
+      delete body.data;
 
-      commit('RESET_META', ['delete', { loading: false }]);
-      commit('DELETE', data);
+      commit('RESET_META', ['delete', { ...body, loading: false }]);
+      item.id && commit('DELETE', item);
     } catch (err) {
       let handled = false;
       let meta = { loading: false, success: false };
@@ -190,10 +212,14 @@ const actions = {
     return data;
   },
 
+  getOrderedItemsByParentId ({ state }, parentId) {
+    const filtered = _.filter(state.flatTree, { parent_id: parentId });
+    const ordered = _.orderBy(filtered, 'sort');
+
+    return ordered;
+  }
+
 };
-
-
-const getters = {};
 
 
 export default {

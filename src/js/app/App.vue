@@ -14,7 +14,8 @@
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
+  import _ from 'lodash';
   import Vue from 'vue';
   import { mapState, mapGetters, mapActions } from 'vuex';
   import { HttpError } from '../factory/http/errors';
@@ -47,7 +48,10 @@
         fetchUser: 'account/fetch',
         logout: 'account/logout',
         showError: 'messages/error',
-      })
+      }),
+      showCommonError: _.debounce(function (msg) {
+        this.showError(msg);
+      }, 100)
     },
     created () {
       this.$bus.on('uncaughtException', err => {
@@ -55,38 +59,48 @@
          * а теперь можно систематизировать и захардкодить ошибки,
          * которые можно будет обрабатывать внутри приложения
          */
-        
+
+        if (!!err.CONNECTION_ERROR) {
+          this.showCommonError({
+            title: 'Ошибка соединения',
+            content: 'Проверьте соединение с интернетом'
+          });
+        } else
         if (!!err.HTTP_ERROR) {
           let message;
+        
+          if (err.SERVER_ERROR) {
+            this.showError({
+              title: 'Ошибка на стороне сервера',
+              content: 'Специалисты уже в курсе и занимаются скорейшим восстановлением работоспособности приложения'
+            });
+          } else {
+            switch (err.code) {
+              case 401:
+                message = 'Авторизуйтесь';
+                break;
+              case 403:
+                message = 'Доступ запрещён';
+                break;
+              case 404:
+                message = 'Запрашиваемый адрес не существует';
+                break;
+              case 800:
+                message = 'Объект уже существует';
+                break;
+              case 422:
+                message = 'Неверные данные';
+                break;
+            }
 
-          switch (err.code) {
-            case 401:
-              message = 'Авторизуйтесь';
-              break;
-            case 403:
-              message = 'Доступ запрещён';
-              break;
-            case 404:
-              message = 'Запрашиваемый адрес не существует';
-              break;
-            case 500:
-              message = 'Ошибка на сервере';
-              break;
-            case 800:
-              message = 'Объект уже существует';
-              break;
-            case 422:
-              message = 'Ошибка валидации';
-              break;
+            this.showError({
+              title: err.message || message
+            });
           }
-
-          this.showError({
-            title: err.message || message
-          });
         } else {
-          this.showError({
-            title: err.message,
-            content: err.stack
+          this.showCommonError({
+            title: 'Ошибка в приложении',
+            content: 'Специалисты уже в курсе и занимаются скорейшим восстановлением работоспособности приложения'
           });
         }
 

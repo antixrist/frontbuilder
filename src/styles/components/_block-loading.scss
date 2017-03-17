@@ -2,4 +2,10 @@
   @include block-loader ('../../img/loader.gif', 3) {
     background-color: rgba(#fff, .7);
   }
+
+  &.-small {
+    @include block-loader () {
+      background-color: rgba(#fff, .7);
+    }
+  }
 }

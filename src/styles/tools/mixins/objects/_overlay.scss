@@ -40,7 +40,7 @@
   }
 }
 
-@mixin block-loader ($image, $factor: 1) {
+@mixin block-loader ($image: null, $factor: 1) {
   position: relative;
   //display: inline-block;
   //border: none;
@@ -51,13 +51,16 @@
     @include pseudo;
     @include stretch;
     @include icon-base;
-    @include img-icon($image, $factor);
-    @include bg-size-image($image, $factor);
+
+    @if $image {
+      @include img-icon($image, $factor);
+      @include bg-size-image($image, $factor);
+    }
 
     width: auto;
     height: auto;
     margin: auto;
-    z-index: 2;
+    z-index: 5;
 
     @content;
   }

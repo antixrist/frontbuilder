@@ -14,8 +14,7 @@ export default actions;
   };
 
   const defaults = {
-    ids: [],
-    byIds: {},
+    items: [],
     newItem: {},
     editedItem: {},
 
@@ -27,6 +26,12 @@ export default actions;
   };
 
   const state = _.cloneDeep(defaults);
+
+  const getters = {
+    byId (state) {
+      return _.keyBy(state.items, 'id');
+    },
+  };
 
   const mutations = {
     // commit('projects/RESET_META')
@@ -45,26 +50,28 @@ export default actions;
     },
 
     RESET_LIST (state, items = []) {
-      const { ids, byIds } = items.reduce((reducer, item) => {
-        reducer.ids.push(item.id);
-        reducer.byIds[item.id] = item;
+      const oldListById = _.keyBy(state.items, 'id');
 
-        return reducer;
-      }, { ids: [], byIds: {} });
+      state.items = items.map(item => {
+        const exists = oldListById[item.id] || null;
 
-      state.ids = ids;
-      state.byIds = byIds;
+        return _.merge(exists ? oldListById : {}, item);
+      });
     },
 
     SAVE (state, item) {
-      const exists = state.ids.indexOf(item.id) >= 0;
-      !exists && state.ids.push(item.id);
-      state.byIds = {...state.byIds, [item.id]: item};
+      const idx = _.findIndex(state.items, { id: item.id });
+      if (idx >= 0) {
+        const exists = state.flatTree[idx];
+        state.items.splice(idx, 1, _.merge(exists, item));
+      } else {
+        state.items.push(item);
+      }
     },
 
     DELETE (state, item) {
-      _.pull(state.ids,  item.id);
-      delete state.byIds[item.id];
+      const exists = _.find(state.items, { id: item.id });
+      exists && _.pull(state.items, exists);
     }
 
   };
@@ -75,9 +82,11 @@ export default actions;
 
       try {
         const res = await api.post('/url', query);
-        const { data } = res.body;
+        const { body = { success: true } } = res;
+        const { data = {} } = body;
+        delete body.data;
 
-        commit('RESET_META', ['create', { loading: false }]);
+        commit('RESET_META', ['create', { ...body, loading: false }]);
         // здесь обработчик
         commit('SAVE', data);
       } catch (err) {
@@ -91,6 +100,32 @@ export default actions;
         }
 
         commit('RESET_META', ['create', meta]);
+        if (!handled) { throw err; }
+      }
+    },
+
+    // dispatch('projects/delete')
+    async delete ({ commit }, item = {}) {
+      commit('RESET_META', ['delete', { loading: true }]);
+
+      try {
+        const res = await api.post('/item/delete', item);
+        const { body = { success: true } } = res;
+        delete body.data;
+
+        commit('RESET_META', ['delete', { ...body, loading: false }]);
+        item.id && commit('DELETE', item.id);
+      } catch (err) {
+        let handled = false;
+        let meta = { loading: false, success: false };
+
+        if (err.code == 422) {
+          const { response: { body = {} } = {} } = err;
+          handled = true;
+          meta = Object.assign({}, body, meta);
+        }
+
+        commit('RESET_META', ['delete', meta]);
         if (!handled) { throw err; }
       }
     },

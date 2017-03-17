@@ -97,6 +97,10 @@ const mutations = {
   remove (state, message) {
     const idx = state.list.indexOf(message);
     idx >= 0 && state.list.splice(idx, 1);
+  },
+
+  reset_list (state) {
+    state.list = [];
   }
 };
 

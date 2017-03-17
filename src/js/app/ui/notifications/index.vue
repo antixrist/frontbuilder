@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex';
+  import { mapActions, mapGetters, mapMutations } from 'vuex';
   
   export default {
     
@@ -58,6 +58,13 @@
     
     methods: {
       ...mapActions('messages', ['close']),
+      ...mapMutations({
+        reset: 'messages/reset_list'
+      }),
+    },
+    
+    beforeMount () {
+      this.reset();
     }
   };
 </script>

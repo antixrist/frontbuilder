@@ -3,7 +3,7 @@
 
 <script>
   import Vue from 'vue';
-  Vue.component('projects-list',   require('../../components/projects-list/index.vue'));
+  Vue.component('tree',            require('../../components/tree/index.vue'));
   Vue.component('contact-list',    require('../../components/contact-list/index.vue'));
   Vue.component('search-block',    require('../../components/search-block/index.vue'));
   Vue.component('layers-checkers', require('../../components/layers-checkers/index.vue'));
@@ -18,7 +18,7 @@
       return {
         layout: {
           leftSideOpened: true,
-          activeSidebar: 'projects'
+          activeSidebar: 'tree'
         }
       };
     }
