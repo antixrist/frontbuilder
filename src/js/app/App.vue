@@ -14,15 +14,15 @@
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
   import _ from 'lodash';
   import Vue from 'vue';
   import { mapState, mapGetters, mapActions } from 'vuex';
   import { HttpError } from '../factory/http/errors';
   
   /** Общие для всего приложения UI-компоненты */
-  Vue.component('modal',        require('./ui/modal/index.vue'));
-  Vue.component('check-box',    require('./ui/check-box/index.vue'));
+  Vue.component('modal',         require('./ui/modal/index.vue'));
+  Vue.component('check-box',     require('./ui/check-box/index.vue'));
   Vue.component('notifications', require('./ui/notifications/index.vue'));
   Vue.directive('focus', {
     inserted (el) { el.focus(); }
@@ -72,7 +72,7 @@
           if (err.SERVER_ERROR) {
             this.showError({
               title: 'Ошибка на стороне сервера',
-              content: 'Специалисты уже в курсе и занимаются скорейшим восстановлением работоспособности приложения'
+              content: 'Специалисты уже извещены и занимаются скорейшим восстановлением работоспособности приложения'
             });
           } else {
             switch (err.code) {

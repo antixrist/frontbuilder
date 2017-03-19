@@ -2,7 +2,6 @@ import d from 'd';
 import _ from 'lodash';
 import { isCancel } from 'axios';
 import { errorToJSON } from '../../../utils';
-import { HttpError, RequestError, ResponseError } from '../errors';
 import statuses from 'statuses';
 
 normalizeErrors.destroy = destroy;
@@ -135,11 +134,159 @@ export function enhanceResponseError (err) {
 }
 
 /**
- * @typedef {{}} RequestErrorTranscription
+ * @typedef {{}} AxiosError
+ * @augments Error
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+
+/**
+ * @typedef {{}} AxiosErrorTranscription
+ * @property {boolean} isCanceled
  * @property {boolean} CONNECTION_ERROR
  * @property {boolean} TIMEOUT_ERROR
- * @property {boolean} isCanceled
+ * @property {boolean} MAX_CONTENT_LENGTH_ERROR
+ * @property {boolean} TRANSFORM_DATA_ERROR
+ * @property {boolean} CLIENT_ERROR
+ * @property {boolean} SERVER_ERROR
+ * @property {boolean} UNKNOWN_ERROR
  */
+
+/**
+ * @param {AxiosError} err
+ * @returns {AxiosErrorTranscription}
+ */
+export function getErrorTranscription (err) {
+  const { message = null, code = null } = err;
+  
+  /**
+   * ошибка xhr.onerror. это сообщение захардкожено в самом axios'е
+   * @link https://github.com/mzabriskie/axios/blob/5630d3be55cd591cd279927616f895356a10a361/lib/adapters/xhr.js#L87
+   */
+  const xhrErrorMessage = 'Network Error';
+
+  /**
+   * коды ответа, которые возвращает нода (если axios запускался из под неё, а не в браузере),
+   * если есть проблема с соединением
+   * @link https://nodejs.org/api/errors.html#errors_common_system_errors
+   */
+  const connectionProblemCodes = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'];
+  
+  /**
+   * Сработал таймаут. Если работаем в браузере, то код ошибки захардкожен в самом axios'е
+   * @link https://github.com/mzabriskie/axios/blob/5630d3be55cd591cd279927616f895356a10a361/lib/adapters/xhr.js#L95
+   * @link https://nodejs.org/api/errors.html#errors_common_system_errors
+   */
+  const timeoutCodes = ['ECONNABORTED', 'ETIMEDOUT'];
+  
+  
+  const isCanceled = isCancel(err);
+  const isTimeout = timeoutCodes.includes[code];
+  const isXhrError = message === xhrErrorMessage;
+  const isBadConnection = isXhrError || connectionProblemCodes.includes[code];
+  
+  /**
+   * Тело ответа больше установленного в опциях запроса
+   * @link https://github.com/mzabriskie/axios/blob/5630d3be55cd591cd279927616f895356a10a361/lib/adapters/http.js#L170
+   */
+  const isBadMaxContentLength = !!~message.indexOf('maxContentLength');
+  
+  /**
+   * Неправильно трансформировано тело ответа.
+   * @link https://github.com/mzabriskie/axios/blob/5630d3be55cd591cd279927616f895356a10a361/lib/adapters/http.js#L38-L41
+   */
+  const isBadTransformData = !!~message.indexOf('Data after transformation must');
+  
+  /**
+   * Если произошла какая-то ошибка во время выполнения запроса,
+   * которую axios решил специальным образом не обрабатывать,
+   * то у такой ошибки нет кода или код может быть каким-то нечисловым (т.е. не http-кодом).
+   * Это могут быть ошибки req или стримов (внутри ноды), или иметь какое-то
+   * захардкоженное строковое значение как `ECONNABORTED`, к примеру.
+   * Все известные мне на данный момент строковые коды обрабатываются.
+   * Но в новых версиях могут появиться и другие.
+   * Поэтому простое правило - если `_.isNumber(err.code) === false`, значит это не http-код,
+   * значит это что-то внутреннее. А значит это ошибка на этапе request'а. До response'а дело не дошло.
+   *
+   * @link https://github.com/mzabriskie/axios/blob/5630d3be55cd591cd279927616f895356a10a361/lib/adapters/http.js#L176
+   * @link https://github.com/mzabriskie/axios/blob/5630d3be55cd591cd279927616f895356a10a361/lib/adapters/http.js#L194
+   */
+
+  const HttpError = {
+    RequestError: false,
+    ResponseError: false
+  };
+  
+  
+  // если запрос отменён, или это ошибка соединения, таймаута или какой-то нечисловой код
+  if (isCanceled || isBadConnection || isTimeout || err.code || !_.isNumber(err.code)) {
+    HttpError.RequestError = {
+      isCanceled,
+      isBadConnection,
+      isTimeout
+    };
+  } else {
+    
+  }
+  
+  err.IS_CANCELED = isCancel(err);
+  
+  const retVal = {};
+  
+  if (!err.code || IS_CANCELED || LOOSE_CONNECTION || IS_TIMEOUT) {
+    retVal.BAD_REQUEST = true;
+  }
+  
+  const transcriptions = {
+    // запрос отменён токеном отмены
+    isCanceled: isCancel(err),
+  
+    CONNECTION_ERROR:
+      // сработал xhr.onerror, без кодов и статусов (это сообщение захардкожено в самом axios'е)
+      message === 'Network Error' ||
+      // код ответа, который вернула сама нода (если axios запускался из под неё, а не в браузере) - проблема с соединением
+      ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'].includes[code]
+    ,
+  
+    // сработал таймаут (этот код захардкожен в самом axios'е)
+    TIMEOUT_ERROR: ['ECONNABORTED'].includes[code],
+    // превышение установленного в конфиге максимального размера ответа
+    MAX_CONTENT_LENGTH_ERROR: !!~message.indexOf('maxContentLength'),
+    // ошибка неправильного результата из transformRequest'а
+    TRANSFORM_DATA_ERROR: !!~message.indexOf('Data after transformation must'),
+  };
+  
+  // если нету response'а, а http-код ответа (если он есть) подразумевает обязательное наличие тела ответа
+  if (!err.response && !statuses.empty[err.code]) {
+    // значит это ошибка запроса.
+    // например, таймаут, canceled, ещё какая-нибудь фигня, при которой ответа от сервера не было вообще)
+    //
+    transcriptions.REQUEST_ERROR = true;
+    transcriptions.CLIENT_ERROR = false;
+    transcriptions.SERVER_ERROR = false;
+  } else {
+    // а если `response` есть, то ответ от сервера получен,
+    // но он не прошёл валидацию в `config.validateStatus`.
+    // запишем, что это ошибка ответа
+    transcriptions.RESPONSE_ERROR = true;
+    // немного её проклассифицируем
+    const { is4xx = false, is5xx = false } = err.response ? getResponseTranscription(err.response) : {};
+    transcriptions.CLIENT_ERROR = is4xx;
+    transcriptions.SERVER_ERROR = is5xx;
+  }
+  
+  // если в `transcriptions` ни один из флагов не является `true`,
+  // то это какая-то неведомая бубуйня.
+  // это могут быть ошибки стримов и `req.on('err')` -
+  // axios к таким ошибкам коды не ставит и сообщения отдаёт как есть
+  transcriptions.UNKNOWN_ERROR = !Object.keys(transcriptions).some(key => transcriptions[key]);
+  
+  transcriptions.HTTP_ERROR = true;
+  
+  return transcriptions;
+}
 
 /**
  * @param {Error} err
@@ -149,6 +296,9 @@ export function getRequestErrorTranscription (err) {
   const { message = '', code = '' } = err;
 
   return {
+    // запрос отменён токеном отмены
+    isCanceled: isCancel(err),
+  
     CONNECTION_ERROR:
       // сработал xhr.onerror, без кодов и статусов (это сообщение захардкожено в самом axios'е)
       message === 'Network Error' ||
@@ -159,8 +309,11 @@ export function getRequestErrorTranscription (err) {
     // сработал таймаут (этот код захардкожен в самом axios'е)
     TIMEOUT_ERROR: ['ECONNABORTED'].includes[code],
     
-    // запрос отменён токеном отмены
-    isCanceled: isCancel(err),
+    // превышение установленного в конфиге максимального размера ответа
+    MAX_CONTENT_LENGTH_ERROR: !!~message.indexOf('maxContentLength'),
+    // ошибка неправильного результата из transformRequest'а
+    TRANSFORM_DATA_ERROR: !!~message.indexOf('Data after transformation must'),
+  
   };
 }
 

@@ -10,6 +10,7 @@ import { enhanceResponseError } from '../../factory/http/axios-plugins/normalize
 const api = http({
   method: 'post',
   baseURL: API_URL,
+  timeout: 10000, // 10 сек.
   headers: {
     'Accept':       'application/json',
     'Content-Type': 'application/json',
@@ -178,11 +179,13 @@ api.interceptors.response.use(res => {
 
 api.interceptors.response.use(res => res, err => {
   const { response: res } = err;
-
+  
+  console.log('err', errorToJSON(err));
+  
   if (res) {
     formatApiResponse(res);
   }
-
+  
   const errCode = _.get(res, 'body.code') || res.status;
   const errMessage = _.get(res, 'body.message') || err.message;
 

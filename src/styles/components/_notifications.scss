@@ -19,7 +19,7 @@ $panel-box-bounds: get-bounds-map($panel-box); // without !default
     @include md-shadow(10);
 
     position: relative;
-    width: 250px;
+    width: 300px;
     max-width: 100%;
     background: #393d46;
     color: #f2ebc7;

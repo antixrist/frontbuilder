@@ -111,25 +111,26 @@ const actions = {
 
   async fetch ({ commit, dispatch }) {
     commit('setFetchStatus', { loading: true });
-
+  
+    let res;
     try {
-      const res = await api.post('/user/get');
-      const { body } = res;
-      const { data } = body;
-      delete body.data;
-
-      data.username = data.name;
-      delete data.name;
-
-      commit('setFetchStatus', { ...body, loading: false });
-      commit('updateInfo', data);
-
+      res = await api.post('/user/get');
     } catch (err) {
-      const { body = { success: false } } = err.response;
+      const { body = { success: false } } = (err.CLIENT_ERROR) ? err.response : {};
       commit('setFetchStatus', { ...body, loading: false });
 
       throw err;
     }
+  
+    const { body = {} } = res;
+    const { data = {} } = body;
+    delete body.data;
+  
+    data.username = data.name;
+    delete data.name;
+  
+    commit('setFetchStatus', { ...body, loading: false });
+    commit('updateInfo', data);
   }
 };
 
