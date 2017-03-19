@@ -5,7 +5,7 @@ import progress from '../progress';
 import { errorToJSON, getStackFrames } from '../../utils';
 import { http } from '../../factory';
 import createError from 'axios/lib/core/createError';
-import { enhanceResponseError } from '../../factory/http/axios-plugins/normalize-errors';
+import { enhanceAxiosError } from '../../factory/http/axios-plugins/detailed';
 
 const api = http({
   method: 'post',
@@ -181,6 +181,8 @@ api.interceptors.response.use(res => res, err => {
   const { response: res } = err;
   
   console.log('err', errorToJSON(err));
+  
+  // err.isBadApiRequest = true;
   
   if (res) {
     formatApiResponse(res);
