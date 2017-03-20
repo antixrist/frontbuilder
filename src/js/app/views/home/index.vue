@@ -4,6 +4,7 @@
 <script>
   import Vue from 'vue';
   Vue.component('tree',            require('../../components/tree/index.vue'));
+  Vue.component('projects-tab',    require('../../components/projects-tab/index.vue'));
   Vue.component('contact-list',    require('../../components/contact-list/index.vue'));
   Vue.component('search-block',    require('../../components/search-block/index.vue'));
   Vue.component('layers-checkers', require('../../components/layers-checkers/index.vue'));
@@ -16,10 +17,8 @@
     name: 'home',
     data () {
       return {
-        layout: {
-          leftSideOpened: true,
-          activeSidebar: 'tree'
-        }
+        activeTab: 'tree',
+        sidebarOpened: true,
       };
     }
   };

@@ -50,7 +50,7 @@
       }),
       showErrorDebounced: _.debounce(function (msg) {
         this.showError(msg);
-      }, 100)
+      }, 200)
     },
     created () {
       this.$bus.on('uncaughtException', async err => {
