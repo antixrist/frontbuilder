@@ -216,13 +216,6 @@ const actions = {
     return res.data;
   },
 
-  getOrderedItemsByParentId ({ state }, parentId) {
-    const filtered = _.filter(state.flatTree, { parent_id: parentId });
-    const ordered = _.orderBy(filtered, 'sort');
-
-    return ordered;
-  }
-
 };
 
 

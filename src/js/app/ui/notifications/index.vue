@@ -1,5 +1,5 @@
 <style lang="scss" rel="stylesheet/scss">
-  .notification {
+  .c-notification {
     $tr: .3s ease-out;
     
     &-enter-active,
@@ -15,7 +15,7 @@
 </style>
 
 <template>
-  <transition-group name="notification" tag="div" class="notifications">
+  <transition-group name="notification" tag="div" class="c-notifications">
     <div v-for="item in queue"
          :key="item"
          :class="[`-${item.type}`]"

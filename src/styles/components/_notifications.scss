@@ -1,7 +1,7 @@
 $panel-box: .5rem 1rem !default;
 $panel-box-bounds: get-bounds-map($panel-box); // without !default
 
-.notifications {
+@include c(notifications) {
   @include box($panel-box);
 
   pointer-events: none;

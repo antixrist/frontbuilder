@@ -6,7 +6,6 @@ import createLogger from 'vuex/dist/logger';
 import { isDevelopment } from '../../config';
 
 import getters from './getters';
-import actions from './actions';
 import modules from './modules';
 
 Vue.use(Vuex);
@@ -19,17 +18,16 @@ const store = new Vuex.Store({
   ],
 
   state: {
-    activeObjectId: 0,
+
   },
 
   mutations: {
-    SET_ACTIVE_OBJECT (store, item) {
-      store.activeObjectId = _.isNumber(item) ? item : item.id;
-    }
+  },
+
+  actions: {
   },
 
   getters,
-  actions,
   modules,
 
 });
