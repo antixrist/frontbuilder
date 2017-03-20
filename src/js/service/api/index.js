@@ -174,7 +174,7 @@ function formatApiResponse (body) {
     Object.assign(body, body.error);
     delete body.error;
   }
-  
+
   const possibleTopLevelProps = body.success ? _.keys(getSuccessJson()) : _.keys(getFailedJson());
   
   let data = _.omit(body, possibleTopLevelProps);
@@ -184,9 +184,8 @@ function formatApiResponse (body) {
     body.data = body.data ? _.merge(body.data, data) : data;
   } else {
     body.errors = body.errors ? _.merge(body.errors, data) : data;
-    
   }
-  
+
   return body.success ? getSuccessJson(body) : getFailedJson(body);
 }
 
@@ -233,7 +232,7 @@ api.interceptors.response.use(res => {
   /** причешем конечный json */
   res.body.success = true;
   res.body = formatApiResponse(res.body);
-  
+
   const { body, config } = res;
   
   /**
@@ -259,7 +258,7 @@ api.interceptors.response.use(res => {
   return body;
 }, err => {
   /** Здесь надо учесть ещё и все те ошибки, которые были созданы вручную, шагами выше. */
-  
+
   /**
    * Если мы оказались в этом catch-блоке потому,
    * что не прошла валидация в `config.validateStatus`
@@ -274,6 +273,7 @@ api.interceptors.response.use(res => {
     let { code, message } = err;
     
     /** если есть нормальное тело ответа */
+
     if (!err.isInvalidApiResponseBody) {
       const { response: res } = err;
 
@@ -285,7 +285,7 @@ api.interceptors.response.use(res => {
       /** причешем конечный json */
       res.body.success = false;
       res.body = formatApiResponse(res.body);
-  
+
       const { body } = res;
       
       /**
@@ -301,10 +301,10 @@ api.interceptors.response.use(res => {
        */
       if (LOCAL_ERROR_CODES.includes(code)) {
         /** то вернём **json с ошибкой**, а **не объект Error** */
-        res.body = getFailedJson({
+        res.body = getFailedJson(Object.assign(body, {
           code,
           message
-        });
+        }));
   
         /** возвращаем json-ответ */
         return res.body;
@@ -312,6 +312,7 @@ api.interceptors.response.use(res => {
         /** иначе просто перезапишем у ошибки код и сообщение */
         err.code = code;
         err.message = message;
+        err.response = res;
       }
     }
   }

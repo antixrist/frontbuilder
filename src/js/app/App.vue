@@ -1,6 +1,7 @@
 <template>
   <div>
     <notifications :reverse="false"></notifications>
+    
     <div v-if="!userLogged || loading">
       <modal>
         <login class="is-loading-block" :class="{ '-loading': loading }"></login>
@@ -43,9 +44,9 @@
     },
     methods: {
       ...mapActions({
-        fetchUser: 'account/fetch',
-        logout: 'account/logout',
-        showError: 'messages/error',
+        fetchAccountInfo: 'account/fetch',
+        logout:           'account/logout',
+        showError:        'messages/error',
       }),
       showErrorDebounced: _.debounce(function (msg) {
         this.showError(msg);
@@ -111,8 +112,7 @@
               switch (err.code) {
                 case 401:
                   bubble.content = 'Пожалуйста, авторизуйтесь';
-                  // отправляем на выход
-                  this.$router.push({ name: 'logout' });
+                  this.logout();
                   break;
                 case 403:
                   bubble.content = 'Доступ запрещён';
@@ -177,34 +177,14 @@
         }
       });
     },
-    async mounted () {
-      /**
-       * Здесь, по сути, точка входа в рендер приложения.
-       *
-       * Т.к. доступ не залогиненным пользователям _полностью_ запрещён, то надо
-       * показывать форму входа для любого не залогиненного (логично, да).
-       *
-       * Ситуация в том, что стор может сохранять своё состояние персистентно (в localStorage, например),
-       * а может и не сохранять. Это на его усмотрение (например, плагином каким-нибудь).
-       * Поэтому, сперва проверяем - залогинен ли юзер. Если да, то всё ок, рендерится `router-view`.
-       * А вот если нет (стор пустой) - в localStorage может лежать api_token
-       * (мало ли, может юзер просто страницу обновил). А может и не лежать.
-       * Поэтому дальше запросим с сервера информацию о юзере.
-       * Если api_token есть в localStorage, токен подставится в запрос интерцептером.
-       * Если запрос отработает без ошибок и инфа о юзере придёт, то токен валидный, всё ок - рендерится `router-view`.
-       * Если ответ пришёл с ошибкой 401 (пользователь не авторизован), значит либо токена нет, либо он не валидный.
-       * Все ошибки, кроме 401 выбрасываем наружу, чтобы не показывать глобальный нотис на ошибку авторизации.
-       * В итоге отрендерится только форма входа без сообщения об ошибке авторизации
-       * (но для остальных ошибок сообщения отобразятся).
-       */
-      if (!this.userLogged) {
-        try {
-          await this.fetchUser();
-        } catch (err) {
-          if (err.code != 401) { throw err; }
-        }
-      }
+    beforeMount () {
+      this.fetchAccountInfo().catch(err => {
+        /**
+         * если юзер не был авторизован, то ничего страшного,
+         * просто скроется лоадер и останется форма входа
+         */
+        if (err.code != 401) { throw err; }
+      });
     },
-
   };
 </script>

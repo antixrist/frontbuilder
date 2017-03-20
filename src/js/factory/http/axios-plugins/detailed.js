@@ -209,7 +209,12 @@ export function getAxiosErrorDetails (err) {
   const isXhrError = message === xhrErrorMessage;
   /** возможно, хреновое соединение */
   const isBadConnection = isXhrError || connectionProblemCodes.includes(code);
-    
+
+  if (err.response) {
+    err.code = err.response.status;
+    err.message = err.response.statusText;
+  }
+
   const retVal = {
     RequestError: false,
     ResponseError: false
@@ -230,6 +235,7 @@ export function getAxiosErrorDetails (err) {
    *  - может это какой-то нечисловой код или код вообще отсутствует
    *    (при условии, что это не старый ишак, в котором `response` есть, а кода нет)
    */
+
   if (
     isCanceled ||
     isBadConnection ||
@@ -248,7 +254,7 @@ export function getAxiosErrorDetails (err) {
        * если кода нет или это какое-то необработанное строковое значение,
        * то пометим ошибку как неизвестную
        */
-      isUnknown: !isCanceled && !isBadConnection && !isTimeout && !isBadTransformData
+      isUnknown: !isXhrError && !isCanceled && !isBadConnection && !isTimeout && !isBadTransformData
     };
   } else {
     /** иначе это ошибка ответа */

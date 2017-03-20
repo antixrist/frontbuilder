@@ -2,7 +2,7 @@
 
 <script type="text/ecmascript-6">
   import { isDevelopment } from '../../../config';
-  import { mapActions, mapState } from 'vuex';
+  import { mapActions, mapState, mapMutations } from 'vuex';
   
   let wasAttempts = false;
   
@@ -16,14 +16,20 @@
     },
     computed: {
       ...mapState('account', {
-        loadingFromState: state => state.meta.login.loading,
         code: state => state.meta.login.code,
         failed: state => !state.meta.login.success,
-        errors: state => state.meta.login.errors,
-        message: state => state.meta.login.message,
       }),
       loading () {
-        return this.loadingFromState && wasAttempts;
+        const loading = this.$store.state.account.meta.login.loading;
+        return loading && wasAttempts ? loading : false;
+      },
+      errors () {
+        const errors = this.$store.state.account.meta.login.errors;
+        return errors && wasAttempts ? errors : {};
+      },
+      message () {
+        const message = this.$store.state.account.meta.login.message;
+        return message && wasAttempts ? message : '';
       },
       hasErrors () {
         return Object.keys(this.errors).length;
@@ -39,17 +45,22 @@
       ...mapActions({
         loginAction: 'account/login'
       }),
+      ...mapMutations({
+        resetLoginStatus: 'account/resetLoginStatus'
+      }),
       allowShowErrorFor (field) {
         return !!this.errors[field];
       },
       async login () {
-        try {
-          wasAttempts = true;
-          const { username, password } = this;
-          await this.loginAction({ username, password });
-          this.$router.replace({ name: 'home' });
-        } catch (err) { throw err; }
+        wasAttempts = true;
+        const { username, password } = this;
+        await this.loginAction({ username, password });
+        this.$router.replace({ name: 'home' });
       }
+    },
+    beforeDestroy () {
+      wasAttempts = false;
+      this.resetLoginStatus();
     }
   };
 </script>

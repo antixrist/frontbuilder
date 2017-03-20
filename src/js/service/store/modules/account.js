@@ -4,6 +4,7 @@ import { API_TOKEN_NAME } from '../../../config';
 import { storage } from '../../';
 import api from '../../api';
 import { resetState } from '../utils';
+import { errorToJSON } from '../../../utils';
 
 const defaults = {
   username: null,
@@ -64,10 +65,16 @@ const actions = {
     try {
       res = await api.post('/login', { login: username, password });
     } catch (err) {
-      commit('setLoginStatus', { success: false, loading: false });
-      throw err;
+
+      // todo: поменять неправильный код в json-ответе. а то хардкод
+      if (err.code == 401) {
+        res = err.response.body;
+      } else {
+        commit('setLoginStatus', { success: false, loading: false });
+        throw err;
+      }
     }
-  
+
     if (res.success) {
       const data = res.data;
       delete res.data;
@@ -95,7 +102,10 @@ const actions = {
 
     try {
       await api.post('/logout');
-    } catch (err) { throw err; }
+    } catch (err) {
+      // если пользователь и так не был авторизован, то ничего страшного
+      if (err.code != 401) { throw err; }
+    }
 
     storage.remove('token', state[API_TOKEN_NAME]);
   },
@@ -107,21 +117,18 @@ const actions = {
     try {
       res = await api.post('/user/get');
     } catch (err) {
-      const { body = { success: false } } = (err.CLIENT_ERROR) ? err.response : {};
-      commit('setFetchStatus', { ...body, loading: false });
-
+      commit('setFetchStatus', { success: false, loading: false });
       throw err;
     }
-  
-    const { body = {} } = res;
-    const { data = {} } = body;
-    delete body.data;
-  
-    data.username = data.name;
-    delete data.name;
-  
-    commit('setFetchStatus', { ...body, loading: false });
-    commit('updateInfo', data);
+
+    if (res.success) {
+      const { data } = res;
+      delete res.data;
+
+      commit('updateInfo', data);
+    }
+
+    commit('setFetchStatus', { ...res, loading: false });
   }
 };
 
