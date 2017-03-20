@@ -18,10 +18,24 @@ const store = new Vuex.Store({
   ],
 
   state: {
-
+    layout: {
+      activeTab: 'tree',
+      sidebarOpened: false,
+      modals: {
+        createTask: false,
+        updateTask: false,
+        createProject: false,
+        updateProject: false,
+        createPolygon: false,
+        updatePolygon: false,
+      },
+    },
   },
 
   mutations: {
+    UPDATE_LAYOUT (state, data) {
+      state.layout = _.merge(state.layout, data);
+    }
   },
 
   actions: {

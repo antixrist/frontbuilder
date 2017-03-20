@@ -1,3 +1,4 @@
+import d from 'd';
 import _ from 'lodash';
 import Vue from 'vue';
 import api from '../../api';
@@ -37,46 +38,20 @@ const getters = {
   }
 };
 
-const mutations = {
-  RESET_LIST (state, list = []) {
-    state.list = list;
-  },
+/**
+ * @param {{}} item
+ * @returns {{}}
+ */
+function cleanupItem (item) {
+  const { type } = item;
+  Object.assign(item, {
+    isTask:    type == 'task',
+    isFolder:  type == 'directory',
+    isPolygon: type == 'polygon'
+  });
 
-  DELETE (state, project) {
-    const exists = _.find(state.list, { id: project.id });
-    exists && _.pull(state.list, exists);
-  },
-
-  SET_ACTIVE_ITEM (store, item) {
-    store.activeItemId = _.isNumber(item) ? item : item.id;
-  },
-
-  RESET_ACTIVE_ITEM (store) {
-    store.activeItemId = null;
-  },
-
-  UPDATE_ITEM (store, updates) {
-    const { id } = updates;
-    const idx = _.findIndex(state.list, { id });
-
-    if (idx >= 0) {
-      const item = store.list[idx];
-      const updated = _.assign(item, updates);
-
-      Vue.set(store.list, idx, updated);
-    }
-  },
-
-  BATCH_UPDATE (store, updates = []) {
-    const updatesById = _.keyBy(updates, 'id');
-
-    store.list = store.list.map(item => {
-      if (!updatesById[item.id]) { return item; }
-
-      return { ...item, ...updatesById[item.id] };
-    });
-  }
-};
+  return item;
+}
 
 /**
  * @param {{}} byId
@@ -99,7 +74,82 @@ function getParentsIds (byId, itemId) {
   return parentsIds;
 }
 
+const mutations = {
+  ADD_ITEM (state, item = {}) {
+    cleanupItem(item);
+    state.list.push(item);
+  },
+
+  REMOVE_ITEM (state, item) {
+    const idx = _.findIndex(state.list, { id: item.id });
+    idx >= 0 && state.list.splice(idx, 1);
+  },
+
+  UPDATE_ITEM (state, updates = {}) {
+    const { id } = updates;
+    const idx = _.findIndex(state.list, { id });
+
+    if (idx >= 0) {
+      const item = _.assign(state.list[idx], updates);
+      cleanupItem(item);
+
+      Vue.set(state.list, idx, item);
+    }
+  },
+
+  BATCH_UPDATE (state, updates = []) {
+    const updatesById = _.keyBy(updates, 'id');
+
+    state.list.forEach((item, idx) => {
+      if (!updatesById[item.id]) { return item; }
+
+      _.assign(item, updatesById[item.id]);
+      cleanupItem(item);
+
+      Vue.set(state.list, idx, item);
+    });
+  },
+
+  SET_ACTIVE_ITEM (state, item) {
+    state.activeItemId = _.isNumber(item) ? item : item.id;
+  },
+
+  RESET_ACTIVE_ITEM (state) {
+    state.activeItemId = null;
+  },
+
+  RESET_LIST (state, list = []) {
+    state.list = list;
+  },
+
+};
+
 const actions = {
+  addItem ({ commit, dispatch }, item) {
+    commit('ADD_ITEM', item);
+
+    if (item.isActive) {
+      dispatch('activateItem', item);
+    }
+  },
+
+  removeItem ({ state, commit }, item = {}) {
+    state.activeItemId == item.id && commit('RESET_ACTIVE_ITEM');
+    commit('REMOVE_ITEM', item);
+  },
+
+  updateItem ({ commit, dispatch }, item = {}) {
+    commit('UPDATE_ITEM', item);
+
+    if (item.isActive) {
+      dispatch('activateItem', item);
+    }
+  },
+
+  moveItem ({ commit, dispatch }, item = {}) {
+
+  },
+
   activateItem ({ state, commit, dispatch }, item) {
     const { id } = item;
 
@@ -110,38 +160,18 @@ const actions = {
     dispatch('expandBranchToItem', id);
   },
 
-  expandBranchToItem ({ commit, getters, dispatch }, item) {
-    const { id: itemId } = item;
-    const parentsIds = getParentsIds(getters.byId, itemId);
-
-    const updates = parentsIds
-      .filter(id => getters.byId[id] && getters.byId[id].isFolder)
-      .map(id => ({ id, isExpanded: true }))
-    ;
-
-    updates.length && commit('BATCH_UPDATE', updates);
-  },
-
-  async updateList ({ commit, getters, dispatch }, list = []) {
+  updateList ({ commit, getters, dispatch }, list = []) {
     let activeItem;
 
     const mergedList = list.map(item => {
       if (getters.byId[item.id]) {
-        _.defaults(item, getters.byId[item.id], {
-          isExpanded: false
-        });
+        _.defaults(item, getters.byId[item.id]);
       }
-
-      const { type } = item;
-      Object.assign(item, {
-        isTask:    type == 'task',
-        isFolder:  type == 'directory',
-        isPolygon: type == 'polygon',
-      });
 
       return item;
     });
 
+    // найдём активный элемент
     mergedList.forEach(item => {
       if (!item.isActive) { return; }
 
@@ -153,81 +183,29 @@ const actions = {
     });
 
     commit('RESET_LIST', mergedList);
-    if (activeItem) {
-      await dispatch('activateItem', activeItem);
-    }
+    activeItem && dispatch('activateItem', activeItem);
   },
 
-  // dispatch('projects/move')
-  async move ({ commit }, item = {}) {
-    // на move раскрывать ветку, если перемещаемый является активным
-
-    commit('RESET_META', ['move', { loading: true }]);
-
-    try {
-      const res = await api.post('/project/move', item);
-      const { body = { success: true } } = res;
-      const { data = {} } = body;
-      delete body.data;
-
-      commit('RESET_META', ['move', { ...body, loading: false }]);
-      commit('SAVE', data);
-    } catch (err) {
-      let handled = false;
-      let meta = { loading: false, success: false };
-
-      if (err.code == 422) {
-        const { response: { body = {} } = {} } = err;
-        handled = true;
-        meta = Object.assign({}, body, meta);
-      }
-
-      commit('RESET_META', ['move', meta]);
-      if (!handled) { throw err; }
-    }
-  },
-
-  // dispatch('projects/delete')
-  async delete ({ commit }, item = {}) {
-    // на delete проверять не является ли удаляемый активным
-
-    commit('RESET_META', ['delete', { loading: true }]);
-
-    try {
-      const res = await api.post('/project/delete', item);
-      const { body = { success: true } } = res;
-      delete body.data;
-
-      commit('RESET_META', ['delete', { ...body, loading: false }]);
-      item.id && commit('DELETE', item);
-    } catch (err) {
-      let handled = false;
-      let meta = { loading: false, success: false };
-
-      if (err.code == 422) {
-        const { response: { body = {} } = {} } = err;
-        handled = true;
-        meta = Object.assign({}, body, meta);
-      }
-
-      commit('RESET_META', ['delete', meta]);
-      if (!handled) { throw err; }
-    }
-  },
-
-  // dispatch('projects/fetchTree')
   async fetch ({ dispatch, commit }, query = {}) {
-    let res;
-    // try {
-      res = await api.post('/project/tree', query);
-    // } catch (err) {
-    //   commit('RESET_LIST', []);
-    //   throw err;
-    // }
+    let res = await api.post('/project/tree', query);
 
-    dispatch('updateList', res.data);
+    if (res.success) {
+      dispatch('updateList', res.data);
+    }
 
-    return res.data;
+    return res;
+  },
+
+  expandBranchToItem ({ commit, getters, dispatch }, item) {
+    const { id: itemId } = item;
+    const parentsIds = getParentsIds(getters.byId, itemId);
+
+    const updates = parentsIds
+            .filter(id => getters.byId[id] && getters.byId[id].isFolder)
+            .map(id => ({ id, isExpanded: true }))
+      ;
+
+    updates.length && commit('BATCH_UPDATE', updates);
   },
 
 };

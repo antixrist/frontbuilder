@@ -3,6 +3,8 @@
 
 <script>
   import Vue from 'vue';
+  import { mapMutations, mapState } from 'vuex';
+  
   Vue.component('tree',            require('../../components/tree/index.vue'));
   Vue.component('projects-tab',    require('../../components/projects-tab/index.vue'));
   Vue.component('contact-list',    require('../../components/contact-list/index.vue'));
@@ -15,11 +17,31 @@
 
   export default {
     name: 'home',
-    data () {
-      return {
-        activeTab: 'tree',
-        sidebarOpened: true,
-      };
+    computed: {
+      ...mapState({
+        storeLayout: state => state.layout
+      }),
+      activeTab: {
+        get () {
+          return this.storeLayout.activeTab;
+        },
+        set (activeTab) {
+          this.updateLayout({ activeTab });
+        },
+      },
+      sidebarOpened: {
+        get () {
+          return this.storeLayout.sidebarOpened;
+        },
+        set (sidebarOpened) {
+          this.updateLayout({ sidebarOpened });
+        },
+      }
+    },
+    methods: {
+      ...mapMutations({
+        updateLayout: 'UPDATE_LAYOUT'
+      })
     }
   };
 </script>
