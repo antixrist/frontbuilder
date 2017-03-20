@@ -23,21 +23,45 @@ Vue.config.errorHandler = globalErrorsHandler;
 
 /** тот самый обработчик необработанных ошибок */
 async function globalErrorsHandler (err) {
-  const isHttpError       = !!err.HTTP_ERROR;
-  const isConnectionError = isHttpError && err.CONNECTION_ERROR;
-
-  if (isHttpError) {
-    // если это отменённый запрос, то делать, в принципе, ничего не надо
-    if (err.isCanceled) { return; }
-  } else {
-
+  let needReportError = true;
+  
+  if (err.HttpError) {
+    if (err.RequestError) {
+      const {
+        isTimeout,
+        isXhrError,
+        isCanceled,
+        isBadConnection,
+        isBadTransformData,
+        isUnknown
+      } = err.RequestError;
+      
+      // если это отменённый запрос, то делать, в принципе, ничего не надо
+      if (isCanceled) { return; }
+      
+      /** скорее всего проблемы с сетью или с сервером */
+      if (isXhrError || isBadConnection || isUnknown || isTimeout) {
+        needReportError = false;
+      }
+    } else
+    if (err.ResponseError) {
+      const {
+        isStatusRejected,
+        isMaxContentLengthOverflow
+      } = err.RequestError;
+      
+      /** если это http-ошибка, то тоже отчёт не нужен */
+      if (isStatusRejected) {
+        needReportError = false;
+      }
+    }
   }
 
   // прокидываем ошибку в приложение
   app.$bus.emit('uncaughtException', err);
 
   // если у нас продакшн и это не ошибка сети
-  if (!isDevelopment && !isConnectionError) {
+  if (!isDevelopment && needReportError) {
     // то отправим её на сервер
     await reportError({ err });
   }
@@ -52,11 +76,6 @@ assert(app.$storage.enabled, 'Пожалуйста, выйдите из прив
  * @link http://v4-alpha.getbootstrap.com/content/reboot/#click-delay-optimization-for-touch
  */
 document.addEventListener('DOMContentLoaded', () => FastClick.attach(document.body), false);
-
-/** А для разработки выкидываем его глобально */
-if (process.env.NODE_ENV == 'development') {
-  window.app = app;
-}
 
 // prime the store with server-initialized state.
 // the state is determined during SSR and inlined in the page markup.
@@ -73,3 +92,8 @@ router.onReady(() => app.$mount('#app'));
 // if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
 //   navigator.serviceWorker.register('/service-worker.js')
 // }
+
+/** Для разработки выкидываем приложение глобально */
+if (process.env.NODE_ENV == 'development') {
+  window.app = app;
+}

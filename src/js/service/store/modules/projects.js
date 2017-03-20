@@ -197,19 +197,23 @@ const actions = {
   // dispatch('projects/fetch')
   async fetch ({ commit }, query = {}) {
     const res = await api.post('/project/get', query);
-    const { data } = res.body;
 
-    return data;
+    return res.data;
   },
 
   // dispatch('projects/fetchTree')
   async fetchTree ({ commit }, query = {}) {
-    const res = await api.post('/project/tree', query);
-    const { data } = res.body;
+    let res;
+    try {
+      res = await api.post('/project/tree', query);
+    } catch (err) {
+      commit('RESET_LIST', []);
+      throw err;
+    }
 
-    commit('RESET_LIST', data);
+    commit('RESET_LIST', res.data);
 
-    return data;
+    return res.data;
   },
 
   getOrderedItemsByParentId ({ state }, parentId) {

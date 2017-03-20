@@ -27,14 +27,15 @@
       ><i class="i -notification-times"></i></div>
       
       <div class="content">
-        <h3 v-if="item.title" v-html="item.title"></h3>
-        <div v-if="item.content" v-html="item.content"></div>
+        <h3 v-if="item.title" v-html="nl2br(item.title)"></h3>
+        <div v-if="item.content" v-html="nl2br(item.content)"></div>
       </div>
     </div>
   </transition-group>
 </template>
 
 <script>
+  import { nl2br } from '../../filters';
   import { mapActions, mapGetters, mapMutations } from 'vuex';
   
   export default {
@@ -57,6 +58,7 @@
     },
     
     methods: {
+      nl2br,
       ...mapActions('messages', ['close']),
       ...mapMutations({
         reset: 'messages/reset_list'

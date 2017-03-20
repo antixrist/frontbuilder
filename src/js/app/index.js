@@ -7,6 +7,8 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import { sync } from 'vuex-router-sync';
+import * as filters from './filters';
+import * as directives from './directives';
 import * as services from '../service';
 import '../../styles/main.scss';
 
@@ -40,6 +42,15 @@ Object.defineProperties(Vue.prototype, {
   $progress: {
     get () { return progress; }
   }
+});
+
+/** Устанавливаем фильтры и директивы */
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+});
+
+Object.keys(directives).forEach(key => {
+  Vue.directive(key, directives[key])
 });
 
 /**

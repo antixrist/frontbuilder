@@ -1,7 +1,36 @@
+/**
+ * @typedef {{}} AxiosResponseDetails
+ * @property {boolean} is1xx
+ * @property {boolean} is2xx
+ * @property {boolean} is3xx
+ * @property {boolean} is4xx
+ * @property {boolean} is5xx
+ * @property {boolean} isOldIEXDomainRequest
+ * @property {boolean} isUnknownStatus
+ * @property {boolean} isRedirect
+ * @property {boolean} canBeRetried
+ * @property {boolean} hasEmptyBody
+ * @property {boolean} bodyShouldBeEmpty
+ */
+
+/**
+ * @typedef {{}} AxiosErrorDetails
+ * @property {boolean} HttpError
+ * @property {(boolean|{})} RequestError
+ * @property {boolean} [RequestError.isTimeout]
+ * @property {boolean} [RequestError.isXhrError]
+ * @property {boolean} [RequestError.isCanceled]
+ * @property {boolean} [RequestError.isBadConnection]
+ * @property {boolean} [RequestError.isBadTransformData]
+ * @property {boolean} [RequestError.isUnknown]
+ * @property {(boolean|{})} ResponseError
+ * @property {boolean} [ResponseError.isStatusRejected]
+ * @property {boolean} [ResponseError.isMaxContentLengthOverflow]
+ */
+
 import d from 'd';
 import _ from 'lodash';
 import { isCancel } from 'axios';
-import { errorToJSON } from '../../../utils';
 import statuses from 'statuses';
 
 normalizeErrors.destroy = destroy;
@@ -47,8 +76,8 @@ function requestInterceptorResolve (config) {
 }
 
 /**
- * @param {AxiosError} err
- * @returns {Promise<AxiosError>}
+ * @param {AxiosError|Error} err
+ * @returns {Promise<AxiosError|Error>}
  */
 function requestInterceptorReject (err) {
   return Promise.reject(enhanceAxiosError(err));
@@ -63,16 +92,16 @@ function responseInterceptorResolve (response) {
 }
 
 /**
- * @param {AxiosError} err
- * @returns {Promise<AxiosError>}
+ * @param {AxiosError|Error} err
+ * @returns {Promise<AxiosError|Error>}
  */
 function responseInterceptorReject (err) {
   return Promise.reject(enhanceAxiosError(err));
 }
 
 /**
- * @param {AxiosError} err
- * @returns {AxiosError}
+ * @param {AxiosError|Error} err
+ * @returns {AxiosError|Error}
  */
 export function enhanceAxiosError (err) {
   const errorExtendedData = getAxiosErrorDetails(err);
@@ -82,9 +111,9 @@ export function enhanceAxiosError (err) {
     enhanceAxiosResponse(err.response);
   }
 
-  Object.defineProperty(err, 'HttpError', d('e', true));
+  Object.defineProperty(err, 'HttpError', d('we', true));
   Object.keys(errorExtendedData).forEach(key => {
-    Object.defineProperty(err, key, d('e', errorExtendedData[key]));
+    Object.defineProperty(err, key, d('we', errorExtendedData[key]));
   });
   
   return err;
@@ -98,14 +127,14 @@ export function enhanceAxiosResponse (response) {
   const responseExtendedData = getAxiosResponseDetails(response);
   
   Object.keys(responseExtendedData).forEach(key => {
-    Object.defineProperty(response, key, d('e', responseExtendedData[key]));
+    Object.defineProperty(response, key, d('we', responseExtendedData[key]));
   });
 
   return response;
 }
 
 /**
- * @param {AxiosError} err
+ * @param {AxiosError|Error} err
  * @returns {AxiosErrorDetails}
  */
 export function getAxiosErrorDetails (err) {
@@ -175,11 +204,11 @@ export function getAxiosErrorDetails (err) {
   /** запрос отменён */
   const isCanceled = isCancel(err);
   /** сработал таймаут */
-  const isTimeout = timeoutCodes.includes[code];
+  const isTimeout = timeoutCodes.includes(code);
   /** xhr-ошибка, не имеющая подробных характеристик */
   const isXhrError = message === xhrErrorMessage;
   /** возможно, хреновое соединение */
-  const isBadConnection = isXhrError || connectionProblemCodes.includes[code];
+  const isBadConnection = isXhrError || connectionProblemCodes.includes(code);
     
   const retVal = {
     RequestError: false,
@@ -219,7 +248,7 @@ export function getAxiosErrorDetails (err) {
        * если кода нет или это какое-то необработанное строковое значение,
        * то пометим ошибку как неизвестную
        */
-      isUnknown: !err.code || !_.isNumber(err.code)
+      isUnknown: !isCanceled && !isBadConnection && !isTimeout && !isBadTransformData
     };
   } else {
     /** иначе это ошибка ответа */
@@ -236,7 +265,6 @@ export function getAxiosErrorDetails (err) {
   
     retVal.ResponseError = {
       isStatusRejected,
-      isOldIEXDomainRequest,
       isMaxContentLengthOverflow
     };
   }
@@ -251,17 +279,19 @@ export function getAxiosErrorDetails (err) {
 export function getAxiosResponseDetails (res) {
   const { status = 0 } = res;
   
-  const isRedirect         = status && statuses.redirect[status];
-  const canBeRetried       = status && statuses.retry[status];
-  const hasEmptyBody       = !res.data;
-  const shouldHasEmptyBody = status && statuses.empty[status];
-  
   const is1xx = status >= 100 && status < 200;
   const is2xx = status >= 200 && status < 300;
   const is3xx = status >= 300 && status < 400;
   const is4xx = status >= 400 && status < 500;
   const is5xx = status >= 500;
-  const isUnknownStatus = !statuses[status];
+  /** `response`-то есть, а вот статуса нет. значит это старый ишак */
+  const isOldIEXDomainRequest = !status;
+  const isUnknownStatus = !isOldIEXDomainRequest && !statuses[status];
+  
+  const isRedirect        = status && !!statuses.redirect[status];
+  const canBeRetried      = status && !!statuses.retry[status];
+  const hasEmptyBody      = !res.data;
+  const bodyShouldBeEmpty = status && !!statuses.empty[status];
   
   return {
     is1xx,
@@ -269,39 +299,12 @@ export function getAxiosResponseDetails (res) {
     is3xx,
     is4xx,
     is5xx,
+    isOldIEXDomainRequest,
     isUnknownStatus,
   
     isRedirect,
     canBeRetried,
     hasEmptyBody,
-    shouldHasEmptyBody
+    bodyShouldBeEmpty
   };
 }
-
-/**
- * @typedef {{}} AxiosResponseDetails
- * @property {boolean} is1xx
- * @property {boolean} is2xx
- * @property {boolean} is3xx
- * @property {boolean} is4xx
- * @property {boolean} is5xx
- * @property {boolean} isUnknownStatus
- * @property {boolean} isRedirect
- * @property {boolean} canBeRetried
- * @property {boolean} hasEmptyBody
- * @property {boolean} shouldHasEmptyBody
- */
-
-/**
- * @typedef {{}} AxiosErrorDetails
- * @property {(boolean|{})} RequestError
- * @property {boolean} [RequestError.isTimeout]
- * @property {boolean} [RequestError.isXhrError]
- * @property {boolean} [RequestError.isCanceled]
- * @property {boolean} [RequestError.isBadConnection]
- * @property {boolean} [RequestError.isBadTransformData]
- * @property {(boolean|{})} ResponseError
- * @property {boolean} [ResponseError.isStatusRejected]
- * @property {boolean} [ResponseError.isOldIEXDomainRequest]
- * @property {boolean} [ResponseError.isMaxContentLengthOverflow]
- */

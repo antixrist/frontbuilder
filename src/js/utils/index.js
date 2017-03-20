@@ -6,7 +6,9 @@ export * from './errors';
  */
 export function assert (condition = true, message = '') {
   if (!condition && message) {
-    throw new Error(`${message}`)
+    const err = new Error(`${message}`);
+    err.isAssertFailed = true;
+    throw err;
   }
 }
 

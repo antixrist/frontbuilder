@@ -60,41 +60,32 @@ const actions = {
   async login ({ commit }, { username, password }) {
     commit('setLoginStatus', { loading: true });
 
+    let res;
     try {
-      const res = await api.post('/login', { login: username, password });
-      const { body } = res;
-      const { data } = res.body;
+      res = await api.post('/login', { login: username, password });
+    } catch (err) {
+      commit('setLoginStatus', { success: false, loading: false });
+      throw err;
+    }
+  
+    if (res.success) {
+      const data = res.data;
+      delete res.data;
+    
       const token = data[API_TOKEN_NAME];
-
-      delete body.data;
       delete data[API_TOKEN_NAME];
-
-      commit('setLoginStatus', { ...body, loading: false });
+    
       commit('updateInfo', { username, ...data });
       storage.set('token', token);
-
-    } catch (err) {
-      let handled = false;
-      let meta = { loading: false, success: false };
-
-      if (err.code == 422 || err.code == 401) {
-        const { response } = err;
-
-        if (response.body && response.body.errors) {
-          const { errors } = response.body;
-          if (errors.login) {
-            errors.username = errors.login;
-            delete errors.login;
-          }
-        }
-
-        handled = true;
-        meta = Object.assign({}, response.body, meta);
+    } else {
+      const { errors } = res;
+      if (errors.login) {
+        errors.username = errors.login;
+        delete errors.login;
       }
-
-      commit('setLoginStatus', meta);
-      if (!handled) { throw err; }
     }
+  
+    commit('setLoginStatus', { ...res, loading: false });
   },
 
   // dispatch('account/logout')

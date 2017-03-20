@@ -1,11 +1,20 @@
+import d from 'd';
 import _ from 'lodash';
 import { API_URL } from '../../config';
 import storage from '../storage';
 import progress from '../progress';
+import status from 'statuses';
 import { errorToJSON, getStackFrames } from '../../utils';
 import { http } from '../../factory';
-import createError from 'axios/lib/core/createError';
+import axiosCreateError from 'axios/lib/core/createError';
 import { enhanceAxiosError } from '../../factory/http/axios-plugins/detailed';
+
+function createError (msg, config, code, response) {
+  const err = axiosCreateError(msg, config, code, response);
+  return enhanceAxiosError(err);
+}
+
+const LOCAL_ERROR_CODES = [400, 422, 800];
 
 const api = http({
   method: 'post',
@@ -18,27 +27,26 @@ const api = http({
 });
 
 /** Пологируем */
-// api.interceptors.request.use(
-//   config => {
-//     console.log('interceptors request', _.cloneDeep(config));
-//     return config;
-//   },
-//   err => {
-//     console.log('interceptors request err', errorToJSON(err), err);
-//     return Promise.reject(err);
-//   }
-// );
-//
-// api.interceptors.response.use(
-//   config => {
-//     console.log('interceptors response', _.cloneDeep(response));
-//     return config;
-//   },
-//   err => {
-//     console.log('interceptors response err', errorToJSON(err), err, err.code);
-//     return Promise.reject(err);
-//   }
-// );
+api.interceptors.request.use(
+  config => {
+    console.log('[start] request', _.cloneDeep(config));
+    return config;
+  },
+  err => {
+    console.log('[start] request error', err, errorToJSON(err));
+    return Promise.reject(err);
+  }
+);
+api.interceptors.response.use(
+  res => {
+    console.log('[start] response', _.cloneDeep(res));
+    return res;
+  },
+  err => {
+    console.log('[start] response error', err, errorToJSON(err));
+    return Promise.reject(err);
+  }
+);
 
 /** Подставим api_token во все запросы к api */
 api.interceptors.request.use(config => {
@@ -92,114 +100,252 @@ api.interceptors.response.use(
   }
 );
 
-function isInvalidResponseBody (res) {
-  return typeof res.body.success == 'undefined';
+/**
+ * Если ответ пришёл с 5xx-ошибкой, то на сервере что-то поломалось и валидный json совершенно не обязателен.
+ * Или по http-канонам ответ может быть пустым. Тогда тоже всё нормально (вроде как).
+ *
+ * @param {AxiosResponse} response
+ * @returns {boolean}
+ */
+function apiResponseBodyCanBeInvalid (response) {
+  return (response.is5xx || response.bodyShouldBeEmpty);
 }
 
-function formatInvalidResponseBody (res) {
-  const { body, config, status } = res;
+/**
+ * Если ответ пустой или это не json
+ *
+ * @param body
+ * @returns {boolean}
+ */
+function isInvalidApiResponseBody (body) {
+  return (!body || !_.isPlainObject(body));
+}
 
-  const code = typeof body.code != 'undefined' ? body.code : status;
-  // проверка на success - прямиком из `axios/lib/core/settle`
-  const success = !code || !config.validateStatus || config.validateStatus(code);
-  const message = typeof body.message != 'undefined' ? body.message : '';
+/**
+ * json-ответ от api обязательно должен иметь поле `success`
+ *
+ * @param body
+ * @returns {boolean}
+ */
+function apiResponseDataHasValidFormat (body) {
+  return typeof body.success != 'undefined';
+}
 
-  res.body = { success, code, message };
-  if (success) {
-    res.body.data = _.omit(body, ['success', 'code', 'message']);
-  } else {
-    res.body.errors = _.omit(body, ['success', 'code', 'message']);
-  }
-
-  // подчистим только что установленные, но `undefined` пропертя
-  Object.keys(res.body).forEach(prop => {
-    if (typeof res.body[prop] == 'undefined') {
-      delete res.body[prop];
-    }
+/**
+ * @param {{}} data
+ * @returns {{success: true, message: String, data: {}}}
+ */
+export function getSuccessJson (data = {}) {
+  return _.merge({
+    message: '',
+    data: {}
+  }, data || {}, {
+    success: true,
   });
-
-  return res;
 }
 
-function isApiError (res) {
-  return typeof res.body != 'undefined' && typeof res.body.success != 'undefined' && !res.body.success;
+/**
+ * @param {{}} extend
+ * @returns {{success: false, message: String, code: Number, errors: {}}}
+ */
+export function getFailedJson (extend = {}) {
+  const retVal = _.merge({
+    message: '',
+    code: 0,
+    errors: {}
+  }, extend || {}, {
+    success: false,
+  });
+  
+  retVal.code = retVal.code ? parseInt(retVal.code, 10) : retVal.code;
+  
+  return retVal;
 }
 
-function formatApiErrorResponseBody (res) {
-  if (res.body.error) {
-    Object.assign(res.body, res.body.error || {});
-    delete res.body.error;
+/**
+ * @param body
+ * @returns {{}}
+ */
+function formatApiResponse (body) {
+  if (body.error) {
+    body.success = false;
+    Object.assign(body, body.error);
+    delete body.error;
   }
-  if (res.body.data) {
-    Object.assign(res.body, { errors: res.body.data });
-    delete res.body.data;
+  
+  const possibleTopLevelProps = body.success ? _.keys(getSuccessJson()) : _.keys(getFailedJson());
+  
+  let data = _.omit(body, possibleTopLevelProps);
+  body = _.pick(body, possibleTopLevelProps);
+  
+  if (body.success) {
+    body.data = body.data ? _.merge(body.data, data) : data;
+  } else {
+    body.errors = body.errors ? _.merge(body.errors, data) : data;
+    
   }
-
-  if (res.body.code) {
-    res.body.code = parseInt(res.body.code, 10);
-  }
-
-  res.body.success = false;
+  
+  return body.success ? getSuccessJson(body) : getFailedJson(body);
 }
 
-function formatApiResponse (res) {
-  if (isInvalidResponseBody(res)) {
-    formatInvalidResponseBody(res);
+/**
+ * На этом шаге проверим - если нам не пришёл распарсенный json, то нормально ли это.
+ * Если нет - вернём ошибку с соответствующей пометкой.
+ */
+api.interceptors.response.use(
+  res => {
+    if ((isInvalidApiResponseBody(res.body) && !apiResponseBodyCanBeInvalid(res))) {
+      const err = createError('', res.config, res.status, res);
+      Object.defineProperty(err, 'isInvalidApiResponseBody', d('e', true));
+    
+      return Promise.reject(err);
+    }
+    
+    return res;
+  },
+  err => {
+    const hasInvalidBody = !!(err.response && isInvalidApiResponseBody(err.response.body) && !apiResponseBodyCanBeInvalid(err.response));
+    Object.defineProperty(err, 'isInvalidApiResponseBody', d('e', hasInvalidBody));
+    
+    return Promise.reject(err);
   }
+);
 
-  const isError = isApiError(res);
-
-  res.body.success = !isError;
-  isError && formatApiErrorResponseBody(res);
-}
-
+/**
+ * Теперь здесь надо проверить валидность формата пришедшего json.
+ * Если он не валидный, то попытаться привести его к нормальному виду.
+ */
 api.interceptors.response.use(res => {
-  if (!res.body) { return res; }
-
+  /** На этом этапе будет либо валидный json, либо разрешённый http-канонами пустой ответ */
+  
+  /** Если ответ пуст, то просто запишем дефолтовый ответ с `success === true` */
+  if (res.hasEmptyBody) {
+    res.body = getSuccessJson();
+  }
+  
+  // /** теперь проверим - а в правильном ли формате? */
+  // if (!apiResponseDataHasValidFormat(res.body)) {
+  //   res.body.success = true;
+  // }
+  
+  /** причешем конечный json */
+  res.body.success = true;
+  res.body = formatApiResponse(res.body);
+  
+  const { body, config } = res;
+  
   /**
-   * так же ответ может приходить таким, что он не соответствует принятой схеме.
-   * обработаем этот момент.
+   * Теперь в чём прикол.
+   * Если у нас `success === false`, то в теле ответа может присутствовать ненулевой `code`.
+   * Вот здесь-то и надо захардкодить те коды, которые должны обрабатываться снаружи глобальным обработчиком,
+   * а какие оставлять в теле ответа, чтобы обрабатывать на месте.
    */
-
-  formatApiResponse(res);
-
-  if (!res.body.success) {
+  if (!body.success && body.code && !LOCAL_ERROR_CODES.includes(body.code)) {
     /**
-     * здесь любой неудачный ответ завернём в инстанс ошибки.
-     * сделаем это родной для axios'а функцией `createError`
-     * и нашим улучшателем ошибок ответа сервера
+     * т.е. в json'е есть ненулевой код (это может быть, к примеру, 401, 403, 500 и т.д.)
+     * и этот код надо выкидывать наружу.
      */
-
-    const err = createError(res.body.message || '', res.config, res.body.code || res.status, res);
-    return Promise.reject(enhanceResponseError(err));
-  }
-
-  return res;
-}, err => Promise.reject(err));
-
-api.interceptors.response.use(res => res, err => {
-  const { response: res } = err;
-  
-  console.log('err', errorToJSON(err));
-  
-  // err.isBadApiRequest = true;
-  
-  if (res) {
-    formatApiResponse(res);
+    
+    res.status = body.code;
+    res.statusText = status[body.code];
+    
+    const err = createError(body.message || '', config, body.code, res);
+    return Promise.reject(enhanceAxiosError(err));
   }
   
-  const errCode = _.get(res, 'body.code') || res.status;
-  const errMessage = _.get(res, 'body.message') || err.message;
+  /** возвращаем json-ответ */
+  return body;
+}, err => {
+  /** Здесь надо учесть ещё и все те ошибки, которые были созданы вручную, шагами выше. */
+  
+  /**
+   * Если мы оказались в этом catch-блоке потому,
+   * что не прошла валидация в `config.validateStatus`
+   */
+  if (err.ResponseError && err.ResponseError.isStatusRejected) {
+    /**
+     * сотрём axios'овское захардкоженное обобщённое сообщение об ошибке
+     * @link @link https://github.com/mzabriskie/axios/blob/master/lib/core/settle.js#L19
+     */
+    err.message = '';
+    
+    let { code, message } = err;
+    
+    /** если есть нормальное тело ответа */
+    if (!err.isInvalidApiResponseBody) {
+      const { response: res } = err;
 
-  err.code = err.statusCode = errCode;
-  err.message = errMessage;
-  if (res.body) {
-    res.body.code = errCode;
-    res.body.message = errMessage;
+      /** Если ответ пуст, то просто запишем дефолтовый ответ с `success === false` */
+      if (res.hasEmptyBody) {
+        res.body = getFailedJson();
+      }
+  
+      /** причешем конечный json */
+      res.body.success = false;
+      res.body = formatApiResponse(res.body);
+  
+      const { body } = res;
+      
+      /**
+       * теперь вытащим код и сообщение из json-ответа,
+       * если такие есть с фоллбеком на уже имеющиеся
+       */
+      code = body.code || code;
+      message = body.message || message;
+  
+      /**
+       * и вот если этот код входит в список "локальных",
+       * т.е. такую ошибку **не надо** выкидывать глобально
+       */
+      if (LOCAL_ERROR_CODES.includes(code)) {
+        /** то вернём **json с ошибкой**, а **не объект Error** */
+        res.body = getFailedJson({
+          code,
+          message
+        });
+  
+        /** возвращаем json-ответ */
+        return res.body;
+      } else {
+        /** иначе просто перезапишем у ошибки код и сообщение */
+        err.code = code;
+        err.message = message;
+      }
+    }
   }
-
+  
   return Promise.reject(err);
 });
+
+/** Пологируем */
+api.interceptors.request.use(
+  config => {
+    console.log('[end] request', _.cloneDeep(config));
+    return config;
+  },
+  err => {
+    console.log('[end] request error', err, errorToJSON(err));
+    return Promise.reject(err);
+  }
+);
+api.interceptors.response.use(
+  res => {
+    console.log('[end] response', _.cloneDeep(res));
+    return res;
+  },
+  err => {
+    console.log('[end] response error', err, errorToJSON(err));
+    return Promise.reject(err);
+  }
+);
+
+
+
+
+
+
+
+
 
 export async function reportError (data, opts = {}) {
   const { error } = data;

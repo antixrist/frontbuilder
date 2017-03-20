@@ -18,16 +18,12 @@
   import _ from 'lodash';
   import Vue from 'vue';
   import { mapState, mapGetters, mapActions } from 'vuex';
-  import { HttpError } from '../factory/http/errors';
   
   /** Общие для всего приложения UI-компоненты */
   Vue.component('modal',         require('./ui/modal/index.vue'));
   Vue.component('check-box',     require('./ui/check-box/index.vue'));
   Vue.component('notifications', require('./ui/notifications/index.vue'));
-  Vue.directive('focus', {
-    inserted (el) { el.focus(); }
-  });
-  
+
   export default {
     components: {
       login: require('./views/login/index.vue')
@@ -49,60 +45,111 @@
         logout: 'account/logout',
         showError: 'messages/error',
       }),
-      showCommonError: _.debounce(function (msg) {
+      showErrorDebounced: _.debounce(function (msg) {
         this.showError(msg);
       }, 100)
     },
     created () {
       this.$bus.on('uncaughtException', err => {
-        /**
-         * а теперь можно систематизировать и захардкодить ошибки,
-         * которые можно будет обрабатывать внутри приложения
-         */
+        let debounced = false;
+        const bubble = {
+          title: '',
+          content: ''
+        };
 
-        if (!!err.CONNECTION_ERROR) {
-          this.showCommonError({
-            title: 'Ошибка соединения',
-            content: 'Проверьте соединение с интернетом'
-          });
-        } else
-        if (!!err.HTTP_ERROR) {
-          let message;
-        
-          if (err.SERVER_ERROR) {
-            this.showError({
-              title: 'Ошибка на стороне сервера',
-              content: 'Специалисты уже извещены и занимаются скорейшим восстановлением работоспособности приложения'
-            });
-          } else {
-            switch (err.code) {
-              case 401:
-                message = 'Авторизуйтесь';
-                break;
-              case 403:
-                message = 'Доступ запрещён';
-                break;
-              case 404:
-                message = 'Запрашиваемый адрес не существует';
-                break;
-              case 800:
-                message = 'Объект уже существует';
-                break;
-              case 422:
-                message = 'Неверные данные';
-                break;
+        /** ошибка ajax-запроса */
+        if (err.HttpError) {
+          bubble.title = 'Ошибка запроса';
+
+          /** исходящая ошибка */
+          if (err.RequestError) {
+            const {
+              isTimeout,
+              isXhrError,
+              isCanceled,
+              isBadConnection,
+              isBadTransformData,
+              isUnknown
+            } = err.RequestError;
+
+            if (isTimeout) {
+              bubble.content = `Истекло время ожидания ответа.
+                                Сервер не отвечает или отсутствует соединение с сетью.`;
             }
 
-            this.showError({
-              title: err.message || message
-            });
+            if (isXhrError || isBadConnection || isUnknown) {
+              bubble.content = 'Пожалуйста, проверьте соединение с сетью';
+            }
+
+            if (isBadTransformData) {
+              bubble.content = `Неправильное преобразование данных запроса.
+                                Специалисты уже извещены о проблеме.`;
+            }
+
+            if (isCanceled) {
+              // запрос отменён
+            }
+          } else
+          /** входящая ошибка */
+          if (err.ResponseError) {
+            const {
+              isStatusRejected,
+              isMaxContentLengthOverflow
+            } = err.RequestError;
+
+            if (isStatusRejected) {
+              switch (err.code) {
+                case 401:
+                  bubble.content = 'Пожалуйста, авторизуйтесь';
+                  break;
+                case 403:
+                  bubble.content = 'Доступ запрещён';
+                  break;
+                case 404:
+                  bubble.content = 'Запрашиваемый адрес не существует';
+                  break;
+                default:
+                  if (err.response.is5xx) {
+                    if (err.response.canBeRetried) {
+                      bubble.content = `Ошибка на стороне сервера.
+                                        Пожалуйста, повторите позже`;
+                    } else {
+                      bubble.content = `Ошибка на стороне сервера.
+                                        Специалисты уже извещены о проблеме.`;
+                    }
+                  }
+              }
+            }
+
+            if (isMaxContentLengthOverflow) {
+              bubble.content = 'Слишком большой ответ от сервера';
+            }
+          } else
+          /** сервер вернул невалидный json */
+          if (err.isInvalidApiResponseBody) {
+            bubble.content = `Сервер вернул неверные данные.
+                              Специалисты уже извещены о проблеме.`;
+          }
+          /** что-то непонятное с запросом */
+          else {
+            debounced = true;
+            bubble.content = `Возможно отсутствует соединение с сетью.
+                              Специалисты уже извещены о проблеме.`;
           }
         } else {
-          this.showCommonError({
-            title: 'Ошибка в приложении',
-            content: 'Специалисты уже в курсе и занимаются скорейшим восстановлением работоспособности приложения'
-          });
+          bubble.title = 'Ошибка приложения';
+
+          if (err.isAssertFailed) {
+            bubble.content = err.message;
+          }
+          /** что-то поломалось внутри */
+          else {
+            debounced = true;
+            bubble.content = `Специалисты уже извещены о проблеме`;
+          }
         }
+
+        this[debounced ? 'showErrorDebounced' : 'showError'](bubble);
 
         console.error(err);
       });
