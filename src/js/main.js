@@ -48,7 +48,7 @@ async function globalErrorsHandler (err) {
       const {
         isStatusRejected,
         isMaxContentLengthOverflow
-      } = err.RequestError;
+      } = err.ResponseError;
       
       /** если это http-ошибка, то тоже отчёт не нужен */
       if (isStatusRejected) {

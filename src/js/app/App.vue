@@ -60,7 +60,7 @@
         /** ошибка ajax-запроса */
         if (err.HttpError) {
           bubble.title = 'Ошибка запроса';
-
+          
           /** исходящая ошибка */
           if (err.RequestError) {
             const {
@@ -95,12 +95,15 @@
             const {
               isStatusRejected,
               isMaxContentLengthOverflow
-            } = err.RequestError;
+            } = err.ResponseError;
 
             if (isStatusRejected) {
               switch (err.code) {
                 case 401:
                   bubble.content = 'Пожалуйста, авторизуйтесь';
+                  
+                  this.$router.push({ name: 'logout' });
+                  
                   break;
                 case 403:
                   bubble.content = 'Доступ запрещён';
@@ -149,7 +152,7 @@
           }
         }
 
-        this[debounced ? 'showErrorDebounced' : 'showError'](bubble);
+        bubble.title && bubble.content && this[debounced ? 'showErrorDebounced' : 'showError'](bubble);
 
         console.error(err);
       });
