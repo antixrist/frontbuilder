@@ -7,10 +7,9 @@
 import 'babel-polyfill';
 import _ from 'lodash';
 import Vue from 'vue';
+import Vuex from 'vuex';
 import FastClick from 'fastclick';
-import { isDevelopment } from './config';
 import { assert, getErrorFromUncaughtException, getErrorFromUnhandledRejection } from './utils';
-import { reportError } from './service/api';
 import { app, store, router } from './app';
 
 /**
@@ -23,48 +22,8 @@ Vue.config.errorHandler = globalErrorsHandler;
 
 /** тот самый обработчик необработанных ошибок */
 async function globalErrorsHandler (err) {
-  let needReportError = true;
-  
-  if (err.HttpError) {
-    if (err.RequestError) {
-      const {
-        isTimeout,
-        isXhrError,
-        isCanceled,
-        isBadConnection,
-        isBadTransformData,
-        isUnknown
-      } = err.RequestError;
-      
-      // если это отменённый запрос, то делать, в принципе, ничего не надо
-      if (isCanceled) { return; }
-      
-      /** скорее всего проблемы с сетью или с сервером */
-      if (isXhrError || isBadConnection || isUnknown || isTimeout) {
-        needReportError = false;
-      }
-    } else
-    if (err.ResponseError) {
-      const {
-        isStatusRejected,
-        isMaxContentLengthOverflow
-      } = err.ResponseError;
-      
-      /** если это http-ошибка, то тоже отчёт не нужен */
-      if (isStatusRejected) {
-        needReportError = false;
-      }
-    }
-  }
-
   // прокидываем ошибку в приложение
   app.$bus.emit('uncaughtException', err);
-
-  // если у нас продакшн и это не ошибка сети
-  if (!isDevelopment && needReportError) {
-    // то отправим её на сервер
-    await reportError({ err });
-  }
 }
 
 /** Теперь можно глобально выкидывать ошибки без обработчиков */

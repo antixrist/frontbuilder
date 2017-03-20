@@ -18,7 +18,9 @@
   import _ from 'lodash';
   import Vue from 'vue';
   import { mapState, mapGetters, mapActions } from 'vuex';
-  
+  import { isDevelopment } from '../config';
+  import { reportError } from '../service/api';
+
   /** Общие для всего приложения UI-компоненты */
   Vue.component('modal',         require('./ui/modal/index.vue'));
   Vue.component('check-box',     require('./ui/check-box/index.vue'));
@@ -50,9 +52,11 @@
       }, 100)
     },
     created () {
-      this.$bus.on('uncaughtException', err => {
+      this.$bus.on('uncaughtException', async err => {
         let debounced = false;
-        const bubble = {
+        let needReport = true;
+        
+        let bubble = {
           title: '',
           content: ''
         };
@@ -73,11 +77,13 @@
             } = err.RequestError;
 
             if (isTimeout) {
+              needReport = false;
               bubble.content = `Истекло время ожидания ответа.
                                 Сервер не отвечает или отсутствует соединение с сетью.`;
             }
 
             if (isXhrError || isBadConnection || isUnknown) {
+              needReport = false;
               bubble.content = 'Пожалуйста, проверьте соединение с сетью';
             }
 
@@ -87,7 +93,9 @@
             }
 
             if (isCanceled) {
-              // запрос отменён
+              // запрос отменён пользователем
+              bubble = false;
+              needReport = false;
             }
           } else
           /** входящая ошибка */
@@ -98,12 +106,13 @@
             } = err.ResponseError;
 
             if (isStatusRejected) {
+              needReport = false;
+              
               switch (err.code) {
                 case 401:
                   bubble.content = 'Пожалуйста, авторизуйтесь';
-                  
+                  // отправляем на выход
                   this.$router.push({ name: 'logout' });
-                  
                   break;
                 case 403:
                   bubble.content = 'Доступ запрещён';
@@ -112,6 +121,7 @@
                   bubble.content = 'Запрашиваемый адрес не существует';
                   break;
                 default:
+                  // если это ошибка сервера
                   if (err.response.is5xx) {
                     if (err.response.canBeRetried) {
                       bubble.content = `Ошибка на стороне сервера.
@@ -139,9 +149,13 @@
             bubble.content = `Возможно отсутствует соединение с сетью.
                               Специалисты уже извещены о проблеме.`;
           }
-        } else {
+        }
+        // это не ajax-ошибка, а что-то внутреннее
+        else {
+          
           bubble.title = 'Ошибка приложения';
-
+          
+          // это кастомные ошибки через assert, с нормальными сообщениями
           if (err.isAssertFailed) {
             bubble.content = err.message;
           }
@@ -152,9 +166,15 @@
           }
         }
 
-        bubble.title && bubble.content && this[debounced ? 'showErrorDebounced' : 'showError'](bubble);
+        bubble && this[debounced ? 'showErrorDebounced' : 'showError'](bubble);
 
         console.error(err);
+
+        // если у нас продакшн и это не ошибка сети
+        if (!isDevelopment && needReport) {
+          // то отправим её на сервер
+          await reportError({ err });
+        }
       });
     },
     async mounted () {

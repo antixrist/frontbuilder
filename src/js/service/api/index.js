@@ -1,6 +1,6 @@
 import d from 'd';
 import _ from 'lodash';
-import { API_URL } from '../../config';
+import { API_URL, logApiRequests } from '../../config';
 import storage from '../storage';
 import progress from '../progress';
 import status from 'statuses';
@@ -27,26 +27,28 @@ const api = http({
 });
 
 /** Пологируем */
-api.interceptors.request.use(
-  config => {
-    console.log('[start] request', _.cloneDeep(config));
-    return config;
-  },
-  err => {
-    console.log('[start] request error', err, errorToJSON(err));
-    return Promise.reject(err);
-  }
-);
-api.interceptors.response.use(
-  res => {
-    console.log('[start] response', _.cloneDeep(res));
-    return res;
-  },
-  err => {
-    console.log('[start] response error', err, errorToJSON(err));
-    return Promise.reject(err);
-  }
-);
+if (logApiRequests) {
+  api.interceptors.request.use(
+    config => {
+      console.log('[start] request', _.cloneDeep(config));
+      return config;
+    },
+    err => {
+      console.log('[start] request error', err, errorToJSON(err));
+      return Promise.reject(err);
+    }
+  );
+  api.interceptors.response.use(
+    res => {
+      console.log('[start] response', _.cloneDeep(res));
+      return res;
+    },
+    err => {
+      console.log('[start] response error', err, errorToJSON(err));
+      return Promise.reject(err);
+    }
+  );
+}
 
 /** Подставим api_token во все запросы к api */
 api.interceptors.request.use(config => {
@@ -133,7 +135,7 @@ function apiResponseDataHasValidFormat (body) {
 
 /**
  * @param {{}} data
- * @returns {{success: true, message: String, data: {}}}
+ * @returns {{success: Boolean, message: String, data: {}}}
  */
 export function getSuccessJson (data = {}) {
   return _.merge({
@@ -146,7 +148,7 @@ export function getSuccessJson (data = {}) {
 
 /**
  * @param {{}} extend
- * @returns {{success: false, message: String, code: Number, errors: {}}}
+ * @returns {{success: Boolean, message: String, code: Number, errors: {}}}
  */
 export function getFailedJson (extend = {}) {
   const retVal = _.merge({
@@ -318,26 +320,28 @@ api.interceptors.response.use(res => {
 });
 
 /** Пологируем */
-api.interceptors.request.use(
-  config => {
-    console.log('[end] request', _.cloneDeep(config));
-    return config;
-  },
-  err => {
-    console.log('[end] request error', err, errorToJSON(err));
-    return Promise.reject(err);
-  }
-);
-api.interceptors.response.use(
-  res => {
-    console.log('[end] response', _.cloneDeep(res));
-    return res;
-  },
-  err => {
-    console.log('[end] response error', err, errorToJSON(err));
-    return Promise.reject(err);
-  }
-);
+if (logApiRequests) {
+  api.interceptors.request.use(
+    config => {
+      console.log('[end] request', _.cloneDeep(config));
+      return config;
+    },
+    err => {
+      console.log('[end] request error', err, errorToJSON(err));
+      return Promise.reject(err);
+    }
+  );
+  api.interceptors.response.use(
+    res => {
+      console.log('[end] response', _.cloneDeep(res));
+      return res;
+    },
+    err => {
+      console.log('[end] response error', err, errorToJSON(err));
+      return Promise.reject(err);
+    }
+  );
+}
 
 
 
