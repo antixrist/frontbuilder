@@ -6,21 +6,16 @@
   import { formErrors } from '../../mixins';
   import { mapActions, mapState, mapMutations } from 'vuex';
   
-  let wasAttempts = false;
-  
   export default {
     name: 'login',
-//    mixins: [ formErrors('formErrors') ],
+    mixins: [ formErrors('formErrors') ],
     data () {
       return {
+        loading: false,
         password: ''
       };
     },
     computed: {
-      ...mapState('account', {
-        code: state => state.meta.login.code,
-        failed: state => !state.meta.login.success,
-      }),
       username: {
         get () {
           return this.$store.state.account.loginForm.username;
@@ -29,44 +24,40 @@
           this.updateLoginForm({ username });
         },
       },
-      loading () {
-        const loading = this.$store.state.account.meta.login.loading;
-        return loading && wasAttempts ? loading : false;
-      },
-      errors () {
-        const errors = this.$store.state.account.meta.login.errors;
-        return errors && wasAttempts ? errors : {};
-      },
-      message () {
-        const message = this.$store.state.account.meta.login.message;
-        return message && wasAttempts ? message : '';
-      },
-      hasErrors () {
-        return Object.keys(this.errors).length;
-      },
-      showErrors () {
-        return this.failed && this.code && !this.loading;
-      },
-      showMessage () {
-        return this.failed && this.message && !this.hasErrors;
-      },
     },
     methods: {
       ...mapActions({
-        loginAction: 'account/login'
+        login: 'account/login'
       }),
       ...mapMutations({
         updateLoginForm: 'account/updateLoginForm',
-        resetLoginStatus: 'account/resetLoginStatus'
+//        resetLoginStatus: 'account/resetLoginStatus'
       }),
-      allowShowErrorFor (field) {
-        return !!this.errors[field];
-      },
-      async login () {
-        wasAttempts = true;
-        const { username, password } = this;
-        await this.loginAction({ username, password });
-        this.$router.replace({ name: 'home' });
+      async submit () {
+        let res;
+
+        try {
+          this.resetFormErrors();
+          this.loading = true;
+
+          res = await this.login({
+            username: this.username,
+            password: this.password
+          });
+
+          this.loading = false;
+        } catch (err) {
+          this.loading = false;
+          throw err;
+        }
+
+        if (res.success) {
+          this.close();
+          this.resetInStore();
+          this.$router.replace({ name: 'home' });
+        } else {
+          this.setFormErrors(res);
+        }
       }
     },
     beforeMount () {
@@ -76,10 +67,6 @@
           this.password = 'B4mGld';
         }
       }
-    },
-    beforeDestroy () {
-      wasAttempts = false;
-      this.resetLoginStatus();
     }
   };
 </script>

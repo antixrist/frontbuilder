@@ -47,7 +47,7 @@ export default (
   },
   created () {
     Object.keys(props).forEach(propName => {
-      this.$watch(propName, (propName => value => this[options.localName][propName] = value)(propName));
+      this.$watch(propName, (propName => value => this[options.localName][propName] = value)(propName), { immediate: true });
     });
   },
 });

@@ -37,6 +37,7 @@
 </template>
 
 <script>
+  import _ from 'lodash';
   import { mapProps } from '../../utils';
   
   export default {
@@ -92,12 +93,19 @@
       };
     },
     watch: {
-      indeterminate () {
-        this.$refs.checkbox.indeterminate = this.indeterminate;
+      indeterminate: {
+//        immediate: true,
+        handler () {
+          this.$refs.checkbox.indeterminate = this.indeterminate;
+        }
       },
-      disabled () {
-        this.$refs.checkbox.disabled = this.disabled;
-      }
+      disabled: {
+        // todo: а устанавливается ли disabled на старте?
+//        immediate: true,
+        handler () {
+          this.$refs.checkbox.disabled = this.disabled;
+        }
+      },
     },
     mounted () {
       const self = this;

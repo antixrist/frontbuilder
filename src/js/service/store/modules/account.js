@@ -65,8 +65,6 @@ const mutations = {
 const actions = {
   // dispatch('account/login')
   async login ({ commit }, { username, password }) {
-    commit('setLoginStatus', { loading: true });
-
     let res;
     try {
       res = await api.post('/login', { login: username, password });
@@ -75,7 +73,6 @@ const actions = {
       if (err.code == 401) {
         res = err.response.body;
       } else {
-        commit('setLoginStatus', { success: false, loading: false });
         throw err;
       }
     }
@@ -97,10 +94,47 @@ const actions = {
         delete errors.login;
       }
     }
-  
-    commit('setLoginStatus', { ...res, loading: false });
+
+    return res;
   },
 
+  // async login ({ commit }, { username, password }) {
+  //   commit('setLoginStatus', { loading: true });
+  //
+  //   let res;
+  //   try {
+  //     res = await api.post('/login', { login: username, password });
+  //   } catch (err) {
+  //     // todo: поменять неправильный код в json-ответе. а то хардкод
+  //     if (err.code == 401) {
+  //       res = err.response.body;
+  //     } else {
+  //       commit('setLoginStatus', { success: false, loading: false });
+  //       throw err;
+  //     }
+  //   }
+  //
+  //   if (res.success) {
+  //     const data = res.data;
+  //     delete res.data;
+  //
+  //     const token = data[API_TOKEN_NAME];
+  //     delete data[API_TOKEN_NAME];
+  //
+  //     commit('updateInfo', { username, password: null, ...data });
+  //     commit('updateLoginForm', { username, password: '' });
+  //     storage.set('token', token);
+  //   } else {
+  //     const { errors } = res;
+  //     if (errors.login) {
+  //       errors.username = errors.login;
+  //       delete errors.login;
+  //     }
+  //   }
+  //
+  //   commit('setLoginStatus', { ...res, loading: false });
+  // },
+  //
   // dispatch('account/logout')
   async logout ({ commit, state }) {
     // commit('resetLoginStatus');

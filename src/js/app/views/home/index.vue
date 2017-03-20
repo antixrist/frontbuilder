@@ -31,9 +31,11 @@
       },
       sidebarOpened: {
         get () {
+          console.log('this.storeLayout.sidebarOpened', this.storeLayout.sidebarOpened);
           return this.storeLayout.sidebarOpened;
         },
         set (sidebarOpened) {
+          console.log('sidebarOpened', sidebarOpened);
           this.updateLayout({ sidebarOpened });
         },
       }
