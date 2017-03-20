@@ -3,12 +3,14 @@
 <script type="text/ecmascript-6">
   import _ from 'lodash';
   import { isDevelopment } from '../../../config';
+  import { formErrors } from '../../mixins';
   import { mapActions, mapState, mapMutations } from 'vuex';
   
   let wasAttempts = false;
   
   export default {
     name: 'login',
+//    mixins: [ formErrors('formErrors') ],
     data () {
       return {
         password: ''
