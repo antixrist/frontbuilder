@@ -4,7 +4,6 @@ import { API_TOKEN_NAME } from '../../../config';
 import { storage } from '../../';
 import api from '../../api';
 import { resetState } from '../utils';
-import { errorToJSON } from '../../../utils';
 
 const defaults = {
   username: null,
@@ -72,7 +71,6 @@ const actions = {
     try {
       res = await api.post('/login', { login: username, password });
     } catch (err) {
-
       // todo: поменять неправильный код в json-ответе. а то хардкод
       if (err.code == 401) {
         res = err.response.body;
@@ -105,7 +103,7 @@ const actions = {
 
   // dispatch('account/logout')
   async logout ({ commit, state }) {
-    commit('resetLoginStatus');
+    // commit('resetLoginStatus');
     commit('logout');
 
     try {
