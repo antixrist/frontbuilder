@@ -12,7 +12,9 @@
   Vue.component('layers-checkers', require('../../components/layers-checkers/index.vue'));
   Vue.component('task-details',    require('../../components/task-details/index.vue'));
   Vue.component('create-task',     require('../../components/create-task/index.vue'));
+  Vue.component('edit-task',       require('../../components/edit-task/index.vue'));
   Vue.component('create-project',  require('../../components/create-project/index.vue'));
+  Vue.component('edit-project',    require('../../components/edit-project/index.vue'));
   Vue.component('create-contact',  require('../../components/create-contact/index.vue'));
 
   export default {

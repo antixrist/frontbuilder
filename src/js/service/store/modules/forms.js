@@ -1,35 +1,18 @@
 import _ from 'lodash';
 import api from '../../api';
 
-export const emptyProject = {
-  name: ''
-};
+import { emptyProject } from './projects';
 
-const defaults = {
-  forms: {
-    create: {
-      project: _.cloneDeep(emptyProject),
-    },
-    update: {
-      project: _.cloneDeep(emptyProject),
-    },
+const initial = {
+  'create-project': {
+    project: _.cloneDeep(emptyProject),
   },
-
-  // createFormOpened: false,
-  // createForm: {
-  //   project: _.cloneDeep(emptyProject)
-  // },
-  //
-  // editFormOpened: false,
-  // editForm: {
-  //   project: _.cloneDeep(emptyProject)
-  // },
-
-  newProject:    _.cloneDeep(emptyProject),
-  editedProject: _.cloneDeep(emptyProject),
+  'update-project': {
+    project: _.cloneDeep(emptyProject),
+  },
 };
 
-const state = _.cloneDeep(defaults);
+const state = _.cloneDeep(initial);
 
 const getters = {
 
@@ -37,19 +20,16 @@ const getters = {
 
 const mutations = {
 
-  RESET_FORM (state, { type }) {
-    state.forms[type] = _.cloneDeep(defaults.forms[type]);
+  RESET_FORM (state, name) {
+    state[name] = _.cloneDeep(initial[name]);
   },
 
-  SAVE_FORM (state, { type, data = {} }) {
-    state.forms[type] = _.merge(state.forms[type], data);
+  SET_FORM_DATA (state, { name, data = {} }) {
+    state[name] = _.merge(state[name], data);
   },
 
-  TOGGLE_FORM (state, { type, opened }) {
-    state.forms[type].opened = !!opened;
-  },
 
-  
+
 
 
 

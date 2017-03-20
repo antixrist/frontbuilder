@@ -1,6 +1,3 @@
-export * as filters from './filters';
-export mapProps from './map-props';
-
 /**
  * @memberof Vue
  */

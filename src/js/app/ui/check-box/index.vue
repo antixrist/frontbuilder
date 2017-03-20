@@ -38,7 +38,7 @@
 
 <script>
   import _ from 'lodash';
-  import { mapProps } from '../../utils';
+  import { mapProps } from '../../mixins';
   
   export default {
     mixins: [

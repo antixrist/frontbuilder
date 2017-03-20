@@ -1,6 +1,6 @@
 <style lang="scss" rel="stylesheet/scss">
   .c-notification {
-    $tr: .3s ease-out;
+    $tr: .2s ease-out;
     
     &-enter-active,
     &-leave-active {

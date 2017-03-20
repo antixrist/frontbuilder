@@ -42,6 +42,7 @@ const actions = {
 
     if (res.success) {
       dispatch('tree/addItem', res.data, { root: true });
+      commit('RESET_CREATED');
     }
 
     return res;
@@ -62,6 +63,7 @@ const actions = {
 
     if (res.success) {
       dispatch('tree/updateItem', res.data, { root: true });
+      commit('RESET_UPDATED');
     }
 
     return res;

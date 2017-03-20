@@ -119,6 +119,7 @@ const mutations = {
   },
 
   RESET_LIST (state, list = []) {
+    list.forEach(item => cleanupItem(item));
     state.list = list;
   },
 
