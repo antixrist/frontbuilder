@@ -30,8 +30,7 @@
         login: 'account/login'
       }),
       ...mapMutations({
-        updateLoginForm: 'account/updateLoginForm',
-//        resetLoginStatus: 'account/resetLoginStatus'
+        updateLoginForm: 'account/updateLoginForm'
       }),
       async submit () {
         let res;

@@ -160,7 +160,7 @@ const actions = {
     dispatch('expandBranchToItem', id);
   },
 
-  updateList ({ commit, getters, dispatch }, list = []) {
+  resetList ({ commit, getters, dispatch }, list = []) {
     let activeItem;
 
     const mergedList = list.map(item => {
@@ -190,7 +190,7 @@ const actions = {
     let res = await api.post('/project/tree', query);
 
     if (res.success) {
-      dispatch('updateList', res.data);
+      dispatch('resetList', res.data);
     }
 
     return res;
