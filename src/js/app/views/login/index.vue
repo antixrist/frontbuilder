@@ -1,6 +1,7 @@
 <template src="./tpl.pug" lang="pug"></template>
 
 <script type="text/ecmascript-6">
+  import _ from 'lodash';
   import { isDevelopment } from '../../../config';
   import { mapActions, mapState, mapMutations } from 'vuex';
   
@@ -9,16 +10,23 @@
   export default {
     name: 'login',
     data () {
-      return isDevelopment ? {
-        username: 'test',
-        password: 'B4mGld',
-      } : {};
+      return {
+        password: ''
+      };
     },
     computed: {
       ...mapState('account', {
         code: state => state.meta.login.code,
         failed: state => !state.meta.login.success,
       }),
+      username: {
+        get () {
+          return this.$store.state.account.loginForm.username;
+        },
+        set (username) {
+          this.updateLoginForm({ username });
+        },
+      },
       loading () {
         const loading = this.$store.state.account.meta.login.loading;
         return loading && wasAttempts ? loading : false;
@@ -46,6 +54,7 @@
         loginAction: 'account/login'
       }),
       ...mapMutations({
+        updateLoginForm: 'account/updateLoginForm',
         resetLoginStatus: 'account/resetLoginStatus'
       }),
       allowShowErrorFor (field) {
@@ -56,6 +65,14 @@
         const { username, password } = this;
         await this.loginAction({ username, password });
         this.$router.replace({ name: 'home' });
+      }
+    },
+    beforeMount () {
+      if (isDevelopment) {
+        if (!this.username && !this.password) {
+          this.username = 'test';
+          this.password = 'B4mGld';
+        }
       }
     },
     beforeDestroy () {

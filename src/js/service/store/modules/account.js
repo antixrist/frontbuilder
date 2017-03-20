@@ -8,6 +8,9 @@ import { errorToJSON } from '../../../utils';
 
 const defaults = {
   username: null,
+  loginForm: {
+    username: null
+  },
   meta: {
     login: {
       code: 0,
@@ -46,6 +49,10 @@ const mutations = {
     state.meta.fetch = _.merge({}, defaults.meta.fetch, data);
   },
 
+  updateLoginForm (state, data) {
+    Object.keys(data).forEach(key => Vue.set(state.loginForm, key, data[key]));
+  },
+
   updateInfo (state, data) {
     Object.keys(data).forEach(key => Vue.set(state, key, data[key]));
   },
@@ -82,7 +89,8 @@ const actions = {
       const token = data[API_TOKEN_NAME];
       delete data[API_TOKEN_NAME];
     
-      commit('updateInfo', { username, ...data });
+      commit('updateInfo', { username, password: null, ...data });
+      commit('updateLoginForm', { username, password: '' });
       storage.set('token', token);
     } else {
       const { errors } = res;
@@ -102,12 +110,15 @@ const actions = {
 
     try {
       await api.post('/logout');
+      storage.remove('token', state[API_TOKEN_NAME]);
     } catch (err) {
       // если пользователь и так не был авторизован, то ничего страшного
-      if (err.code != 401) { throw err; }
+      if (err.code == 401) {
+        storage.remove('token', state[API_TOKEN_NAME]);
+      } else {
+        throw err;
+      }
     }
-
-    storage.remove('token', state[API_TOKEN_NAME]);
   },
 
   async fetch ({ commit, dispatch }) {
