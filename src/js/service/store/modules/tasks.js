@@ -3,7 +3,22 @@ import api from '../../api';
 
 export const emptyTask = {
   id: 0,
-  name: ''
+  name: '',
+  description: '',
+  parent_id: 0,
+  content_json: {
+    date: {
+      start: '',
+      end: '',
+    },
+    period: 0,
+    phone: {
+      id: 0,
+      contact_id: 0,
+      msisdn: '',
+    },
+    status: 0,
+  }
 };
 
 const defaults = {
@@ -78,6 +93,8 @@ const actions = {
   async update ({ dispatch }, item = {}) {
     dispatch('tree/updateItem', { id: item.id, submitting: 'update' }, { root: true });
 
+    item = _.pick(item, ['id', 'name', 'description', 'sort', 'parent_id', 'content_json']);
+
     let res;
     try {
       res = await api.post('/task/edit', item);
@@ -113,6 +130,50 @@ const actions = {
 
     const newItem = res.success ? res.data : item;
     dispatch('tree/moveItem', { ...newItem, submitting: false }, { root: true });
+
+    return res;
+  },
+
+  async execute ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'execute' }, { root: true });
+
+    let res;
+    try {
+      res = await api.post('/task/execute', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
+    }
+
+    // todo: косячит серверный метод
+    // const newItem = res.success ? res.data : item;
+    const newItem = res.success ? item : item;
+    dispatch('tree/updateItem', { ...newItem, submitting: false }, { root: true });
+
+    return res;
+  },
+
+  async pause ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'pause' }, { root: true });
+
+    let res;
+    try {
+      res = await api.post('/task/pause', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
+    }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/updateItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },

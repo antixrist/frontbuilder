@@ -1,6 +1,6 @@
 import d from 'd';
 import _ from 'lodash';
-import { API_URL, logApiRequests } from '../../config';
+import { API_URL, API_TOKEN_NAME, logApiRequests } from '../../config';
 import storage from '../storage';
 import progress from '../progress';
 import status from 'statuses';
@@ -52,11 +52,11 @@ if (logApiRequests) {
 
 /** Подставим api_token во все запросы к api */
 api.interceptors.request.use(config => {
-  const token = storage.get('token');
+  const token = storage.get(API_TOKEN_NAME);
 
   if (token) {
     config.data = config.data || {};
-    config.data.api_token = token;
+    config.data[API_TOKEN_NAME] = token;
   }
 
   return config;

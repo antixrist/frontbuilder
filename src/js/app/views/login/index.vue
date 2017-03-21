@@ -3,35 +3,36 @@
 <script type="text/ecmascript-6">
   import _ from 'lodash';
   import { isDevelopment } from '../../../config';
-  import { formErrors } from '../../mixins';
+  import { formErrors, mapStateToData } from '../../mixins';
   import { mapActions, mapState, mapMutations } from 'vuex';
   
   export default {
     name: 'login',
-    mixins: [ formErrors('formErrors') ],
+    mixins: [
+      mapStateToData({ form: 'account.loginForm' }),
+      formErrors('formErrors')
+    ],
     data () {
       return {
         loading: false,
-        password: ''
       };
     },
-    computed: {
-      username: {
-        get () {
-          return this.$store.state.account.loginForm.username;
-        },
-        set (username) {
-          this.updateLoginForm({ username });
-        },
+    watch: {
+      form: {
+        deep: true,
+        handler (form) {
+          this.setLoginFormData(form);
+        }
       },
     },
     methods: {
       ...mapActions({
-        login: 'account/login'
+        loginAction: 'account/login',
+        fetchUser: 'account/fetch',
       }),
       ...mapMutations({
-        resetLoginForm: 'account/resetLoginForm',
-        updateLoginForm: 'account/updateLoginForm',
+        resetLoginForm: 'account/RESET_LOGIN_FORM',
+        setLoginFormData: 'account/SET_LOGIN_FORM_DATA',
       }),
       async submit () {
         let res;
@@ -39,12 +40,9 @@
         try {
           this.resetFormErrors();
           this.loading = true;
-
-          res = await this.login({
-            username: this.username,
-            password: this.password
-          });
-
+          
+          res = await this.loginAction(this.form);
+          
           this.loading = false;
         } catch (err) {
           this.loading = false;
@@ -53,6 +51,7 @@
         
         if (res.success) {
           this.resetLoginForm();
+          
           this.$router.replace({ name: 'home' });
         } else {
           this.setFormErrors(res);
@@ -61,9 +60,9 @@
     },
     beforeMount () {
       if (isDevelopment) {
-        if (!this.username && !this.password) {
-          this.username = 'test';
-          this.password = 'B4mGld';
+        if (!this.form.login && !this.form.password) {
+          this.form.login = 'test';
+          this.form.password = 'B4mGld';
         }
       }
     }

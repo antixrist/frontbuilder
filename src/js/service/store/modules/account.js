@@ -6,57 +6,45 @@ import api from '../../api';
 import { resetState } from '../utils';
 
 const defaults = {
-  username: null,
+  user: null,
   loginForm: {
-    username: ''
-  },
-  meta: {
-    fetch: {
-      code: 0,
-      loading: false,
-      success: false,
-      message: '',
-      errors: {}
-    },
+    login: '',
+    password: '',
   },
 };
 
-const state = _.merge({}, defaults);
+const state = _.cloneDeep(defaults);
 
 const mutations = {
-  // commit('account/loginInProgress')
-  resetFetchStatus (state) {
-    state.meta.fetch = _.merge({}, defaults.meta.fetch);
-  },
 
-  setFetchStatus (state, data) {
-    state.meta.fetch = _.merge({}, defaults.meta.fetch, data);
-  },
-
-  resetLoginForm (state) {
+  RESET_LOGIN_FORM (state) {
     state.loginForm = _.cloneDeep(defaults.loginForm);
   },
 
-  updateLoginForm (state, data) {
-    Object.keys(data).forEach(key => Vue.set(state.loginForm, key, data[key]));
+  SET_LOGIN_FORM_DATA (state, data = {}) {
+    state.loginForm = _.merge({}, state.loginForm, data);
+
+    delete state.loginForm.password;
   },
 
-  updateInfo (state, data) {
-    Object.keys(data).forEach(key => Vue.set(state, key, data[key]));
+  SET_USER (state, data = {}) {
+    state.user = data;
   },
 
-  // commit('account/logout')
-  logout (state) {
+  UPDATE_USER (state, data = {}) {
+    state.user = _.merge(state.user, data);
+  },
+
+  LOGOUT (state) {
     resetState(state, defaults);
   }
 };
 
 const actions = {
-  // dispatch('account/login')
-  async login ({ commit }, { username, password }) {
+  async login ({ commit, dispatch }, data = {}) {
     let res;
     try {
-      res = await api.post('/login', { login: username, password });
+      res = await api.post('/login', data);
     } catch (err) {
       // todo: поменять неправильный код в json-ответе. а то хардкод
       if (err.code == 401) {
@@ -67,70 +55,49 @@ const actions = {
     }
 
     if (res.success) {
-      const data = res.data;
-      delete res.data;
-    
-      const token = data[API_TOKEN_NAME];
-      delete data[API_TOKEN_NAME];
-    
-      commit('updateInfo', { username, password: null, ...data });
-      commit('updateLoginForm', { username, password: '' });
-      storage.set('token', token);
-    } else {
-      const { errors } = res;
-      if (errors.login) {
-        errors.username = errors.login;
-        delete errors.login;
+      const token = res.data[API_TOKEN_NAME];
+      delete res.data[API_TOKEN_NAME];
+
+      storage.set(API_TOKEN_NAME, token);
+
+      res = await dispatch('fetch');
+      if (res.success) {
+        commit('SET_USER', res.data);
       }
     }
 
     return res;
   },
 
-  /** todo: доработать */
   async logout ({ commit, state }) {
-    // commit('resetLoginStatus');
-    commit('logout');
+    commit('LOGOUT');
 
     try {
       await api.post('/logout');
-      storage.remove('token', state[API_TOKEN_NAME]);
+      storage.remove(API_TOKEN_NAME, state[API_TOKEN_NAME]);
     } catch (err) {
+      storage.remove(API_TOKEN_NAME, state[API_TOKEN_NAME]);
       // если пользователь и так не был авторизован, то ничего страшного
-      if (err.code == 401) {
-        storage.remove('token', state[API_TOKEN_NAME]);
-      } else {
+      if (err.code != 401) {
         throw err;
       }
     }
   },
 
-  async fetch ({ commit, dispatch }) {
-    commit('setFetchStatus', { loading: true });
-  
-    let res;
-    try {
-      res = await api.post('/user/get');
-    } catch (err) {
-      commit('setFetchStatus', { success: false, loading: false });
-      throw err;
-    }
+  async fetch ({ commit }) {
+    let res = await api.post('/user/get');
 
     if (res.success) {
-      const { data } = res;
-      delete res.data;
-
-      commit('updateInfo', data);
+      commit('UPDATE_USER', res.data);
     }
 
-    commit('setFetchStatus', { ...res, loading: false });
+    return res;
   }
 };
 
 const getters = {
-  // getters['account/isLogged']
   isLogged (state) {
-    return !!(state.username);
+    return (state.user && state.user.id);
   },
 };
 

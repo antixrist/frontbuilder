@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&subset=cyrillic');
 @import '~nprogress/nprogress';
 
+@import 'site/common';
 @import 'site/layout';
 @import 'site/icons';
 @import 'site/header';
@@ -8,9 +9,9 @@
 @import 'site/top-menu';
 @import 'site/search-block';
 @import 'site/task-details';
-@import 'site/create-task';
-@import 'site/create-project';
-@import 'site/create-contact';
+@import 'site/task-form';
+@import 'site/project-form';
+@import 'site/contact-form';
 @import 'site/login';
 @import 'site/layers-checker';
 @import 'site/tree';

@@ -20,10 +20,12 @@
   import Vue from 'vue';
   import { mapState, mapGetters, mapActions } from 'vuex';
   import { errorToJSON } from '../utils';
-  import { isDevelopment } from '../config';
+  import { isDevelopment, API_TOKEN_NAME } from '../config';
+  import { storage } from '../service';
   import { reportError } from '../service/api';
 
   /** Общие для всего приложения UI-компоненты */
+  
   Vue.component('modal',         require('./ui/modal/index.vue'));
   Vue.component('check-box',     require('./ui/check-box/index.vue'));
   Vue.component('notifications', require('./ui/notifications/index.vue'));
@@ -61,8 +63,6 @@
           title: '',
           content: ''
         };
-        
-//        console.log('err', errorToJSON(err));
 
         /** ошибка ajax-запроса */
         if (err.HttpError) {
@@ -180,6 +180,14 @@
       });
     },
     beforeMount () {
+      // если нет токена в сторадже, то ничего не делаем - просто показываем форму
+      if (!storage.get(API_TOKEN_NAME)) { return; }
+      
+      /**
+       * если токен есть, то сделаем запрос на юзера.
+       * если запрос был успешен, то в стор попадёт инфа юзера
+       * (которая пришла с сервера) и сработает `userLogged` и откроется приложение
+       */
       this.loading = true;
       this.fetchAccountInfo()
         .then(res => this.loading = false)

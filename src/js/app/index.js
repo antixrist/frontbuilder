@@ -12,6 +12,20 @@ import * as directives from './directives';
 import * as services from '../service';
 import '../../styles/main.scss';
 
+
+// import 'vue-flatpickr/theme/airbnb.css';
+import 'vue-flatpickr/theme/base16_flat.css';
+// import 'vue-flatpickr/theme/confetti.css';
+// import 'vue-flatpickr/theme/dark.css';
+// import 'vue-flatpickr/theme/material_blue.css';
+// import 'vue-flatpickr/theme/material_green.css';
+// import 'vue-flatpickr/theme/material_orange.css';
+// import 'vue-flatpickr/theme/material_red.css';
+import VueFlatpickr from 'vue-flatpickr';
+
+Vue.use(VueFlatpickr);
+
+
 const { storage, store, api, http, progress, bus } = services;
 
 /** Стор и роутер */

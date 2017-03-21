@@ -16,11 +16,18 @@ export default function (path = 'error', opts = {}) {
       return retVal;
     },
     computed: {
-      failed () {
+      success () {
         return _.get(this, `${path}.success`, true);
+      },
+      failed () {
+        return !this.success;
       },
       errors () {
         const errors = _.get(this, `${path}.errors`, {});
+
+        if (!_.isPlainObject(errors)) {
+          return {};
+        }
 
         Object.keys(errors).forEach(name => {
           if (_.isArray(errors[name])) { return; }
@@ -31,7 +38,16 @@ export default function (path = 'error', opts = {}) {
         return errors;
       },
       errorMessage () {
-        return this.failed ? _.get(this, `${path}.message`, '') : '';
+        if (!this.failed) { return ''; }
+
+        const message = [];
+        const msg = _.get(this, `${path}.message`, '');
+        const errors = _.get(this, `${path}.errors`, {});
+
+        msg && message.push(msg);
+        _.isArray(errors) && message.push(...errors);
+
+        return message.join('<br>');
       },
       successMessage () {
         return this.failed ? '' : _.get(this, `${path}.message`, '');

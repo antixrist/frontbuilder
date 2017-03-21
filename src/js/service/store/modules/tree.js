@@ -30,12 +30,50 @@ const getters = {
     return _.minBy(state.list, 'parent_id').parent_id;
   },
   rootItems (state, getters) {
-    return getters.byParentId[getters.minParentId];
+    return _.values(getters.byParentId[getters.minParentId]);
+  },
+
+  rootProjects (state, getters) {
+    return getters.rootItems.filter(item => item.isFolder);
+  },
+
+  tasks (state, getters) {
+    return state.list.filter(item => item.isTask);
+  },
+
+  projects (state, getters) {
+    return state.list.filter(item => item.isFolder);
+  },
+
+  polygons (state, getters) {
+    return state.list.filter(item => item.isPolygon);
   },
 
   activeItem (state, getters) {
     return state.activeItemId ? getters.byId[state.activeItemId] : null;
+  },
+
+  projectsFlatTree (state, getters) {
+
+    function getter (projects, level) {
+      if (!projects) {
+        level = 0;
+        projects = getters.rootProjects;
+      }
+
+      return _.flatMap(projects, project => {
+        const name = `${ _.repeat('-', level) } ${ project.name }`.trim();
+
+        return [
+          { ...project, name, level: level + 1 },
+          ...getter(getters.byParentId[project.id] || [], level + 1)
+        ];
+      });
+    }
+
+    return getter();
   }
+
 };
 
 /**
@@ -50,6 +88,14 @@ function cleanupItem (item) {
     isFolder:  type == 'directory',
     isPolygon: type == 'polygon'
   });
+
+  if (item.content_json && _.isString(item.content_json)) {
+    try {
+      item.content_json = JSON.parse(item.content_json);
+    } catch (err) {
+      item.content_json = {};
+    }
+  }
 
   return item;
 }
@@ -91,7 +137,7 @@ const mutations = {
     const idx = _.findIndex(state.list, { id });
 
     if (idx >= 0) {
-      const item = _.assign(state.list[idx], updates);
+      const item = { ...state.list[idx], ...updates };
       cleanupItem(item);
 
       Vue.set(state.list, idx, item);
@@ -104,10 +150,11 @@ const mutations = {
     state.list.forEach((item, idx) => {
       if (!updatesById[item.id]) { return item; }
 
-      _.assign(item, updatesById[item.id]);
-      cleanupItem(item);
+      const updated = { ...item, ...updatesById[item.id] };
 
-      Vue.set(state.list, idx, item);
+      cleanupItem(updated);
+
+      Vue.set(state.list, idx, updated);
     });
   },
 

@@ -5,6 +5,7 @@ import createPersistedState from 'vuex-persistedstate';
 import createLogger from 'vuex/dist/logger';
 import { isDevelopment } from '../../config';
 import modules from './modules';
+import { ru } from 'flatpickr/src/l10n/ru';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,11 @@ const store = new Vuex.Store({
   modules,
 
   state: {
+    flatpickrDefaults: {
+      enableTime: true,
+      time_24hr: true,
+      locale: ru
+    },
     layout: {
       activeTab: 'tree',
       sidebarOpened: false,

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { nl2br } from '../../filters';
+  import { nl2br } from '../../utils';
   import { mapActions, mapGetters, mapMutations } from 'vuex';
   
   export default {
