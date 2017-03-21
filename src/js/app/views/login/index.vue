@@ -30,7 +30,8 @@
         login: 'account/login'
       }),
       ...mapMutations({
-        updateLoginForm: 'account/updateLoginForm'
+        resetLoginForm: 'account/resetLoginForm',
+        updateLoginForm: 'account/updateLoginForm',
       }),
       async submit () {
         let res;
@@ -49,10 +50,9 @@
           this.loading = false;
           throw err;
         }
-
+        
         if (res.success) {
-          this.close();
-          this.resetInStore();
+          this.resetLoginForm();
           this.$router.replace({ name: 'home' });
         } else {
           this.setFormErrors(res);

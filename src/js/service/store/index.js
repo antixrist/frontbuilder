@@ -4,8 +4,6 @@ import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import createLogger from 'vuex/dist/logger';
 import { isDevelopment } from '../../config';
-
-import getters from './getters';
 import modules from './modules';
 
 Vue.use(Vuex);
@@ -17,32 +15,58 @@ const store = new Vuex.Store({
     createPersistedState()
   ],
 
+  modules,
+
   state: {
     layout: {
       activeTab: 'tree',
       sidebarOpened: false,
       modals: {
-        createTask:    false,
-        editTask:      false,
-        createProject: false,
-        editProject:   false,
-        createPolygon: false,
-        editPolygon:   false,
+        projectCreate: false,
+        projectEdit: false,
+        taskCreate: false,
+        taskEdit: false,
+        polygonCreate: false,
+        polygonEdit: false,
+
+        taskForm: false,
+        polygonForm: false,
       },
     },
   },
 
   mutations: {
+    ACTIVATE_TAB (state, tabName) {
+      state.activeTab = tabName;
+    },
+
     UPDATE_LAYOUT (state, data) {
       state.layout = _.merge(state.layout, data);
     }
   },
 
   actions: {
+    activateTab ({ commit, state }, tabName) {
+      if (state.layout.activeTab == tabName) { return; }
+
+      commit('UPDATE_LAYOUT', { activeTab: tabName });
+    },
+
+    toggleSidebar ({ commit, state }, opened) {
+      if (state.layout.sidebarOpened == opened) { return; }
+
+      commit('UPDATE_LAYOUT', { sidebarOpened: opened });
+    },
+
+    toggleModal ({ commit }, modals) {
+      commit('UPDATE_LAYOUT', { modals });
+    },
+
   },
 
-  getters,
-  modules,
+  getters: {
+
+  },
 
 });
 

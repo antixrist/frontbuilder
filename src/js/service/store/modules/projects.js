@@ -2,17 +2,14 @@ import _ from 'lodash';
 import api from '../../api';
 
 export const emptyProject = {
+  id: 0,
   name: ''
 };
 
 const defaults = {
-  forms: {
-    create: {
-      project: _.cloneDeep(emptyProject),
-    },
-    update: {
-      project: _.cloneDeep(emptyProject),
-    },
+  form: {
+    create: _.cloneDeep(emptyProject),
+    edit: _.cloneDeep(emptyProject),
   },
 
   // createFormOpened: false,
@@ -37,43 +34,26 @@ const getters = {
 
 const mutations = {
 
-  RESET_FORM (state, { type }) {
-    state.forms[type] = _.cloneDeep(defaults.forms[type]);
+  RESET_CREATE_FORM (state, name) {
+    state.form.create = _.cloneDeep(defaults.form.create);
   },
 
-  SAVE_FORM (state, { type, data = {} }) {
-    state.forms[type] = _.merge(state.forms[type], data);
+  RESET_EDIT_FORM (state, name) {
+    state.form.edit = _.cloneDeep(defaults.form.edit);
   },
 
-  TOGGLE_FORM (state, { type, opened }) {
-    state.forms[type].opened = !!opened;
+  SET_CREATE_FORM_DATA (state, data = {}) {
+    state.form.create = _.merge(state.form.create, data);
   },
 
-  
-
-
-
-
-
-  SET_CREATED (state, project) {
-    state.newProject = _.cloneDeep(project);
-  },
-
-  RESET_CREATED (state) {
-    state.newProject = _.cloneDeep(emptyProject);
-  },
-
-  SET_UPDATED (state, project) {
-    state.editedProject = _.cloneDeep(project);
-  },
-
-  RESET_UPDATED (state) {
-    state.editedProject = _.cloneDeep(emptyProject);
+  SET_EDIT_FORM_DATA (state, data = {}) {
+    state.form.edit = _.merge(state.form.edit, data);
   },
 
 };
 
 const actions = {
+
   async create ({ commit, dispatch }, query = {}) {
     let res = await api.post('/project/create', query);
 

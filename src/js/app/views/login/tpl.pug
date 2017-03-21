@@ -13,9 +13,9 @@ form.panel.login.is-loading-block(:class="{ '-loading': loading }", @submit.prev
           placeholder="Введите ваш логин",
           v-model="username",
           v-focus="",
-          :class="{ '-danger': hasErrorFor('username') }"
+          :class="{ '-danger': hasError('username') }"
         )
-        div.errors(v-if="hasErrorFor('username')", :class="{ 'u-text-danger': hasErrorFor('username') }")
+        div.errors(v-if="hasError('username')", :class="{ 'u-text-danger': hasError('username') }")
           div.error.u-text-sm(v-for="error in errors.username") {{ error }}
       .form-group
         label Пароль:
@@ -23,9 +23,9 @@ form.panel.login.is-loading-block(:class="{ '-loading': loading }", @submit.prev
           placeholder="Введите ваш пароль",
           v-model="password",
           type="password",
-          :class="{ '-danger': hasErrorFor('password') }"
+          :class="{ '-danger': hasError('password') }"
         )
-        div.errors(v-if="hasErrorFor('password')", :class="{ 'u-text-danger': hasErrorFor('password') }")
+        div.errors(v-if="hasError('password')", :class="{ 'u-text-danger': hasError('password') }")
           div.error.u-text-sm(v-for="error in errors.password") {{ error }}
   .actions: .u-text-center
     button.btn.-size-sm.-primary(type="submit") Войти

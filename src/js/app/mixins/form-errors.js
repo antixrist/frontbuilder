@@ -1,24 +1,26 @@
 import _ from 'lodash';
 
-const defaultData = {
+export const errorData = {
   success: true,
   message: '',
   errors: {}
 };
 
-export default function (field = 'error', opts = {}) {
+export default function (path = 'error', opts = {}) {
   return {
     data () {
-      return {
-        [field]: _.cloneDeep(defaultData)
-      };
+      const retVal = {};
+
+      _.set(retVal, path, _.cloneDeep(errorData));
+
+      return retVal;
     },
     computed: {
       failed () {
-        return _.get(this, `${field}.success`, true);
+        return _.get(this, `${path}.success`, true);
       },
       errors () {
-        const errors = _.get(this, `${field}.errors`, {});
+        const errors = _.get(this, `${path}.errors`, {});
 
         Object.keys(errors).forEach(name => {
           if (_.isArray(errors[name])) { return; }
@@ -29,21 +31,24 @@ export default function (field = 'error', opts = {}) {
         return errors;
       },
       errorMessage () {
-        return _.get(this, `${field}.message`, '');
+        return this.failed ? _.get(this, `${path}.message`, '') : '';
+      },
+      successMessage () {
+        return this.failed ? '' : _.get(this, `${path}.message`, '');
       },
       hasErrors () {
         return !!Object.keys(this.errors).length;
       },
     },
     methods: {
-      hasErrorFor (path) {
+      hasError (path) {
         return !!_.get(this.errors, path);
       },
       resetFormErrors () {
-        this[field] = _.cloneDeep(defaultData);
+        _.set(this, path, _.cloneDeep(errorData));
       },
       setFormErrors (errors) {
-        this[field] = errors;
+        _.set(this, path, errors);
       },
     },
   };

@@ -28,16 +28,15 @@
   Vue.component('notifications', require('./ui/notifications/index.vue'));
 
   export default {
+    data () {
+      return {
+        loading: false
+      };
+    },
     components: {
       login: require('./views/login/index.vue')
     },
     computed: {
-      ...mapState('account', {
-        loading: state => state.meta.fetch.loading,
-        failed: state => !state.meta.fetch.success,
-        errors: state => state.meta.fetch.errors,
-        message: state => state.meta.login.message,
-      }),
       ...mapGetters({
         userLogged: 'account/isLogged'
       }),
@@ -178,13 +177,17 @@
       });
     },
     beforeMount () {
-      this.fetchAccountInfo().catch(err => {
-        /**
-         * если юзер не был авторизован, то ничего страшного,
-         * просто скроется лоадер и останется форма входа
-         */
-        if (err.code != 401) { throw err; }
-      });
+      this.loading = true;
+      this.fetchAccountInfo()
+        .then(res => this.loading = false)
+        .catch(err => {
+          this.loading = false;
+          /**
+           * если юзер не был авторизован, то ничего страшного,
+           * просто скроется лоадер и останется форма входа
+           */
+          if (err.code != 401) { throw err; }
+        });
     },
   };
 </script>

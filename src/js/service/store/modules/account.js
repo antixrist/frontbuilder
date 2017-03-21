@@ -8,7 +8,7 @@ import { resetState } from '../utils';
 const defaults = {
   username: null,
   loginForm: {
-    username: null
+    username: ''
   },
   meta: {
     fetch: {
@@ -31,6 +31,10 @@ const mutations = {
 
   setFetchStatus (state, data) {
     state.meta.fetch = _.merge({}, defaults.meta.fetch, data);
+  },
+
+  resetLoginForm (state) {
+    state.loginForm = _.cloneDeep(defaults.loginForm);
   },
 
   updateLoginForm (state, data) {
