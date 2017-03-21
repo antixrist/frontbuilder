@@ -2,12 +2,15 @@ import _ from 'lodash';
 import api from '../../api';
 
 export const emptyTask = {
+  id: 0,
   name: ''
 };
 
 const defaults = {
-  newTask:    _.cloneDeep(emptyTask),
-  editedTask: _.cloneDeep(emptyTask),
+  form: {
+    create: _.cloneDeep(emptyTask),
+    edit: _.cloneDeep(emptyTask),
+  },
 };
 
 const state = _.cloneDeep(defaults);
@@ -18,63 +21,98 @@ const getters = {
 
 const mutations = {
 
-  SET_CREATED (state, task) {
-    state.newTask = _.cloneDeep(task);
+  RESET_CREATE_FORM (state, name) {
+    state.form.create = _.cloneDeep(defaults.form.create);
   },
 
-  RESET_CREATED (state) {
-    state.newTask = _.cloneDeep(emptyTask);
+  RESET_EDIT_FORM (state, name) {
+    state.form.edit = _.cloneDeep(defaults.form.edit);
   },
 
-  SET_UPDATED (state, task) {
-    state.editedTask = _.cloneDeep(task);
+  SET_CREATE_FORM_DATA (state, data = {}) {
+    state.form.create = _.merge(state.form.create, data);
   },
 
-  RESET_UPDATED (state) {
-    state.editedTask = _.cloneDeep(emptyTask);
+  SET_EDIT_FORM_DATA (state, data = {}) {
+    state.form.edit = _.merge(state.form.edit, data);
   },
 
 };
 
 const actions = {
-  async create ({ commit, dispatch }, query = {}) {
+
+  async create ({ dispatch }, query = {}) {
     let res = await api.post('/task/create', query);
 
     if (res.success) {
       dispatch('tree/addItem', res.data, { root: true });
-      commit('RESET_CREATED');
     }
 
     return res;
   },
 
-  async remove ({ commit, dispatch }, item = {}) {
-    let res = await api.post('/task/delete', item);
+  async remove ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'remove' }, { root: true });
+
+    let res;
+    try {
+      res = await api.post('/task/delete', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
+    }
 
     if (res.success) {
-      dispatch('tree/removeItem', item, { root: true });
+      dispatch('tree/removeItem', { ...item, submitting: false }, { root: true });
+    } else {
+      dispatch('tree/updateItem', { ...item, submitting: false }, { root: true });
     }
 
     return res;
   },
 
-  async update ({ commit, dispatch }, query = {}) {
-    let res = await api.post('/task/edit', query);
+  async update ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'update' }, { root: true });
 
-    if (res.success) {
-      dispatch('tree/updateItem', res.data, { root: true });
-      commit('RESET_UPDATED');
+    let res;
+    try {
+      res = await api.post('/task/edit', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
     }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/updateItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },
 
-  async move ({ commit, dispatch }, item = {}) {
-    let res = await api.post('/task/move', item);
+  async move ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'move' }, { root: true });
 
-    if (res.success) {
-      dispatch('tree/moveItem', res.data, { root: true });
+    let res;
+    try {
+      res = await api.post('/task/move', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
     }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/moveItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },

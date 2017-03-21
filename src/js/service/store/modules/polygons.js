@@ -2,12 +2,15 @@ import _ from 'lodash';
 import api from '../../api';
 
 export const emptyPolygon = {
+  id: 0,
   name: ''
 };
 
 const defaults = {
-  newPolygon:    _.cloneDeep(emptyPolygon),
-  editedPolygon: _.cloneDeep(emptyPolygon),
+  form: {
+    create: _.cloneDeep(emptyPolygon),
+    edit: _.cloneDeep(emptyPolygon),
+  },
 };
 
 const state = _.cloneDeep(defaults);
@@ -18,63 +21,98 @@ const getters = {
 
 const mutations = {
 
-  SET_CREATED (state, polygon) {
-    state.newPolygon = _.cloneDeep(polygon);
+  RESET_CREATE_FORM (state, name) {
+    state.form.create = _.cloneDeep(defaults.form.create);
   },
 
-  RESET_CREATED (state) {
-    state.newPolygon = _.cloneDeep(emptyPolygon);
+  RESET_EDIT_FORM (state, name) {
+    state.form.edit = _.cloneDeep(defaults.form.edit);
   },
 
-  SET_UPDATED (state, polygon) {
-    state.editedPolygon = _.cloneDeep(polygon);
+  SET_CREATE_FORM_DATA (state, data = {}) {
+    state.form.create = _.merge(state.form.create, data);
   },
 
-  RESET_UPDATED (state) {
-    state.editedPolygon = _.cloneDeep(emptyPolygon);
+  SET_EDIT_FORM_DATA (state, data = {}) {
+    state.form.edit = _.merge(state.form.edit, data);
   },
 
 };
 
 const actions = {
-  async create ({ commit, dispatch }, query = {}) {
+
+  async create ({ dispatch }, query = {}) {
     let res = await api.post('/polygon/create', query);
 
     if (res.success) {
       dispatch('tree/addItem', res.data, { root: true });
-      commit('RESET_CREATED');
     }
 
     return res;
   },
 
-  async remove ({ commit, dispatch }, item = {}) {
-    let res = await api.post('/polygon/delete', item);
+  async remove ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'remove' }, { root: true });
+
+    let res;
+    try {
+      res = await api.post('/polygon/delete', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
+    }
 
     if (res.success) {
-      dispatch('tree/removeItem', item, { root: true });
+      dispatch('tree/removeItem', { ...item, submitting: false }, { root: true });
+    } else {
+      dispatch('tree/updateItem', { ...item, submitting: false }, { root: true });
     }
 
     return res;
   },
 
-  async update ({ commit, dispatch }, query = {}) {
-    let res = await api.post('/polygon/edit', query);
+  async update ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'update' }, { root: true });
 
-    if (res.success) {
-      dispatch('tree/updateItem', res.data, { root: true });
-      commit('RESET_UPDATED');
+    let res;
+    try {
+      res = await api.post('/polygon/edit', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
     }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/updateItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },
 
-  async move ({ commit, dispatch }, item = {}) {
-    let res = await api.post('/polygon/move', item);
+  async move ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'move' }, { root: true });
 
-    if (res.success) {
-      dispatch('tree/moveItem', res.data, { root: true });
+    let res;
+    try {
+      res = await api.post('/polygon/move', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
     }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/moveItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },

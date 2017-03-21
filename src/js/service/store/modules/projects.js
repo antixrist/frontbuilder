@@ -11,19 +11,6 @@ const defaults = {
     create: _.cloneDeep(emptyProject),
     edit: _.cloneDeep(emptyProject),
   },
-
-  // createFormOpened: false,
-  // createForm: {
-  //   project: _.cloneDeep(emptyProject)
-  // },
-  //
-  // editFormOpened: false,
-  // editForm: {
-  //   project: _.cloneDeep(emptyProject)
-  // },
-
-  newProject:    _.cloneDeep(emptyProject),
-  editedProject: _.cloneDeep(emptyProject),
 };
 
 const state = _.cloneDeep(defaults);
@@ -54,44 +41,78 @@ const mutations = {
 
 const actions = {
 
-  async create ({ commit, dispatch }, query = {}) {
+  async create ({ dispatch }, query = {}) {
     let res = await api.post('/project/create', query);
 
     if (res.success) {
       dispatch('tree/addItem', res.data, { root: true });
-      commit('RESET_CREATED');
     }
 
     return res;
   },
 
-  async remove ({ commit, dispatch }, item = {}) {
-    let res = await api.post('/project/delete', item);
+  async remove ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'remove' }, { root: true });
+
+    let res;
+    try {
+      res = await api.post('/project/delete', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
+    }
 
     if (res.success) {
-      dispatch('tree/removeItem', item, { root: true });
+      dispatch('tree/removeItem', { ...item, submitting: false }, { root: true });
+    } else {
+      dispatch('tree/updateItem', { ...item, submitting: false }, { root: true });
     }
 
     return res;
   },
 
-  async update ({ commit, dispatch }, query = {}) {
-    let res = await api.post('/project/edit', query);
+  async update ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'update' }, { root: true });
 
-    if (res.success) {
-      dispatch('tree/updateItem', res.data, { root: true });
-      commit('RESET_UPDATED');
+    let res;
+    try {
+      res = await api.post('/project/edit', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
     }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/updateItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },
 
-  async move ({ commit, dispatch }, item = {}) {
-    let res = await api.post('/project/move', item);
+  async move ({ dispatch }, item = {}) {
+    dispatch('tree/updateItem', { id: item.id, submitting: 'move' }, { root: true });
 
-    if (res.success) {
-      dispatch('tree/moveItem', res.data, { root: true });
+    let res;
+    try {
+      res = await api.post('/project/move', item);
+    } catch (err) {
+      dispatch('tree/updateItem', {
+        id: item.id,
+        submitting: false
+      }, { root: true });
+
+      throw err;
     }
+
+    const newItem = res.success ? res.data : item;
+    dispatch('tree/moveItem', { ...newItem, submitting: false }, { root: true });
 
     return res;
   },

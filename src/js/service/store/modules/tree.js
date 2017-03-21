@@ -19,7 +19,7 @@ const getters = {
     return _(state.list)
       .groupBy('parent_id')
       .transform((accum, items, parentId) => {
-        accum[parentId] = _.orderBy(items, 'sort');
+        accum[parentId] = _.orderBy(items, ['sort', 'id']);
       }, {})
       .value()
     ;
@@ -43,8 +43,9 @@ const getters = {
  * @returns {{}}
  */
 function cleanupItem (item) {
-  const { type } = item;
+  const { type, sort } = item;
   Object.assign(item, {
+    sort:      sort || 0,
     isTask:    type == 'task',
     isFolder:  type == 'directory',
     isPolygon: type == 'polygon'

@@ -19,6 +19,7 @@
   import _ from 'lodash';
   import Vue from 'vue';
   import { mapState, mapGetters, mapActions } from 'vuex';
+  import { errorToJSON } from '../utils';
   import { isDevelopment } from '../config';
   import { reportError } from '../service/api';
 
@@ -60,6 +61,8 @@
           title: '',
           content: ''
         };
+        
+//        console.log('err', errorToJSON(err));
 
         /** ошибка ajax-запроса */
         if (err.HttpError) {
