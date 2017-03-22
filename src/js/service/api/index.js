@@ -9,6 +9,8 @@ import { http } from '../../factory';
 import axiosCreateError from 'axios/lib/core/createError';
 import { enhanceAxiosError } from '../../factory/http/axios-plugins/detailed';
 
+import towersApi from './towers';
+
 function createError (msg, config, code, response) {
   const err = axiosCreateError(msg, config, code, response);
   return enhanceAxiosError(err);
@@ -374,5 +376,7 @@ export async function reportError (data, opts = {}) {
     .catch(err => console.error(err))
   ;
 }
+
+api.towers = towersApi;
 
 export default api;

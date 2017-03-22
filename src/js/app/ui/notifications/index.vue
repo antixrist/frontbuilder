@@ -1,15 +1,17 @@
 <style lang="scss" rel="stylesheet/scss">
-  .c-notification {
-    $tr: .3s ease-out;
-    
-    &-enter-active,
-    &-leave-active {
-      transition: opacity $tr, transform $tr;
-    }
-    &-enter,
-    &-leave-to {
-      opacity: 0;
-      transform: translateX(100%);
+  .c-notifications {
+    .notification {
+      $tr: .1s ease-out;
+      
+      &-enter-active,
+      &-leave-active {
+        transition: opacity $tr, transform $tr;
+      }
+      &-enter,
+      &-leave-to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
     }
   }
 </style>

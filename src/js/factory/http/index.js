@@ -13,7 +13,6 @@ const defaults = {
   },
   xsrfCookieName: 'csrftoken',
   xsrfHeaderName: 'X-CSRFToken',
-  data: {}
 };
 
 export default function factory (opts = {}) {

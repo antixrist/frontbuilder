@@ -63,6 +63,8 @@
           title: '',
           content: ''
         };
+        
+//        console.log('uncaughtException', errorToJSON(err));
 
         /** ошибка ajax-запроса */
         if (err.HttpError) {
