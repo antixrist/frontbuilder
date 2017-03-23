@@ -355,6 +355,9 @@ if (logApiRequests) {
 
 
 export async function reportError (data, opts = {}) {
+  /**
+   * todo: https://habrahabr.ru/post/324366/
+   */
   const { error } = data;
   const errObj = errorToJSON(error);
   delete data.error;

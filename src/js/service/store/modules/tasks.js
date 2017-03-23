@@ -21,40 +21,86 @@ export const emptyTask = {
   }
 };
 
+export const emptyForm = {
+  id: 0,
+  name: '',
+  parent_id: 0,
+  status: 1,
+  period: 15,
+  msisdn: '',
+  dateEnd: null,
+  dateStart: null,
+  description: '',
+};
+
 const defaults = {
   form: {
-    create: _.cloneDeep(emptyTask),
-    edit: _.cloneDeep(emptyTask),
+    create: _.cloneDeep(emptyForm),
+    edit: _.cloneDeep(emptyForm),
   },
 };
 
 const state = _.cloneDeep(defaults);
 
-const getters = {
-
-};
+const getters = {};
 
 const mutations = {
 
-  RESET_CREATE_FORM (state, name) {
-    state.form.create = _.cloneDeep(defaults.form.create);
-  },
-
-  RESET_EDIT_FORM (state, name) {
-    state.form.edit = _.cloneDeep(defaults.form.edit);
-  },
-
   SET_CREATE_FORM_DATA (state, data = {}) {
-    state.form.create = _.merge(state.form.create, data);
+    state.form.create = data;
   },
 
   SET_EDIT_FORM_DATA (state, data = {}) {
-    state.form.edit = _.merge(state.form.edit, data);
+    state.form.edit = data;
   },
 
 };
 
 const actions = {
+
+  setCreateFormData ({ commit, rootGetters }, data = {}) {
+    // сюда можно загнать исходный объект
+    if (data.content_json) {
+      // но для формы из него надо вытащить только то, что принимает серверное api
+      let newData = _.pick(data, ['id', 'name', 'parent_id', 'description']);
+
+      newData.period = _.get(data, 'content_json.period');
+      newData.status = _.get(data, 'content_json.status');
+      newData.msisdn = _.get(data, 'content_json.phone.msisdn');
+      newData.dateEnd   = _.get(data, 'content_json.date.end');
+      newData.dateStart = _.get(data, 'content_json.date.start');
+
+      data = newData;
+    }
+
+    data = _.merge({}, emptyForm, data);
+
+    data.parent_id = data.parent_id || rootGetters['tree/minParentId'];
+
+    commit('SET_CREATE_FORM_DATA', data);
+  },
+
+  setEditFormData ({ commit, rootGetters }, data = {}) {
+    // сюда можно загнать исходный объект
+    if (data.content_json) {
+      // но для формы из него надо вытащить только то, что принимает серверное api
+      let newData = _.pick(data, ['id', 'name', 'parent_id', 'description']);
+
+      newData.period = _.get(data, 'content_json.period');
+      newData.status = _.get(data, 'content_json.status');
+      newData.msisdn = _.get(data, 'content_json.phone.msisdn');
+      newData.dateEnd   = _.get(data, 'content_json.date.end');
+      newData.dateStart = _.get(data, 'content_json.date.start');
+
+      data = newData;
+    }
+
+    data = _.merge({}, emptyForm, data);
+
+    data.parent_id = data.parent_id || rootGetters['tree/minParentId'];
+
+    commit('SET_EDIT_FORM_DATA', data);
+  },
 
   async create ({ dispatch }, query = {}) {
     let res = await api.post('/task/create', query);

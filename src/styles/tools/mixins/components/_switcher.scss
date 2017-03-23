@@ -1,0 +1,189 @@
+$switcher-map: ();
+
+//<label class="switcher">
+//  <input type="checkbox">
+//  <i class="helper"></i>
+//</label>
+
+@function get-switcher-key () {
+  @return inspect(&);
+}
+
+@function get-switcher-options ($key: null) {
+  $key: if($key != null, $key, get-switcher-key($key));
+
+  @if (map-has-key($switcher-map, $key)) {
+    @return map-get($switcher-map, $key);
+  }
+
+  //@warn('[get-switcher-options] Not existing key: "#{$key}"');
+  @return null;
+}
+
+@function set-switcher-options ($key: null, $options: ()) {
+  $key: if($key != null, $key, get-switcher-key($key));
+
+  $switcher-options: get-switcher-options($key);
+  $switcher-options: if(not $switcher-options, (), $switcher-options);
+  $switcher-options: map-merge($switcher-options, $options);
+  $switcher-map: map-merge($switcher-map, (
+    $key: $switcher-options
+  )) !global;
+
+  @return get-switcher-options($key);
+}
+
+@function switcher-checked-state() {
+  @return 'input[type=checkbox]:checked';
+}
+
+@function get-switcher-control ($key: null, $checked: false) {
+  $key: if($key != null, $key, get-switcher-key($key));
+
+  $options: get-switcher-options($key);
+  $checked: if($checked, '#{switcher-checked-state()} + ', '');
+  $selector: '#{$checked}#{map-get($options, helper)}:before';
+
+  @return $selector;
+}
+
+@function get-switcher-track ($key: null, $checked: false) {
+  $key: if($key != null, $key, get-switcher-key($key));
+
+  $options: get-switcher-options($key);
+  $checked: if($checked, '#{switcher-checked-state()} + ', '');
+  $selector: '#{$checked}#{map-get($options, helper)}';
+
+  @return $selector;
+}
+
+@mixin switcher (
+  $height: 20px,
+  $helper: '.switcher-helper',
+  $reverse: false,
+  $debug: false
+) {
+  $switcher-key: get-switcher-key();
+  $res: set-switcher-options($switcher-key, (
+    height: $height,
+    helper: $helper,
+    reverse: not not $reverse
+  ));
+
+  position: relative;
+
+  input[type=checkbox] {
+    position: absolute;
+    @if not $debug {
+      opacity: 0;
+      top: -9999px;
+      left: -9999px;
+    }
+    z-index: 2;
+
+    &:focus + #{get-switcher-track($switcher-key)} { @include focus-outline; }
+    &:hover:focus + #{get-switcher-track($switcher-key)} { @include focus-outline-reset; }
+  }
+
+  @content;
+
+  // $switcher-map: map-remove($switcher-map, $switcher-key) !global;
+}
+
+@mixin switcher-track () {
+  $switcher-key: get-switcher-key();
+  $switcher-options: get-switcher-options($switcher-key);
+
+  $helper: map-get($switcher-options, helper);
+  $height: map-get($switcher-options, height);
+
+  #{get-switcher-track($switcher-key)} {
+    position: relative;
+    display: block;
+    height: $height;
+    border-radius: $height;
+
+    @content;
+  }
+}
+
+@mixin switcher-checked-track (
+  $x-offset: 2px,
+  $width: null,
+  $height: null
+) {
+  $switcher-key: get-switcher-key();
+  $switcher-options: get-switcher-options($switcher-key);
+
+  $helper: map-get($switcher-options, helper);
+  $outer-height: map-get($switcher-options, height);
+  $outer-width: map-get($switcher-options, width);
+
+  $height: if($height != null, $height, $outer-height);
+  $width: if($width != null, $width, $height);
+
+  #{get-switcher-track($switcher-key, true)} {
+    @content;
+  }
+}
+
+@mixin switcher-control (
+  $x-offset: 2px,
+  $width: null,
+  $height: null
+) {
+  $switcher-key: get-switcher-key();
+  $options: get-switcher-options($switcher-key);
+
+  $helper: map-get($options, helper);
+  $outer-height: map-get($options, height);
+  $reverse: map-get($options, reverse);
+  $direction: if($reverse, right, left);
+
+  $height: if($height != null, $height, $outer-height);
+  $width: if($width != null, $width, $height);
+
+  $res: set-switcher-options($switcher-key, (
+    control: (
+      x-offset: $x-offset,
+      width: $width,
+      height: $height
+    )
+  ));
+
+  #{get-switcher-control($switcher-key)} {
+    content: '';
+    display: block;
+    position: absolute;
+
+    width: $width;
+    height: $height;
+    top: 50%;
+    margin-top: -$height /2;
+    #{$direction}: 0;
+    margin-#{$direction}: $x-offset;
+
+    border-radius: $height /2;
+
+    @content;
+  }
+}
+
+@mixin switcher-checked-control () {
+  $switcher-key: get-switcher-key();
+  $options: get-switcher-options($switcher-key);
+  $control-options: map-get($options, control);
+
+  $helper: map-get($options, helper);
+  $reverse: map-get($options, reverse);
+  $direction: if($reverse, right, left);
+  $width: map-get($control-options, width);
+  $x-offset: map-get($control-options, x-offset);
+
+  #{get-switcher-control($switcher-key, true)} {
+    #{$direction}: 100%;
+    margin-#{$direction}: -($x-offset + $width);
+
+    @content;
+  }
+}

@@ -53,25 +53,27 @@ const getters = {
     return state.activeItemId ? getters.byId[state.activeItemId] : null;
   },
 
-  projectsFlatTree (state, getters) {
+  projectsFlatTree (state, { rootProjects, byParentId }) {
 
-    function getter (projects, level) {
+    return (function getter (projects, level) {
       if (!projects) {
         level = 0;
-        projects = getters.rootProjects;
+        projects = rootProjects;
       }
 
-      return _.flatMap(projects, project => {
-        const name = `${ _.repeat('-', level) } ${ project.name }`.trim();
+      return _(projects)
+        .filter(project => project.isFolder)
+        .flatMap(project => {
+          const name = `${ _.repeat('-', level) } ${ project.name }`.trim();
 
-        return [
-          { ...project, name, level: level + 1 },
-          ...getter(getters.byParentId[project.id] || [], level + 1)
-        ];
-      });
-    }
-
-    return getter();
+          return [
+            { ...project, name, level: level + 1 },
+            ...getter(byParentId[project.id] || [], level + 1)
+          ];
+        })
+        .value()
+      ;
+    })();
   }
 
 };
