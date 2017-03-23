@@ -6,10 +6,17 @@ export const emptyProject = {
   name: ''
 };
 
+export const emptyForm = {
+  id: 0,
+  name: '',
+  parent_id: 0,
+  description: '',
+};
+
 const defaults = {
   form: {
-    create: _.cloneDeep(emptyProject),
-    edit: _.cloneDeep(emptyProject),
+    create: _.cloneDeep(emptyForm),
+    edit: _.cloneDeep(emptyForm),
   },
 };
 
@@ -39,80 +46,98 @@ const mutations = {
 
 };
 
+export function getFormDataFromProject (project) {
+  // сюда можно загнать исходный объект
+  if (project.content_json) {
+    // но для формы из него надо вытащить только то, что принимает серверное api
+  }
+
+  project = _.merge({}, emptyForm, project);
+
+  return project;
+}
+
+
 const actions = {
 
-  async create ({ dispatch }, query = {}) {
-    let res = await api.post('/project/create', query);
+  setCreateFormData ({ commit, rootGetters }, data = {}) {
+    data = getFormDataFromProject(data);
+    data.parent_id = data.parent_id || rootGetters['tree/minParentId'];
 
-    if (res.success) {
-      dispatch('tree/addItem', res.data, { root: true });
-    }
-
-    return res;
+    commit('SET_CREATE_FORM_DATA', data);
   },
 
-  async remove ({ dispatch }, item = {}) {
-    dispatch('tree/updateItem', { id: item.id, submitting: 'remove' }, { root: true });
+  setEditFormData ({ commit, rootGetters }, data = {}) {
+    data = getFormDataFromProject(data);
+    data.parent_id = data.parent_id || rootGetters['tree/minParentId'];
 
+    commit('SET_EDIT_FORM_DATA', data);
+  },
+
+  async save ({ dispatch }, item = {}) {
     let res;
-    try {
-      res = await api.post('/project/delete', item);
-    } catch (err) {
-      dispatch('tree/updateItem', {
-        id: item.id,
-        submitting: false
-      }, { root: true });
 
-      throw err;
-    }
-
-    if (res.success) {
-      dispatch('tree/removeItem', { ...item, submitting: false }, { root: true });
+    if (!item.id) {
+      res = await dispatch('create', item);
     } else {
-      dispatch('tree/updateItem', { ...item, submitting: false }, { root: true });
+      res = await dispatch('update', item);
     }
 
     return res;
   },
 
-  async update ({ dispatch }, item = {}) {
-    dispatch('tree/updateItem', { id: item.id, submitting: 'update' }, { root: true });
+  async create ({ dispatch }, item = {}) {
+    item = _.pick(item, _.keys(emptyForm));
+
+    let res = await api.post('/project/create', item);
+
+    if (res.success) {
+      dispatch('tree/addItems', res.data, { root: true });
+    }
+
+    return res;
+  },
+
+  async update ({ dispatch, commit }, item = {}) {
+    item = _.pick(item, _.keys(emptyForm));
+
+    commit('tree/SET_PROCESSING', { [item.id]: 'update' }, { root: true });
 
     let res;
     try {
       res = await api.post('/project/edit', item);
+
+      commit('tree/SET_PROCESSING', { [item.id]: false }, { root: true });
     } catch (err) {
-      dispatch('tree/updateItem', {
-        id: item.id,
-        submitting: false
-      }, { root: true });
+      commit('tree/SET_PROCESSING', { [item.id]: false }, { root: true });
 
       throw err;
     }
 
-    const newItem = res.success ? res.data : item;
-    dispatch('tree/updateItem', { ...newItem, submitting: false }, { root: true });
+    if (res.success) {
+      dispatch('tree/updateItems', res.data, { root: true });
+    }
 
     return res;
   },
 
-  async move ({ dispatch }, item = {}) {
-    dispatch('tree/updateItem', { id: item.id, submitting: 'move' }, { root: true });
+  async remove ({ dispatch, commit }, item = {}) {
+    commit('tree/SET_PROCESSING', { [item.id]: 'remove' }, { root: true });
 
     let res;
     try {
-      res = await api.post('/project/move', item);
+      res = await api.post('/project/delete', item);
+
+      commit('tree/SET_PROCESSING', { [item.id]: false }, { root: true });
     } catch (err) {
-      dispatch('tree/updateItem', {
-        id: item.id,
-        submitting: false
-      }, { root: true });
+      commit('tree/SET_PROCESSING', { [item.id]: false }, { root: true });
 
       throw err;
     }
 
-    const newItem = res.success ? res.data : item;
-    dispatch('tree/moveItem', { ...newItem, submitting: false }, { root: true });
+    if (res.success) {
+      dispatch('tree/removeItems', item, { root: true });
+    }
 
     return res;
   },

@@ -1,20 +1,22 @@
-import d from 'd';
 import _ from 'lodash';
 import Vue from 'vue';
 import api from '../../api';
-
+import { assignToReactive } from '../utils';
 
 const defaults = {
   list: [],
+  processings: {},
   activeItemId: null,
 };
 
 const state = _.cloneDeep(defaults);
 
 const getters = {
+
   byId (state) {
     return _.keyBy(state.list, 'id');
   },
+
   byParentId (state) {
     return _(state.list)
       .groupBy('parent_id')
@@ -24,11 +26,13 @@ const getters = {
       .value()
     ;
   },
+
   minParentId (state) {
     // todo: хардкооод!
     return 1;
     return _.minBy(state.list, 'parent_id').parent_id;
   },
+
   rootItems (state, getters) {
     return _.values(getters.byParentId[getters.minParentId]);
   },
@@ -50,7 +54,23 @@ const getters = {
   },
 
   activeItem (state, getters) {
-    return state.activeItemId ? getters.byId[state.activeItemId] : null;
+    return _.last(getters.activeItems);
+  },
+
+  tasksById (state, getters) {
+    return _.keyBy(getters.tasks, 'id');
+  },
+
+  projectsById (state, getters) {
+    return _.keyBy(getters.projects, 'id');
+  },
+
+  activeItems (state, getters) {
+    return _.filter(state.list, { isActive: true });
+  },
+
+  hasSeveralActiveItems (state, getters) {
+    return !!getters.activeItems.length;
   },
 
   projectsFlatTree (state, { rootProjects, byParentId }) {
@@ -74,24 +94,35 @@ const getters = {
         .value()
       ;
     })();
-  }
+  },
 
 };
 
 /**
- * @param {{}} item
+ * @param item
  * @returns {{}}
  */
 function cleanupItem (item) {
-  const { type, sort } = item;
-  Object.assign(item, {
-    sort:      sort || 0,
-    isTask:    type == 'task',
-    isFolder:  type == 'directory',
-    isPolygon: type == 'polygon'
+  const isTask = (item.type == 'task');
+  const isFolder = (item.type == 'directory');
+  const isPolygon = (item.type == 'polygon');
+  const isActive = item.isActive || false;
+  const isExpanded = item.isExpanded || false;
+
+  _.forEach({ isTask, isFolder, isPolygon }, (val, key) => {
+    if (item[key] === val) { return; }
+
+    Vue.set(item, key, val);
   });
 
-  if (item.content_json && _.isString(item.content_json)) {
+  _.forEach({ isActive, isExpanded }, (val, key) => {
+    if (typeof item[key] != 'undefined') { return; }
+
+    Vue.set(item, key, val);
+  });
+
+  if (typeof item.content_json != 'undefined' && _.isString(item.content_json)) {
+    item.content_json_origin = item.content_json;
     try {
       item.content_json = JSON.parse(item.content_json);
     } catch (err) {
@@ -124,6 +155,81 @@ function getParentsIds (byId, itemId) {
 }
 
 const mutations = {
+
+  ADD_ITEMS (state, items = []) {
+    items = _.isArray(items) ? items : [items];
+
+    state.list.push(...items.reduce((all, item) => {
+      if (item.id) {
+        cleanupItem(item);
+        state.processings[item.id] = false;
+        all.push(item);
+      }
+
+      return all;
+    }, []));
+  },
+
+  REMOVE_ITEMS (state, items = []) {
+    items = _.isArray(items) ? items : [items];
+
+    items.forEach(item => {
+      const idx = _.findIndex(state.list, { id: item.id });
+      if (idx >= 0) {
+        state.list.splice(idx, 1);
+        delete state.processings[item.id];
+      }
+    });
+  },
+
+  UPDATE_ITEMS (state, updates = []) {
+    updates = _.isArray(updates) ? updates : [updates];
+
+    updates.forEach(update => {
+      const { id } = update;
+      const idx = _.findIndex(state.list, { id });
+
+      if (idx >= 0) {
+        const item = state.list[idx];
+
+        assignToReactive(item, update);
+        cleanupItem(item);
+
+        state.list.splice(idx, 1, item);
+      }
+    });
+  },
+
+  RESET_LIST (state, list = []) {
+    state.processings = {};
+
+    state.list = list.map(item => {
+      state.processings[item.id] = false;
+
+      return cleanupItem(item);
+    });
+  },
+
+  SET_PROCESSING (state, values = {}) {
+
+    state.processings = { ...state.processings, ...values };
+
+    // assignToReactive(state.processings, values);
+    // Object.keys(values).forEach(id => {
+    //   state.processings[id] = values[id];
+    // });
+  },
+
+  ENSURE_ALONE_ACTIVE_ITEM (state, activeItem) {
+    activeItem.isActive && state.list.forEach(item => {
+      if (item.isActive && item.id !== activeItem.id) {
+        item.isActive = false;
+      }
+    });
+  },
+
+
+
   ADD_ITEM (state, item = {}) {
     cleanupItem(item);
     state.list.push(item);
@@ -168,95 +274,58 @@ const mutations = {
     state.activeItemId = null;
   },
 
-  RESET_LIST (state, list = []) {
-    list.forEach(item => cleanupItem(item));
-    state.list = list;
-  },
-
 };
 
 const actions = {
-  addItem ({ commit, dispatch }, item) {
-    commit('ADD_ITEM', item);
+  addItems ({ commit, getters }, items = []) {
+    items = _.isArray(items) ? items : [items];
 
-    if (item.isActive) {
-      dispatch('activateItem', item);
-    }
+    commit('ADD_ITEMS', items);
+
+    const newActiveItem = _.findLast(items, { isActive: true });
+    newActiveItem && commit('ENSURE_ALONE_ACTIVE_ITEM', newActiveItem);
   },
 
-  removeItem ({ state, commit }, item = {}) {
-    state.activeItemId == item.id && commit('RESET_ACTIVE_ITEM');
-    commit('REMOVE_ITEM', item);
+  removeItems ({ commit }, items = []) {
+    commit('REMOVE_ITEMS', items);
   },
 
-  updateItem ({ commit, dispatch }, item = {}) {
-    commit('UPDATE_ITEM', item);
+  updateItems ({ commit, dispatch, getters }, items = []) {
+    items = _.isArray(items) ? items : [items];
 
-    if (item.isActive) {
-      dispatch('activateItem', item);
-    }
+    commit('UPDATE_ITEMS', items);
+
+    const newActiveItem = _.findLast(items, { isActive: true });
+    newActiveItem && commit('ENSURE_ALONE_ACTIVE_ITEM', newActiveItem);
   },
 
-  moveItem ({ commit, dispatch }, item = {}) {
+  resetList ({ commit, getters }, list = []) {
+    list = list.map(item => _.defaults(item, getters.byId[item.id] || {}));
 
+    commit('RESET_LIST', list);
+
+    const newActiveItem = _.findLast(list, { isActive: true });
+    newActiveItem && commit('ENSURE_ALONE_ACTIVE_ITEM', newActiveItem);
   },
 
-  activateItem ({ state, commit, dispatch }, item) {
-    const { id } = item;
+  expandBranchToItems ({ commit, getters }, items = []) {
+    items = _.isArray(items) ? items : [items];
 
-    if (state.activeItemId != id) {
-      commit('SET_ACTIVE_ITEM', id);
-    }
+    items.forEach(item => {
+      const { id: itemId } = item;
+      const parentsIds = getParentsIds(getters.byId, itemId);
 
-    dispatch('expandBranchToItem', id);
-  },
+      const updates = parentsIds
+        .filter(id => getters.byId[id] && getters.byId[id].isFolder)
+        .map(id => ({ id, isExpanded: true }))
+      ;
 
-  resetList ({ commit, getters, dispatch }, list = []) {
-    let activeItem;
-
-    const mergedList = list.map(item => {
-      if (getters.byId[item.id]) {
-        _.defaults(item, getters.byId[item.id]);
-      }
-
-      return item;
+      updates.length && commit('UPDATE_ITEMS', updates);
     });
-
-    // найдём активный элемент
-    mergedList.forEach(item => {
-      if (!item.isActive) { return; }
-
-      if (activeItem) {
-        item.isActive = false;
-      } else {
-        activeItem = item;
-      }
-    });
-
-    commit('RESET_LIST', mergedList);
-    activeItem && dispatch('activateItem', activeItem);
   },
 
   async fetch ({ dispatch, commit }, query = {}) {
-    let res = await api.post('/project/tree', query);
-
-    if (res.success) {
-      dispatch('resetList', res.data);
-    }
-
-    return res;
-  },
-
-  expandBranchToItem ({ commit, getters, dispatch }, item) {
-    const { id: itemId } = item;
-    const parentsIds = getParentsIds(getters.byId, itemId);
-
-    const updates = parentsIds
-            .filter(id => getters.byId[id] && getters.byId[id].isFolder)
-            .map(id => ({ id, isExpanded: true }))
-      ;
-
-    updates.length && commit('BATCH_UPDATE', updates);
+    return await api.post('/project/tree', query);
   },
 
 };
